@@ -9,42 +9,27 @@ namespace RPi.RPi_Server_API
 {
     class CDeviceData
     {
-        #region Fields
-
-        private UInt32 _deviceId;
-        private List<int> _data;
-
-        #endregion
-
         #region Contructors
 
         public CDeviceData()
         {
-            _deviceId = Convert.ToUInt32((new Random().Next()));
+            Id = Convert.ToUInt32((new Random().Next()));
         }
 
         public CDeviceData(UInt32 id)
         {
-            _deviceId = id;
+            Id = id;
         }
 
         #endregion
 
         #region Properties
 
-        public UInt32 ID
-        {
-            get { return _deviceId; }
-        }
+        public UInt32 Id { get; private set; }
 
-        public List<int> Data
-        {
-            get { return _data; }
-            set { _data = value; }
-        }
+        public List<int> Data { get; set; }
 
         #endregion
-
 
         #region Methods
 
