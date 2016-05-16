@@ -28,9 +28,9 @@ namespace RPi.RPi_Hardware
     {
         #region Fields
 
-        public Dictionary<EChairPartArea, CSensor> Back;
-        public Dictionary<EChairPartArea, CSensor> Seat;
-        public Dictionary<EChairPartArea, CSensor> Handles;
+        public Dictionary<EChairPartArea, CSensor> Back { get; set; } = new Dictionary<EChairPartArea, CSensor>();
+        public Dictionary<EChairPartArea, CSensor> Seat { get; set; } = new Dictionary<EChairPartArea, CSensor>();
+        public Dictionary<EChairPartArea, CSensor> Handles { get; set; } = new Dictionary<EChairPartArea, CSensor>();
 
         #endregion
     }
