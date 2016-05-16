@@ -99,7 +99,6 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="RPi Hardware\Chair.cs" />
-    <Compile Include="RPi Hardware\Device.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

@@ -12,8 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+using RPi.RPi_Hardware;
 
 namespace RPi
 {
@@ -24,6 +23,22 @@ namespace RPi
     {
         public MainPage()
         {
+            // initial setup
+            //CChair myChair = new CChair();
+            
+            //CSensor bigSensor1 = new CSensor(ESensorType.FlexiForceA201);
+            //CSensor bigSensor2 = new CSensor(ESensorType.FlexiForceA201);
+
+            //CSensor smallSensor1 = new CSensor(ESensorType.SquareForceResistor);
+            //CSensor smallSensor2 = new CSensor(ESensorType.SquareForceResistor);
+
+            //myChair.Seat.Add(ESensorPosition.SeatLeftMid, bigSensor1);
+            //myChair.Seat.Add(ESensorPosition.SeatRightMid, bigSensor2);
+
+            //myChair.Back.Add(ESensorPosition.BackLeftMid, smallSensor1);
+            //myChair.Back.Add(ESensorPosition.BackRightMid, smallSensor2);
+
+
             this.InitializeComponent();
         }
 
