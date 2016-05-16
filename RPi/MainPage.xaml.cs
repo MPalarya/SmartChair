@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+﻿using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using RPi.RPi_Hardware;
 
 namespace RPi
@@ -24,27 +13,23 @@ namespace RPi
         public MainPage()
         {
             // initial setup
-            //CChair myChair = new CChair();
-            
-            //CSensor bigSensor1 = new CSensor(ESensorType.FlexiForceA201);
-            //CSensor bigSensor2 = new CSensor(ESensorType.FlexiForceA201);
+            CChair myChair = new CChair();
 
-            //CSensor smallSensor1 = new CSensor(ESensorType.SquareForceResistor);
-            //CSensor smallSensor2 = new CSensor(ESensorType.SquareForceResistor);
+            CSensor bigSensor1 = new CSensor(ESensorType.FlexiForceA201, 0);
+            CSensor bigSensor2 = new CSensor(ESensorType.FlexiForceA201, 1);
 
-            //myChair.Seat.Add(ESensorPosition.SeatLeftMid, bigSensor1);
-            //myChair.Seat.Add(ESensorPosition.SeatRightMid, bigSensor2);
+            CSensor smallSensor1 = new CSensor(ESensorType.SquareForceResistor, 2);
+            CSensor smallSensor2 = new CSensor(ESensorType.SquareForceResistor, 3);
 
-            //myChair.Back.Add(ESensorPosition.BackLeftMid, smallSensor1);
-            //myChair.Back.Add(ESensorPosition.BackRightMid, smallSensor2);
+            myChair.Seat.Add(EChairPartArea.LeftMid, bigSensor1);
+            myChair.Seat.Add(EChairPartArea.RightMid, bigSensor2);
+
+            myChair.Back.Add(EChairPartArea.LeftMid, smallSensor1);
+            myChair.Back.Add(EChairPartArea.RightMid, smallSensor2);
 
 
             this.InitializeComponent();
         }
 
-        private void ClickMe_Click(object sender, RoutedEventArgs e)
-        {
-            this.HelloMessage.Text = "Hello, Windows IoT Core!";
-        }
     }
 }
