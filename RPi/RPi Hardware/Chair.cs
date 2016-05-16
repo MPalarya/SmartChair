@@ -1,12 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace RPi.RPi_Hardware
 {
-    class Chair
+    internal enum EChairPart
     {
+        Seat,
+        Back,
+        Handles,
+    }
+
+    internal enum EChairPartArea
+    {
+        LeftFront,
+        LeftMid,
+        LeftRear,
+        LeftTop = LeftFront,
+        LeftBottom = LeftRear,
+
+        RightFront,
+        RightMid,
+        RightRear,
+        RightTop = RightFront,
+        RightBottom = RightRear,
+    }
+    
+    internal class CChair
+    {
+        #region Fields
+
+        public Dictionary<EChairPartArea, CSensor> Back;
+        public Dictionary<EChairPartArea, CSensor> Seat;
+        public Dictionary<EChairPartArea, CSensor> Handles;
+
+        #endregion
     }
 }
