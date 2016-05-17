@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Spi;
+using Windows.Foundation.Metadata;
 
 namespace RPi.RPi_Hardware
 {
@@ -100,7 +102,7 @@ namespace RPi.RPi_Hardware
         /// <summary>
         /// open a SPI connection between mcp3008 and RPi
         /// </summary>
-        private static async void ConnectAdcDeviceAsync()
+        public static async void ConnectAdcDeviceAsync()
         {
             if (_isConnected)
                 return;
@@ -118,11 +120,16 @@ namespace RPi.RPi_Hardware
 
                 var spiQuery = SpiDevice.GetDeviceSelector("SPI0");
 
+
                 DeviceInformationCollection deviceInfo = await DeviceInformation.FindAllAsync(spiQuery);
+                
+
                 if (deviceInfo != null && deviceInfo.Count > 0)
                 {
                     AdcDevice = await SpiDevice.FromIdAsync(deviceInfo[0].Id, spiSettings);
+                    
                     _isConnected = true;
+                    
                 }
             }
 
@@ -139,8 +146,8 @@ namespace RPi.RPi_Hardware
         /// <param name="channel"></param>
         public double Read()
         {
-            ConnectAdcDeviceAsync();
-            _eventConnect.WaitOne();
+            //ConnectAdcDeviceAsync();
+            //_eventConnect.WaitOne();
 
             // from mcp3008 datasheet:
 
