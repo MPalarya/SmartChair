@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RPi.RPi_Server_API
 {
-    class CDeviceData
+    public class CDeviceData
     {
         #region Contructors
 
@@ -35,7 +35,7 @@ namespace RPi.RPi_Server_API
         /// </summary>
         public bool RPiServer_newDataSample(CDeviceData data, System.DateTime timestamp)
         {
-            // TODO: connect to Azure and send a msg
+            // TODO: to be implemented by Orr
             return true;
         }
 
