@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using RPi.RPi_Hardware;
@@ -29,41 +30,30 @@ namespace RPi
 
             myChair.Back.Add(EChairPartArea.LeftMid, smallSensor1);
             myChair.Back.Add(EChairPartArea.RightMid, smallSensor2);
-            
 
+
+            this.Loaded += (sender, args) =>
+            {
+                CSensor.ConnectAdcDeviceAsync();
+            };
             this.InitializeComponent();
         }
 
         private void buttonRead1_Click(object sender, RoutedEventArgs e)
         {
-            double w = Math.Round(double.Parse(textBoxWeight1.Text), 2);
             double v = Math.Round(bigSensor1.Read(), 2);
-            double c = Math.Round(w/v, 2);
-            textRead1.Text = "- W:" + w + " mV: " + v + " C: " + c;
+            textRead1.Text += v + ", ";
         }
 
-        private void buttonRead2_Click(object sender, RoutedEventArgs e)
+        private void buttonRead2_Click_1(object sender, RoutedEventArgs e)
         {
-            double w = Math.Round(double.Parse(textBoxWeight2.Text), 2);
-            double v = Math.Round(bigSensor1.Read(), 2);
-            double c = Math.Round(w / v, 2);
-            textRead2.Text = "- W:" + w + " mV: " + v + " C: " + c;
+            double v = Math.Round(bigSensor2.Read(), 2);
+            textRead2.Text += v + ", ";
         }
 
-        private void buttonRead3_Click(object sender, RoutedEventArgs e)
+        private void buttonCalibrate_Click(object sender, RoutedEventArgs e)
         {
-            double w = Math.Round(double.Parse(textBoxWeight3.Text), 2);
-            double v = Math.Round(bigSensor1.Read(), 2);
-            double c = Math.Round(w / v, 2);
-            textRead3.Text = "- W:" + w + " mV: " + v + " C: " + c;
-        }
 
-        private void buttonRead4_Click(object sender, RoutedEventArgs e)
-        {
-            double w = Math.Round(double.Parse(textBoxWeight4.Text), 2);
-            double v = Math.Round(bigSensor1.Read(), 2);
-            double c = Math.Round(w / v, 2);
-            textRead4.Text = "- W:" + w + " mV: " + v + " C: " + c;
         }
     }
 }
