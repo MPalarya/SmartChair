@@ -116,7 +116,7 @@ namespace RPi.RPi_Hardware
                     Mode = SpiMode.Mode0
                 };
 
-                string spiQuery = SpiDevice.GetDeviceSelector("SPI0");
+                var spiQuery = SpiDevice.GetDeviceSelector("SPI0");
 
                 DeviceInformationCollection deviceInfo = await DeviceInformation.FindAllAsync(spiQuery);
                 if (deviceInfo != null && deviceInfo.Count > 0)
@@ -140,6 +140,7 @@ namespace RPi.RPi_Hardware
         public double Read()
         {
             ConnectAdcDeviceAsync();
+            _eventConnect.WaitOne();
 
             // from mcp3008 datasheet:
 
