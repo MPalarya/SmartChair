@@ -24,6 +24,7 @@ namespace Client
     {
         public viewWeeklySummary()
         {
+            this.DataContext = new weeklySummaryController();
             this.InitializeComponent();
         }
     }
