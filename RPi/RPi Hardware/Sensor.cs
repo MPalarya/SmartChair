@@ -140,11 +140,26 @@ namespace RPi.RPi_Hardware
         }
 
         /// <summary>
-        /// mcp3008 has 8 analog inputs, channel number is a number in range [0,7].
+        /// return Sensor's averaged read value over several measures
+        /// </summary>
+        public double Read()
+        {
+            const int count = 3; // changing this value means re-calibrating the sensors!
+            double sum = 0;
+
+            for (int i = 0; i < count; i++)
+            {
+                sum += ReadSingle();
+            }
+
+            return sum/count;
+        }
+
+        /// <summary>
         /// return value is the Vin value in miliVolts.
         /// </summary>
         /// <param name="channel"></param>
-        public double Read()
+        public double ReadSingle()
         {
             //ConnectAdcDeviceAsync();
             //_eventConnect.WaitOne();

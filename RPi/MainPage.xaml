@@ -24,5 +24,37 @@
         
         <Button x:Name="buttonCalibrate" Content="Calibrate" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top" Width="134" Click="buttonCalibrate_Click"/>
 
+        <TextBlock x:Name="textHeader" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="350">
+        	<Run Text="Set weight -&gt; Read few times -&gt; Save -&gt; Calibrate"/>
+        	<LineBreak/>
+        	<Run Text="Repeat with different weights"/>
+        </TextBlock>
+
+
+        <TextBox x:Name="textBoxWeight1" HorizontalAlignment="Left" Margin="10,68,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="76"/>
+        <TextBox x:Name="textBoxWeight2" HorizontalAlignment="Left" Margin="10,142,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="76"/>
+
+        <Button x:Name="buttonRead1" Content="Read1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="91,68,0,0" Click="buttonRead1_Click" Width="87"/>
+        <Button x:Name="buttonRead2" Content="Read2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="91,142,0,0" Click="buttonRead2_Click" Width="87"/>
+
+        <TextBlock x:Name="textRead1" HorizontalAlignment="Left" Margin="183,74,0,0" TextWrapping="Wrap" Text="output" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textRead2" HorizontalAlignment="Left" Margin="183,148,0,0" TextWrapping="Wrap" Text="output"  VerticalAlignment="Top"/>
+        <TextBlock x:Name="textCal1" HorizontalAlignment="Left" Margin="183,111,0,0" TextWrapping="Wrap" Text="output" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textCal2" HorizontalAlignment="Left" Margin="183,185,0,0" TextWrapping="Wrap" Text="output" VerticalAlignment="Top"/>
+
+        <Button x:Name="buttonCalibrate1" Content="Calibrate1" HorizontalAlignment="Left" Margin="91,105,0,0" VerticalAlignment="Top" Width="87" Click="buttonCalibrate1_Click"/>
+        <Button x:Name="buttonCalibrate2" Content="Calibrate2" HorizontalAlignment="Left" Margin="91,179,0,0" VerticalAlignment="Top" Width="87" Click="buttonCalibrate2_Click"/>
+
+        <Button x:Name="buttonSave1" Content="Save1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,105,0,0" Width="76" Click="buttonSave1_Click"/>
+        <Button x:Name="buttonSave2" Content="Save2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,179,0,0" Width="76" Click="buttonSave2_Click"/>
+
+        <Button x:Name="buttonReadAll" Content="Read All" HorizontalAlignment="Left" Margin="10,268,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.169,0.25" Width="76" Click="buttonReadAll_Click"/>
+        <Button x:Name="button" Content="1.25kg" HorizontalAlignment="Left" Margin="295,68,0,0" VerticalAlignment="Top" Width="65" Click="button_Click"/>
+        <Button x:Name="button1" Content="2.5kg" HorizontalAlignment="Left" Margin="295,105,0,0" VerticalAlignment="Top" Width="65" Click="button1_Click"/>
+        <Button x:Name="button2" Content="3.75kg" HorizontalAlignment="Left" Margin="294,142,0,0" VerticalAlignment="Top" Width="66" Click="button2_Click"/>
+        <Button x:Name="button3" Content="5kg" HorizontalAlignment="Left" Margin="295,179,0,0" VerticalAlignment="Top" Width="65" Click="button3_Click"/>
+        
+        <TextBlock x:Name="textReadAll" HorizontalAlignment="Left" Margin="183,274,0,0" TextWrapping="Wrap" Text="output" VerticalAlignment="Top"/>
+
     </Grid>
 </Page>
