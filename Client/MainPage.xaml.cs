@@ -26,5 +26,21 @@ namespace Client
         {
             this.InitializeComponent();
         }
+        
+
+        private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(initializeChair));
+        }
+
+        private void HyperlinkButton2_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(weeklySummaryView));
+        }
+
+        private void HyperlinkButton3_Click(object sender, RoutedEventArgs e)
+        {
+            //navigate to login
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Windows.UI.Xaml.Controls;
 
 namespace Client
 {
@@ -26,6 +27,7 @@ namespace Client
         private bool canExecute(object arg)
         {
             return isLogined;
+            //return false;
         }
         
         private void onLogin(object arg)
@@ -38,11 +40,14 @@ namespace Client
         {
 
             //new screen- asks to sit straight and gets approval/error from server 
+            new initializeController();
+            
         }
 
         private void onViewWeeklySummary(object arg)
         {
             //new screen- asks the data from the server and presents it
+            new weeklySummaryController();
         }
     }
 }

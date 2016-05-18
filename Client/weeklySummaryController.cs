@@ -8,6 +8,10 @@ namespace Client
 {
     public class weeklySummaryController
     {
+        public weeklySummaryController()
+        {
+
+        }
         //get data from server
     }
 }

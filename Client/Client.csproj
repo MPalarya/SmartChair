@@ -98,8 +98,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="initialize.xaml.cs">
-      <DependentUpon>initialize.xaml</DependentUpon>
+    <Compile Include="booleanToVisibilityConverter.cs" />
+    <Compile Include="initializeChair.xaml.cs">
+      <DependentUpon>initializeChair.xaml</DependentUpon>
     </Compile>
     <Compile Include="initializeController.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -107,9 +108,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="smartChairController.cs" />
-    <Compile Include="viewWeeklySummary.xaml.cs">
-      <DependentUpon>viewWeeklySummary.xaml</DependentUpon>
-    </Compile>
     <Compile Include="weeklySummaryController.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -133,7 +131,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="initialize.xaml">
+    <Page Include="initializeChair.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -141,7 +139,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="viewWeeklySummary.xaml">
+    <Page Include="weeklySummaryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
