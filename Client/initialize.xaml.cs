@@ -24,6 +24,7 @@ namespace Client
     {
         public initialize()
         {
+            this.DataContext = new initializeController();
             this.InitializeComponent();
         }
     }
