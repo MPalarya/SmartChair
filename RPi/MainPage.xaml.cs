@@ -69,13 +69,14 @@ namespace RPi
         }
         private void ReadAllTick(object sender, object e)
         {
-            double r1 = bigSensor1.ReadSingle() * bigSensor1.Coefficient;
-            double r2 = bigSensor2.ReadSingle() * bigSensor2.Coefficient;
+            // from miliVolts to Volts
+            double r1 = Math.Round(bigSensor1.ReadSingle() * bigSensor1.Coefficient / 1000, 2);
+            double r2 = Math.Round(bigSensor2.ReadSingle() * bigSensor2.Coefficient / 1000, 2);
 
-            double a1 = bigSensor1.Read() * bigSensor1.Coefficient;
-            double a2 = bigSensor2.Read() * bigSensor2.Coefficient;
+            double a1 = Math.Round(bigSensor1.Read() * bigSensor1.Coefficient / 1000, 2);
+            double a2 = Math.Round(bigSensor2.Read() * bigSensor2.Coefficient / 1000, 2);
 
-            textReadAll.Text = "single read: \n" + r1 + "\n " + r2 + "\n average of 3 reads: \n" + a1 + "\n " + a2;
+            textReadAll.Text = "single read: \n" + r1 + " kg\n " + r2 + " kg\n average of 3 reads: \n" + a1 + "kg \n " + a2 + " kg";
 
         }
         private void buttonSave1_Click(object sender, RoutedEventArgs e)
