@@ -8,6 +8,10 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Button x:Name="button" Content="Initialize" FontSize="45" Command="{Binding InitializeCommand}" HorizontalAlignment="Left" Margin="171,146,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="button1" Content="Last Week Summary" FontSize="45" Command="{Binding ViewWeeklySummaryCommand}" HorizontalAlignment="Left" Margin="171,290,0,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlock" FontSize="45" HorizontalAlignment="Left" Margin="171,10,0,0" TextWrapping="Wrap" Text="Smart Chair App" VerticalAlignment="Top"/>
+        <Button x:Name="button2" Content="Login" FontSize="45" Command="{Binding LoginCommand}" HorizontalAlignment="Left" Height="97" Margin="171,426,0,0" VerticalAlignment="Top" Width="339"/>
 
     </Grid>
 </Page>
