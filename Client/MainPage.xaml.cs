@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace Client
@@ -24,7 +25,24 @@ namespace Client
     {
         public MainPage()
         {
+            this.DataContext = new smartChairController();
             this.InitializeComponent();
+        }
+
+
+        private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(initializeChair));
+        }
+
+        private void HyperlinkButton2_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(viewWeeklySummary));
+        }
+
+        private void HyperlinkButton3_Click(object sender, RoutedEventArgs e)
+        {
+            //navigate to login
         }
     }
 }
