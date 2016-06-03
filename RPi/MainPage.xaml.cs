@@ -4,6 +4,7 @@ using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using RPi.RPi_Hardware;
+using RPi.RPi_Server_API;
 
 namespace RPi
 {
@@ -21,6 +22,9 @@ namespace RPi
         private List<double> weightsBigSensor2 = new List<double>();
         private List<double> voltagesBigSensor2 = new List<double>();
 
+        private CDeviceData deviceData = new CDeviceData(1);
+        private List<Tuple<Tuple<EChairPart, EChairPartArea>, CSensor>> sensors;
+
         CSensor smallSensor1 = new CSensor(ESensorType.SquareForceResistor, 2);
         CSensor smallSensor2 = new CSensor(ESensorType.SquareForceResistor, 3);
 
@@ -29,15 +33,26 @@ namespace RPi
             // initial setup
             CChair myChair = new CChair();
 
-
-
             myChair.Seat.Add(EChairPartArea.LeftMid, bigSensor1);
             myChair.Seat.Add(EChairPartArea.RightMid, bigSensor2);
 
-            myChair.Back.Add(EChairPartArea.LeftMid, smallSensor1);
-            myChair.Back.Add(EChairPartArea.RightMid, smallSensor2);
+            //myChair.Back.Add(EChairPartArea.LeftMid, smallSensor1);
+            //myChair.Back.Add(EChairPartArea.RightMid, smallSensor2);
 
+            sensors = new List<Tuple<Tuple<EChairPart, EChairPartArea>, CSensor>>() {
 
+                // {[Seat, LeftMid], bigSensor1}
+                new Tuple<Tuple<EChairPart, EChairPartArea>, CSensor>(
+                new Tuple<EChairPart, EChairPartArea>(
+                    EChairPart.Seat, EChairPartArea.LeftMid), bigSensor1),
+
+                // {[Seat, RightMid], bigSensor2}
+                new Tuple<Tuple<EChairPart, EChairPartArea>, CSensor>(
+                new Tuple<EChairPart, EChairPartArea>(
+                    EChairPart.Seat, EChairPartArea.RightMid), bigSensor2)
+
+            };
+            
             this.Loaded += (sender, args) =>
             {
                 CSensor.ConnectAdcDeviceAsync();
@@ -67,6 +82,7 @@ namespace RPi
             dispatcherTimer.Start();
 
         }
+
         private void ReadAllTick(object sender, object e)
         {
             // from miliVolts to Volts
@@ -78,6 +94,11 @@ namespace RPi
 
             textReadAll.Text = "single read: \n" + r1 + " kg\n " + r2 + " kg\n average of 3 reads: \n" + a1 + "kg \n " + a2 + " kg";
 
+            deviceData.Data.Clear();
+            foreach (var sensorData in sensors)
+            {
+                deviceData.Data.Add(sensorData.Item1, (int)(sensorData.Item2.Read() * sensorData.Item2.Coefficient / 1000));
+            }
         }
         private void buttonSave1_Click(object sender, RoutedEventArgs e)
         {

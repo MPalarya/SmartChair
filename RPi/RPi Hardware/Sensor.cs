@@ -5,11 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Spi;
-using Windows.Foundation.Metadata;
 
 namespace RPi.RPi_Hardware
 {
-    internal enum ESensorType
+    /// <summary>
+    /// type of the FSR used defines the maximum load and way of calibration
+    /// </summary>
+    public enum ESensorType
     {
         FlexiForceA201,
         SquareForceResistor,
@@ -26,11 +28,8 @@ namespace RPi.RPi_Hardware
 
         #region Constructors
 
-        /// <summary>
+        /// <param name="type">type of sensor</param>
         /// <param name="channel">number of channel the sensor uses to connect to AdcDevice</param>
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="channel"></param>
         public CSensor(ESensorType type, byte channel)
         {
             Channel = channel;
@@ -43,9 +42,6 @@ namespace RPi.RPi_Hardware
 
                 case ESensorType.SquareForceResistor:
                     MaxLoad = 10; // kg
-                    break;
-
-                default:
                     break;
             }
         }
@@ -74,21 +70,43 @@ namespace RPi.RPi_Hardware
         /// max load to be detected by the sensor, as provided by the manufacturer.
         /// value is in kilograms.
         /// </summary>
-        public double MaxLoad { get; set; } = -1;
+        public double MaxLoad { get; private set; } = -1;
 
         /// <summary>
-        /// min load is the effectice zero,
-        /// the load detected by the sensor when no additional pressure is applied
-        /// (besides the weight of the system and physical deviations).
-        /// value is in kilograms.
+        /// <para> min load is the effectice zero (of the system),                                                  </para>
+        /// <para> the load detected by the sensor when no additional pressure is applied (as part of a system).    </para>
+        /// <para> (besides the weight of the system and physical deviations).                                      </para>
+        /// <para> value is in kilograms - calculated in calibration proccess after the system is fully assembled.  </para>
         /// </summary>
-        public double MinLoad { get; set; } = -1;
+        private double MinLoadSystem { get; set; } = -1;
 
         /// <summary>
-        /// conversation ratio between weight and voltage.
-        /// satisfying: Weight(kilograms) = Coefficient * Vout(volt)
+        /// <para> min load is the effectice zero (adjusted to a specific user),                       </para>
+        /// <para> the load detected by the sensor when user is sitting correctly (guided).            </para>
+        /// <para> compensates the asymmetricity of the user interation with the chair.                </para>
+        /// <para> value is in kilograms - calculated in guided user calibration (using the Client).   </para>
         /// </summary>
-        public double Coefficient { get; set; } = 0;
+        private double MinLoadUser { get; set; } = -1;
+
+        /// <summary>
+        /// MinLoad is the considering both System imperfection and user's asymmetric use.
+        /// </summary>
+        public double MinLoad
+        {
+            get
+            {
+                if (MinLoadUser >= 0)
+                    return MinLoadUser + MinLoadSystem;
+
+                return MinLoadSystem; // will return -1 to indicate lake of calibration
+            }
+        }
+
+        /// <summary>
+        /// <para> conversation ratio between weight and voltage - calculated in calibration process.    </para>
+        /// <para> satisfying: Weight(kilograms) = Coefficient * Vout(volt)                              </para>
+        /// </summary>
+        public double Coefficient { get; private set; } = 0;
 
         /// <summary>
         /// defines whether a sensor is in working condition.
@@ -119,17 +137,12 @@ namespace RPi.RPi_Hardware
                 };
 
                 var spiQuery = SpiDevice.GetDeviceSelector("SPI0");
-
-
                 DeviceInformationCollection deviceInfo = await DeviceInformation.FindAllAsync(spiQuery);
-                
 
                 if (deviceInfo != null && deviceInfo.Count > 0)
                 {
                     AdcDevice = await SpiDevice.FromIdAsync(deviceInfo[0].Id, spiSettings);
-                    
                     _isConnected = true;
-                    
                 }
             }
 
@@ -152,7 +165,7 @@ namespace RPi.RPi_Hardware
                 sum += ReadSingle();
             }
 
-            return sum/count;
+            return sum / count;
         }
 
         /// <summary>
@@ -160,9 +173,6 @@ namespace RPi.RPi_Hardware
         /// </summary>
         public double ReadSingle()
         {
-            //ConnectAdcDeviceAsync();
-            //_eventConnect.WaitOne();
-
             // from mcp3008 datasheet:
 
             byte[] transmitBuffer = new byte[3];
@@ -191,6 +201,7 @@ namespace RPi.RPi_Hardware
             // in miliVolts for better floating point precision in future calculations
             double analogValue = digitalValue * (3300.0 / 1024.0);
 
+            Task.Delay(20).Wait(); // wait to be able to re-read once returned
             return analogValue;
         }
 
@@ -202,6 +213,7 @@ namespace RPi.RPi_Hardware
             int measuresCount = Math.Min(weights.Count, voltages.Count);
             double rsquared, yintercept, slope;
 
+            // linear fitting based on distances least mean squares
             LinearRegression(
                 voltages.ToArray(), weights.ToArray(),      // y = a*x+b => weight = coeff*volt
                 0, measuresCount,
@@ -213,6 +225,7 @@ namespace RPi.RPi_Hardware
                 Coefficient = slope;
                 IsWorking = true;
             }
+
             else
             {
                 Coefficient = 0;

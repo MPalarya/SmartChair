@@ -1,31 +1,63 @@
-﻿using System;
+﻿using RPi.RPi_Hardware;
+using System;
 using System.Collections.Generic;
 
 namespace RPi.RPi_Server_API
 {
-    public class CDeviceData
+    /// <summary>
+    /// CDeviceData is a Singleton. use CDeviceData.Instace.
+    /// </summary>
+    public sealed class CDeviceData
     {
+        #region Fields
+
+        private static volatile CDeviceData m_instance;
+        private static object syncRoot = new object();
+
+        #endregion
+
         #region Contructors
 
-        public CDeviceData()
+        private CDeviceData()
         {
             Id = Convert.ToUInt32((new Random().Next()));
-        }
-
-        public CDeviceData(UInt32 id)
-        {
-            Id = id;
         }
 
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// CDeviceData Singleton class uses double lock methodology,
+        /// recommended on MSDN for multithreaded access to a Singleton instance.
+        /// </summary>
+        public static CDeviceData Instance
+        {
+            get
+            {
+                if (m_instance == null)
+                {
+                    lock (syncRoot)
+                    {
+                        if (m_instance == null)
+                        {
+                            m_instance = new CDeviceData();
+                        }
+                    }
+                }
+                return m_instance;
+            }
+        }
+
         public UInt32 Id { get; private set; }
 
-        public List<int> Data { get; set; }
+        /// <summary>
+        /// <para>access example: int particular_measurement = Data[Seat][RightMid];                                 </para>
+        /// <para>or: foreach (var chairPart in Data.Keys) { foreach (var chairPartArea in Data[chairPart]) { .. } } </para>
+        /// </summary>
+        public Dictionary<EChairPart, Dictionary<EChairPartArea, int>> Data { get; set; }
 
-        #endregion
+        #endregion Properties
 
         #region Methods
 
@@ -36,9 +68,15 @@ namespace RPi.RPi_Server_API
         public bool RPiServer_newDataSample(CDeviceData data, System.DateTime timestamp)
         {
             // TODO: to be implemented by Orr
+            
             return true;
         }
 
-        #endregion
+        public void Clear()
+        {
+            Data.Clear();
+        }
+
+        #endregion Methods
     }
 }

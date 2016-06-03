@@ -2,14 +2,21 @@
 
 namespace RPi.RPi_Hardware
 {
-    internal enum EChairPart
+    /// <summary>
+    /// represents the part of chair that populates sensors.
+    /// computations logic is different depending on selected part.
+    /// </summary>
+    public enum EChairPart
     {
         Seat,
         Back,
         Handles,
     }
 
-    internal enum EChairPartArea
+    /// <summary>
+    /// roughly divided into 3 rows and 2 coloumns to indicate the specific area onto part's surface.
+    /// </summary>
+    public enum EChairPartArea
     {
         LeftFront,
         LeftMid,
@@ -24,6 +31,9 @@ namespace RPi.RPi_Hardware
         RightBottom = RightRear,
     }
     
+    /// <summary>
+    /// the chair holds record of sensors distribution on the surface of its different parts
+    /// </summary>
     internal class CChair
     {
         #region Fields
