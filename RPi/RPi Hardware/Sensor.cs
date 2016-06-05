@@ -220,7 +220,9 @@ namespace RPi.RPi_Hardware
             double analogValue = digitalValue * (3300.0 / 1024.0);
 
             Task.Delay(20).Wait(); // wait to be able to re-read once returned
-            return analogValue;
+
+            double minLoad = Math.Max(0, MinLoad);
+            return analogValue - minLoad;
         }
 
         /// <summary>
