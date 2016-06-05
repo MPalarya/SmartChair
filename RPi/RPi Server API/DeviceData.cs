@@ -28,6 +28,11 @@ namespace RPi.RPi_Server_API
         #region Properties
 
         /// <summary>
+        /// time to wait in minutes before sending next data-set to Server
+        /// </summary>
+        public static double frequencyToReport { get; } = 1;
+
+        /// <summary>
         /// CDeviceData Singleton class uses double lock methodology,
         /// recommended on MSDN for multithreaded access to a Singleton instance.
         /// </summary>
@@ -65,10 +70,11 @@ namespace RPi.RPi_Server_API
         /// RPi sends data to Azure server, including device id, a list of normalized measurements and an end of sample timestamp
         /// keeps sending until returned success
         /// </summary>
-        public bool RPiServer_newDataSample(CDeviceData data, System.DateTime timestamp)
+        public bool RPiServer_newDataSample(System.DateTime timestamp)
         {
+            // CDeviceData data == this.
             // TODO: to be implemented by Orr
-            
+
             return true;
         }
 

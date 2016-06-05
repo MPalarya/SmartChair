@@ -25,6 +25,8 @@ namespace RPi
         private CDeviceData m_deviceData = CDeviceData.Instance;
         private Dictionary<EChairPart, Dictionary<EChairPartArea, CSensor>> m_sensors;
 
+        DateTime lastReported = DateTime.Now;
+
         public MainPage()
         {
             InitialSetup();
@@ -87,6 +89,18 @@ namespace RPi
 
             textReadAll.Text = "single read: \n" + r1 + " kg\n " + r2 + " kg\n average of 3 reads: \n" + a1 + "kg \n " + a2 + " kg";
 
+            ReadAndReport();
+        }
+
+        private void ReadAndReport()
+        {
+            DateTime curTime = DateTime.Now;
+
+            if (curTime.Subtract(lastReported).TotalMinutes < CDeviceData.frequencyToReport)
+                return;
+
+            lastReported = curTime;
+            
             m_deviceData.Data.Clear();
             foreach (var chairPart in m_sensors)
             {
@@ -95,7 +109,9 @@ namespace RPi
                     m_deviceData.Data[chairPart.Key][partArea.Key] = partArea.Value.ReadKG();
                 }
             }
+            m_deviceData.RPiServer_newDataSample(DateTime.Now);
         }
+
         private void buttonSave1_Click(object sender, RoutedEventArgs e)
         {
             m_weightsBigSensor1.Add(double.Parse(textBoxWeight1.Text));
