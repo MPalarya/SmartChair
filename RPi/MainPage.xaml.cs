@@ -88,9 +88,12 @@ namespace RPi
             textReadAll.Text = "single read: \n" + r1 + " kg\n " + r2 + " kg\n average of 3 reads: \n" + a1 + "kg \n " + a2 + " kg";
 
             m_deviceData.Data.Clear();
-            foreach (var sensorData in m_sensors)
+            foreach (var chairPart in m_sensors)
             {
-                m_deviceData.Data.Add(sensorData.Item1, (int)(sensorData.Item2.Read() * sensorData.Item2.Coefficient / 1000));
+                foreach (var partArea in chairPart.Value)
+                {
+                    m_deviceData.Data[chairPart.Key][partArea.Key] = partArea.Value.ReadKG();
+                }
             }
         }
         private void buttonSave1_Click(object sender, RoutedEventArgs e)

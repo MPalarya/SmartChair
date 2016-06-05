@@ -5,6 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Spi;
+using System.Xml.Serialization;
+using System.Xml;
+using System.Xml.Schema;
+using System.IO;
 
 namespace RPi.RPi_Hardware
 {
@@ -17,7 +21,7 @@ namespace RPi.RPi_Hardware
         SquareForceResistor,
     }
 
-    internal class CSensor
+    internal class CSensor : IXmlSerializable
     {
         #region Fields
 
@@ -152,6 +156,16 @@ namespace RPi.RPi_Hardware
             }
         }
 
+
+        /// <summary>
+        /// return Sensor's averaged read value over several measures in Kg (after calibration)
+        /// </summary>
+        public int ReadKG()
+        {
+            return (int) (Read() * Coefficient / 1000);
+        }
+        
+
         /// <summary>
         /// return Sensor's averaged read value over several measures
         /// </summary>
@@ -231,6 +245,9 @@ namespace RPi.RPi_Hardware
                 Coefficient = 0;
                 IsWorking = false;
             }
+            //XmlSerializer serializer = new XmlSerializer(typeof(CSensor));
+            
+            //serializer.Serialize(new Writ
         }
 
         /// <summary>
@@ -282,6 +299,21 @@ namespace RPi.RPi_Hardware
             rsquared = dblR * dblR;
             yintercept = meanY - ((sCo / ssX) * meanX);
             slope = sCo / ssX;
+        }
+
+        public XmlSchema GetSchema()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
