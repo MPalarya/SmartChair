@@ -72,10 +72,27 @@ namespace RPi.RPi_Server_API
         /// </summary>
         public bool RPiServer_newDataSample(System.DateTime timestamp)
         {
-            // CDeviceData data == this.
+            // CDeviceData data == this
+            // of type: Dictionary<EChairPart, Dictionary<EChairPartArea, int>> see documentation
             // TODO: to be implemented by Orr
 
             return true;
+        }
+
+        /// <summary>
+        /// assumes only chair's own weight is applied on the sensors.
+        /// </summary>
+        public void ServerRPi_CalibrateSystem()
+        {
+            CSensor.CalibrateSystem();
+        }
+
+        /// <summary>
+        /// assumes user is sitten correctly (guided).
+        /// </summary>
+        public void ServerRPi_CalibrateUser()
+        {
+            CSensor.CalibrateUser();
         }
 
         public void Clear()

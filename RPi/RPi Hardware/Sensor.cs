@@ -27,6 +27,7 @@ namespace RPi.RPi_Hardware
 
         private static ManualResetEvent _eventConnect = new ManualResetEvent(false);
         private static bool _isConnected = false;
+        private static List<CSensor> m_sensorList = new List<CSensor>();
 
         #endregion
 
@@ -48,6 +49,9 @@ namespace RPi.RPi_Hardware
                     MaxLoad = 10; // kg
                     break;
             }
+
+            // add to list of sensors (to allow future calibration)
+            m_sensorList.Add(this);
         }
 
         #endregion
@@ -248,6 +252,28 @@ namespace RPi.RPi_Hardware
             //XmlSerializer serializer = new XmlSerializer(typeof(CSensor));
             
             //serializer.Serialize(new Writ
+        }
+
+        /// <summary>
+        /// assumes only chair's own weight is applied on the sensors. sets MinLoadSystem.
+        /// </summary>
+        public static void CalibrateSystem()
+        {
+            foreach (CSensor sensor in m_sensorList)
+            {
+                sensor.MinLoadSystem = sensor.Read();
+            }
+        }
+
+        /// <summary>
+        /// assumes user is sitted correctly (guided). sets MinLoadUser.
+        /// </summary>
+        public static void CalibrateUser()
+        {
+            foreach (CSensor sensor in m_sensorList)
+            {
+                sensor.MinLoadUser = sensor.Read();
+            }
         }
 
         /// <summary>
