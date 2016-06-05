@@ -1582,6 +1582,25 @@
         "runtime": {
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
+        "dependencies": {
+          "WinRTXamlToolkit.Windows": "[1.8.1, )"
+        },
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        }
+      },
+      "WinRTXamlToolkit.Windows/1.8.1": {
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        }
       }
     },
     "UAP,Version=v10.0/win10-arm": {
@@ -3254,6 +3273,25 @@
         "runtime": {
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
+        "dependencies": {
+          "WinRTXamlToolkit.Windows": "[1.8.1, )"
+        },
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        }
+      },
+      "WinRTXamlToolkit.Windows/1.8.1": {
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        }
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
@@ -4897,6 +4935,25 @@
         },
         "runtime": {
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
+        }
+      },
+      "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
+        "dependencies": {
+          "WinRTXamlToolkit.Windows": "[1.8.1, )"
+        },
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        }
+      },
+      "WinRTXamlToolkit.Windows/1.8.1": {
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
         }
       }
     },
@@ -6575,6 +6632,25 @@
         "runtime": {
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
+        "dependencies": {
+          "WinRTXamlToolkit.Windows": "[1.8.1, )"
+        },
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        }
+      },
+      "WinRTXamlToolkit.Windows/1.8.1": {
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        }
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
@@ -8218,6 +8294,25 @@
         },
         "runtime": {
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
+        }
+      },
+      "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
+        "dependencies": {
+          "WinRTXamlToolkit.Windows": "[1.8.1, )"
+        },
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        }
+      },
+      "WinRTXamlToolkit.Windows/1.8.1": {
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
         }
       }
     },
@@ -9896,6 +9991,25 @@
         "runtime": {
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
+        "dependencies": {
+          "WinRTXamlToolkit.Windows": "[1.8.1, )"
+        },
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        }
+      },
+      "WinRTXamlToolkit.Windows/1.8.1": {
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        }
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
@@ -11539,6 +11653,25 @@
         },
         "runtime": {
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
+        }
+      },
+      "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
+        "dependencies": {
+          "WinRTXamlToolkit.Windows": "[1.8.1, )"
+        },
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll": {}
+        }
+      },
+      "WinRTXamlToolkit.Windows/1.8.1": {
+        "compile": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
+        },
+        "runtime": {
+          "lib/netcore451/WinRTXamlToolkit.dll": {}
         }
       }
     }
@@ -14988,6 +15121,83 @@
         "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll",
         "System.Xml.XmlSerializer.nuspec"
       ]
+    },
+    "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
+      "sha512": "qjOgfq3tW6qog7YawQzfJydHvtL+Z6719NP4dPBsiro/noBA5NfRwHiY+HF+ZD3vK/2ihBdl/hvX694Ih3DRpw==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.dll",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization.pri",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Axis/AxisLabel.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Axis/DateTimeAxisLabel.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Axis/DisplayAxis.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Axis/NumericAxisLabel.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Axis/RangeAxis.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Chart/Chart.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/DataPoint/AreaDataPoint.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/DataPoint/BarDataPoint.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/DataPoint/BubbleDataPoint.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/DataPoint/ColumnDataPoint.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/DataPoint/LineDataPoint.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/DataPoint/PieDataPoint.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/DataPoint/ScatterDataPoint.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Primitives/DelegatingListBox.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Series/AreaSeries.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Series/DataPointSeries.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Series/DefinitionSeries.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Series/LegendItem.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Series/LineSeries.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Charting/Series/PieSeries.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Legend/Legend.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Themes/Generic.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/Title/Title.xbf",
+        "lib/netcore451/WinRTXamlToolkit.Controls.DataVisualization/WinRTXamlToolkit.Controls.DataVisualization.xr.xml",
+        "package/services/metadata/core-properties/b24e87923e4f4178a207abd23b3b803f.psmdcp",
+        "WinRTXamlToolkit.Controls.DataVisualization.Windows.nuspec"
+      ]
+    },
+    "WinRTXamlToolkit.Windows/1.8.1": {
+      "sha512": "DQlGwXUhKofcR1RRTjinxSvMbCQm6+3vug2QFrCuwbktJ8v2M9fbKcQC6xF59ABuv8G/Qa4X5Rg/cq9XNgkilQ==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "lib/netcore451/WinRTXamlToolkit.dll",
+        "lib/netcore451/WinRTXamlToolkit.pri",
+        "lib/netcore451/WinRTXamlToolkit/Controls/AlternativeFrame/AlternativeFrame.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/AnimatingContainer/AnimatingContainer.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/AutoCompleteTextBox/AutoCompleteTextBox.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/CameraCaptureControl/CameraCaptureControl.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/CascadingImageControl/CascadingImageControl.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/CascadingTextBlock/CascadingTextBlock.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/ColorPicker/ColorPicker.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/CountdownControl/CountdownControl.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/CustomAppBar/CustomAppBar.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/CustomGridSplitter/CustomGridSplitter.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/DelayedLoadControl/DelayedLoadControl.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/FocusVisualizer/FocusVisualizer.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/FxContentControl/FxContentControl.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/ImageButton/ImageButton.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/ImageToggleButton/ImageToggleButton.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/InputDialog/InputDialog.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/ListItemButton/ListItemButton.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/NumericUpDown/NumericUpDown.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/ToolStrip/ToolStrip.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/ToolWindow/ToolWindow.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/TreeView/TreeView.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/TreeView/TreeViewItem.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/TreeView/TreeViewMouse.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/TreeView/TreeViewTouch.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/WatermarkPasswordBox/WatermarkPasswordBox.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/WatermarkTextBox/WatermarkTextBox.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Controls/WebBrowser/WebBrowser.xbf",
+        "lib/netcore451/WinRTXamlToolkit/Themes/Generic.xbf",
+        "lib/netcore451/WinRTXamlToolkit/WinRTXamlToolkit.xr.xml",
+        "package/services/metadata/core-properties/995f4a0dbf3b4fe99b8b6c7d22dbd232.psmdcp",
+        "WinRTXamlToolkit.Windows.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
@@ -14997,7 +15207,8 @@
       "Microsoft.ApplicationInsights.WindowsApps >= 1.0.0",
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
       "NotificationsExtensions.Win10 >= 14332.0.0",
-      "Prism.Core >= 6.1.0"
+      "Prism.Core >= 6.1.0",
+      "WinRTXamlToolkit.Controls.DataVisualization.Windows >= 1.8.1"
     ],
     "UAP,Version=v10.0": []
   }
