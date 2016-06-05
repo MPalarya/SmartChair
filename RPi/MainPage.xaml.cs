@@ -23,9 +23,6 @@ namespace RPi
         private List<double> m_voltagesBigSensor2 = new List<double>();
 
         private CDeviceData m_deviceData = CDeviceData.Instance;
-        private Dictionary<EChairPart, Dictionary<EChairPartArea, CSensor>> m_sensors;
-
-        DateTime lastReported = DateTime.Now;
 
         public MainPage()
         {
@@ -44,16 +41,14 @@ namespace RPi
         /// </summary>
         private void InitialSetup()
         {
-            CChair myChair = new CChair();
-            myChair.Seat.Add(EChairPartArea.LeftMid, m_bigSensor1);
-            myChair.Seat.Add(EChairPartArea.RightMid, m_bigSensor2);
+            CChair myChair = CChair.Instance;
 
-            m_sensors = new Dictionary<EChairPart, Dictionary<EChairPartArea, CSensor>>()
-            {
-                [EChairPart.Seat] = myChair.Seat,
-                [EChairPart.Back] = myChair.Back,
-                [EChairPart.Handles] = myChair.Handles,
-            };
+            myChair.Seat[EChairPartArea.LeftMid] = m_bigSensor1;
+            myChair.Seat[EChairPartArea.RightMid] = m_bigSensor2;
+
+            myChair.Sensors[EChairPart.Seat] = myChair.Seat;
+            myChair.Sensors[EChairPart.Back] = myChair.Back;
+            myChair.Sensors[EChairPart.Handles] = myChair.Handles;
         }
 
         private void buttonRead1_Click(object sender, RoutedEventArgs e)
@@ -89,27 +84,7 @@ namespace RPi
 
             textReadAll.Text = "single read: \n" + r1 + " kg\n " + r2 + " kg\n average of 3 reads: \n" + a1 + "kg \n " + a2 + " kg";
 
-            ReadAndReport();
-        }
-
-        private void ReadAndReport()
-        {
-            DateTime curTime = DateTime.Now;
-
-            if (curTime.Subtract(lastReported).TotalMinutes < CDeviceData.frequencyToReport)
-                return;
-
-            lastReported = curTime;
-            
-            m_deviceData.Data.Clear();
-            foreach (var chairPart in m_sensors)
-            {
-                foreach (var partArea in chairPart.Value)
-                {
-                    m_deviceData.Data[chairPart.Key][partArea.Key] = partArea.Value.ReadKG();
-                }
-            }
-            m_deviceData.RPiServer_newDataSample(DateTime.Now);
+            CChair.Instance.ReadAndReport();
         }
 
         private void buttonSave1_Click(object sender, RoutedEventArgs e)

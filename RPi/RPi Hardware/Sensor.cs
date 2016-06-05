@@ -5,10 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Spi;
-using System.Xml.Serialization;
-using System.Xml;
-using System.Xml.Schema;
-using System.IO;
 
 namespace RPi.RPi_Hardware
 {
@@ -21,7 +17,7 @@ namespace RPi.RPi_Hardware
         SquareForceResistor,
     }
 
-    internal class CSensor : IXmlSerializable
+    internal class CSensor
     {
         #region Fields
 
@@ -327,21 +323,6 @@ namespace RPi.RPi_Hardware
             rsquared = dblR * dblR;
             yintercept = meanY - ((sCo / ssX) * meanX);
             slope = sCo / ssX;
-        }
-
-        public XmlSchema GetSchema()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ReadXml(XmlReader reader)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void WriteXml(XmlWriter writer)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion
