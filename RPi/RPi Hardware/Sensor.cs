@@ -158,7 +158,6 @@ namespace RPi.RPi_Hardware
         /// <summary>
         /// return value is the Vin value in miliVolts.
         /// </summary>
-        /// <param name="channel"></param>
         public double ReadSingle()
         {
             //ConnectAdcDeviceAsync();

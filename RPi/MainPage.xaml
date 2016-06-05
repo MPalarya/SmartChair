@@ -8,21 +8,6 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBox x:Name="textBoxWeight1" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBoxWeight2" HorizontalAlignment="Left" Margin="10,47,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBoxWeight3" HorizontalAlignment="Left" Margin="10,84,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBoxWeight4" HorizontalAlignment="Left" Margin="10,121,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top"/>
-        <Button x:Name="buttonRead1" Content="Read" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="91,10,0,0" Click="buttonRead1_Click"/>
-        <Button x:Name="buttonRead2" Content="Read" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="91,47,0,0" Click="buttonRead2_Click_1"/>
-        <Button x:Name="buttonRead3" Content="Read" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="91,84,0,0" Click="buttonRead3_Click_1"/>
-        <Button x:Name="buttonRead4" Content="Read" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="91,121,0,0" Click="buttonRead4_Click_1"/>
-        <TextBlock x:Name="textRead1" HorizontalAlignment="Left" Margin="149,16,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textRead2" HorizontalAlignment="Left" Margin="149,53,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textRead3" HorizontalAlignment="Left" Margin="149,90,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textRead4" HorizontalAlignment="Left" Margin="149,127,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>        
-        
-        
-        <Button x:Name="buttonCalibrate" Content="Calibrate" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top" Width="134" Click="buttonCalibrate_Click"/>
 
         <TextBlock x:Name="textHeader" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="350">
         	<Run Text="Set weight -&gt; Read few times -&gt; Save -&gt; Calibrate"/>
