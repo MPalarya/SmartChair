@@ -1,10 +1,8 @@
-﻿using System;
+﻿using RPi.RPi_Hardware;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using RPi.RPi_Hardware;
-using RPi.RPi_Server_API;
 
 namespace RPi
 {
@@ -13,6 +11,8 @@ namespace RPi
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        #region Fields
+
         private CSensor m_bigSensor1 = new CSensor(ESensorType.FlexiForceA201, 0);
         private CSensor m_bigSensor2 = new CSensor(ESensorType.FlexiForceA201, 1);
 
@@ -22,7 +22,7 @@ namespace RPi
         private List<double> m_weightsBigSensor2 = new List<double>();
         private List<double> m_voltagesBigSensor2 = new List<double>();
 
-        private CDeviceData m_deviceData = CDeviceData.Instance;
+        #endregion
 
         public MainPage()
         {
@@ -70,7 +70,6 @@ namespace RPi
             dispatcherTimer.Tick += ReadAllTick;
             dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
             dispatcherTimer.Start();
-
         }
 
         private void ReadAllTick(object sender, object e)

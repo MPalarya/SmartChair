@@ -95,6 +95,9 @@ namespace RPi.RPi_Hardware
 
         #region Methods
 
+        /// <summary>
+        /// reads measurements from all sensors and sends data to Server
+        /// </summary>
         public void ReadAndReport()
         {
             DateTime curTime = DateTime.Now;
