@@ -95,13 +95,16 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="alertData.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="initialize.xaml.cs">
-      <DependentUpon>initialize.xaml</DependentUpon>
+    <Compile Include="booleanToVisibilityConverter.cs" />
+    <Compile Include="InitializeChair.xaml.cs">
+      <DependentUpon>InitializeChair.xaml</DependentUpon>
     </Compile>
     <Compile Include="initializeController.cs" />
+    <Compile Include="ISmartChairServerClient.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -133,7 +136,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="initialize.xaml">
+    <Page Include="InitializeChair.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

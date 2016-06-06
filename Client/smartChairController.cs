@@ -5,6 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using NotificationsExtensions.Tiles;
+using NotificationsExtensions;
+using Windows.UI.Notifications;
+using Windows.Data.Xml.Dom;
+//using System.Xml;
 
 namespace Client
 {
@@ -15,6 +20,8 @@ namespace Client
             this.InitializeCommand = new DelegateCommand<object>(this.onInitialize, this.canExecute);
             this.ViewWeeklySummaryCommand = new DelegateCommand<object>(this.onViewWeeklySummary, this.canExecute);
             this.LoginCommand = new DelegateCommand<object>(this.onLogin);
+            
+            createNotification();
         }
 
         public bool isLogined { get; set; }
@@ -43,6 +50,37 @@ namespace Client
         private void onViewWeeklySummary(object arg)
         {
             //new screen- asks the data from the server and presents it
+        }
+
+        private void createNotification()
+        {
+            //// In a real app, these would be initialized with actual data
+            //string from = "smartchair App";
+            //string subject = "Sitting alatam";
+            //string body = "You are sitting way too long. Take a walk";
+
+
+          
+
+            var xmlToastTemplate = "<toast launch=\"app-defined-string\">" +
+                         "<visual>" +
+                           "<binding template =\"ToastGeneric\">" +
+                             "<text>smartchair App - sitting alaram</text>" +
+                             "<text>" +
+                               "You are sitting way too long. Take a walk" +
+                             "</text>" +
+                           "</binding>" +
+                         "</visual>" +
+                       "</toast>";
+
+            // load the template as XML document
+            var xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(xmlToastTemplate);
+
+            // create the toast notification and show to user
+            var toastNotification = new ToastNotification(xmlDocument);
+            var notification = ToastNotificationManager.CreateToastNotifier();
+            notification.Show(toastNotification);
         }
     }
 }
