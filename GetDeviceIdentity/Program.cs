@@ -32,22 +32,8 @@ namespace GetDeviceIdentity
             {
                 device = await registryManager.GetDeviceAsync(deviceId);
             }
-            Console.WriteLine(device.Authentication.SymmetricKey.PrimaryKey);
+            Console.WriteLine(device.Authentication.SymmetricKey.PrimaryKey + " " + deviceId);
         }
-
-        //public static HashSet<string> NetworkIds()
-        //{
-        //    var result = new HashSet<string>();
-
-        //    var networkProfiles = Windows.Networking.Connectivity.NetworkInformation.GetConnectionProfiles().ToList();
-
-        //    foreach (var net in networkProfiles)
-        //    {
-        //        result.Add(net.NetworkAdapter.NetworkAdapterId.ToString());
-        //    }
-
-        //    return result;
-        //}
 
         private static string OsSerialNumber()
         {
