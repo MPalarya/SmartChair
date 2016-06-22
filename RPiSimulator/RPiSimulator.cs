@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace RPiSimulator
 {
-    class Program
+    class RPiSimulator
     {
         static DeviceClient deviceClient;
         static string iotHubUri = "smartchair-iothub.azure-devices.net";
@@ -29,6 +29,7 @@ namespace RPiSimulator
             deviceKey = deviceData[0];
             deviceId = deviceData[1];
 
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Simulated device on key {0}\n", deviceId);
             deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
 
@@ -49,18 +50,13 @@ namespace RPiSimulator
                     currPressure[i] = Math.Min(currPressure[i], 100);
                 }
 
-                var telemetryDataPoint = new
-                {
-                    deviceId = deviceId,
-                    datetime = DateTime.Now,
-                    pressure = currPressure
-                };
-
-                var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
-                var message = new Message(Encoding.ASCII.GetBytes(messageString));
-
+                dataPoint datapoint = new dataPoint(deviceId, DateTime.Now, currPressure);
+                messageStruct<dataPoint> messagestruct = new messageStruct<dataPoint>(messageId.RpiServer_Datapoint, datapoint);
+                string messageString = JsonConvert.SerializeObject(messagestruct);
+                Message message = new Message(Encoding.ASCII.GetBytes(messageString));
+                Console.WriteLine("Sending message: {0}", messageString);
                 await deviceClient.SendEventAsync(message);
-                Console.WriteLine("Sending message: {0}\n", messageString);
+                Console.WriteLine("Completed");
 
                 Task.Delay(1000).Wait();
             }

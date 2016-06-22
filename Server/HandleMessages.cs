@@ -6,51 +6,27 @@ using Microsoft.ServiceBus.Messaging;
 using System.Threading;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
+using Microsoft.Azure.Devices;
+
+// TODO: parse message from client to send client data
+// TODO: receive log on clients side
+// TODO: predict if sitting incorrectly and alert client
+// TODO: save cliets initial data for prediction
 
 namespace Server
 {
-    // Basic struct for each datapoint received from hardware
-    public struct dataPoint
-    {
-        #region Fields
-
-        public string deviceId;
-        public DateTime datetime;
-        public int[] pressure;
-
-        #endregion
-
-        #region Constructors
-        public dataPoint(int init)
-        {
-            this.deviceId = "";
-            this.datetime = DateTime.Now;
-            this.pressure = new int[7];
-
-            for (int i = 0; i < 7; i++)
-                pressure[i] = init;
-        }
-
-        public dataPoint(string deviceId, DateTime datetime, int[] pressure)
-        {
-            this.deviceId = deviceId;
-            this.datetime = datetime;
-            this.pressure = pressure;
-        }
-        #endregion
-    }
-
     // Runs the main code.
     // Connects to IOT hub to receive messages and handle.
     // Holds Hash Table of key = deviceId value = DataPointsQueue. Therefore adding a datapoint to its correct queue can happen in O(1).
     // Adds every received message to a ThreadPool so a thread can process it. 
-    class ReceiveMessage
+    class HandleMessages
     {
         #region Fields
 
         static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
         static string iotHubD2cEndpoint = "messages/events";
         static EventHubClient eventHubClient;
+        static ServiceClient serviceClient;
         static ConcurrentDictionary<string, DataPointsQueue> dict;
         
         #endregion
@@ -60,6 +36,7 @@ namespace Server
         {
             Console.WriteLine("Receiving and Handling messages:\n");
             eventHubClient = EventHubClient.CreateFromConnectionString(connectionString, iotHubD2cEndpoint);
+            serviceClient = ServiceClient.CreateFromConnectionString(connectionString);
             var d2cPartitions = eventHubClient.GetRuntimeInformation().PartitionIds;
             dict = new ConcurrentDictionary<string, DataPointsQueue>();
 
@@ -94,19 +71,33 @@ namespace Server
                 if (eventData == null) continue;
 
                 string data = Encoding.UTF8.GetString(eventData.GetBytes());
-                ThreadPool.QueueUserWorkItem(new WaitCallback(addToDataset), data);
+                ThreadPool.QueueUserWorkItem(new WaitCallback(processIncomingMessage), data);
             }
         }
 
-        // Thread adds the message data to its correct DataPointsQueue by usingthe Hash Table. 
-        // If there is no queue for the key then it is added.
-        static void addToDataset(Object stateInfo)
+        // Thread deserializes message and handles each message by messageId
+        static void processIncomingMessage(Object stateInfo)
         {
             string data = (string)stateInfo;
-            dataPoint datapoint = JsonConvert.DeserializeObject<dataPoint>(data);
-            DataPointsQueue dpqueue;
+            messageStruct<object> messagestruct = JsonConvert.DeserializeObject<messageStruct<object>>(data);
+            
+            switch (messagestruct.messageid)
+            {
+                case messageId.RpiServer_Datapoint:
+                    dataPoint datapoint = JsonConvert.DeserializeObject<dataPoint>(messagestruct.data.ToString());
+                    addDatapointToQueue(datapoint);
+                    break;
+            }
+        }
 
-            if(dict.TryGetValue(datapoint.deviceId, out dpqueue))
+        // Thread adds the message data to its correct DataPointsQueue by using the Hash Table. 
+        // If there is no queue for the key then it is added.
+        static void addDatapointToQueue(dataPoint datapoint)
+        {
+            DataPointsQueue dpqueue;
+            SendCloudToDeviceMessageAsync(datapoint);
+
+            if (dict.TryGetValue(datapoint.deviceId, out dpqueue))
             {
                 dpqueue.addDataPoint(datapoint);
             }
@@ -114,6 +105,16 @@ namespace Server
             {
                 dict.TryAdd(datapoint.deviceId, new DataPointsQueue(datapoint));
             }
+        }
+
+        private async static void SendCloudToDeviceMessageAsync(dataPoint datapoint)
+        {
+            messageStruct<dataPoint> messagestruct = new messageStruct<dataPoint>(messageId.ServerClient_Datapoint, datapoint);
+            string messageString = JsonConvert.SerializeObject(messagestruct);
+            Message message = new Message(Encoding.ASCII.GetBytes(messageString));
+            Console.WriteLine("Sending message: {0}", messageString);
+            await serviceClient.SendAsync("00326-10000-00000-AA800", message);
+            Console.WriteLine("Completed");
         }
         #endregion
     }

@@ -22,7 +22,7 @@ namespace Server
         #region Fields
 
         ConnectionMultiplexer conn;
-        IDatabase cache;
+        IDatabase redis, redisInitData;
 
         #endregion
 
@@ -31,7 +31,8 @@ namespace Server
         {
             // connect to database
             conn = ConnectionMultiplexer.Connect("smartchair.redis.cache.windows.net:6380,password=EcwNyqsaIKcM8JcnWbkP8FHy/xs/YHf6omQ2UaHvnlw=,ssl=True,abortConnect=False");
-            cache = conn.GetDatabase();
+            redis = conn.GetDatabase(0);
+            redisInitData = conn.GetDatabase(1);
         }
         #endregion
 
@@ -42,7 +43,7 @@ namespace Server
         {
             object[] data = { datapoint.datetime.ToString(), datapoint.pressure };
             var jsondata = JsonConvert.SerializeObject(data);
-            cache.StringAppend(datapoint.deviceId, jsondata.ToString() + ",");
+            redis.StringAppend(datapoint.deviceId, jsondata.ToString() + ",");
             Console.WriteLine("Appended key = " + datapoint.deviceId + "; value = " + jsondata.ToString() + ",");
         }
 
@@ -50,7 +51,7 @@ namespace Server
         // Returns string [[string datetime, int pressure[7]], [string datetime, int pressure[7]], ... ]
         public string getKey(string deviceId)
         {
-            string value = cache.StringGet(deviceId).ToString();
+            string value = redis.StringGet(deviceId).ToString();
             Console.WriteLine("Got key = " + deviceId);
             return "[" + value.TrimEnd(',') + "]";
         }
@@ -58,7 +59,7 @@ namespace Server
         // Deletes key from database
         public void removeKey(string deviceId)
         {
-            cache.KeyDelete(deviceId);
+            redis.KeyDelete(deviceId);
             Console.WriteLine("Removed key = " + deviceId);
         }
         #endregion
