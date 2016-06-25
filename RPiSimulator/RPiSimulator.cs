@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices.Client;
 using Newtonsoft.Json;
+using System.Threading;
 using System.Diagnostics;
 
 namespace RPiSimulator
@@ -30,14 +31,14 @@ namespace RPiSimulator
             deviceId = deviceData[1];
 
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Simulated device on key {0}\n", deviceId);
+            Console.WriteLine("Simulated device on id = {0} ; key = {1}\n", deviceId, deviceKey);
             deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
 
-            SendDeviceToCloudMessagesAsync();
+            sendDatapointToServer();
             Console.ReadLine();
         }
 
-        private static async void SendDeviceToCloudMessagesAsync()
+        private static async void sendDatapointToServer()
         {
             int[] currPressure = new int[7];
             Random rand = new Random();
@@ -50,15 +51,15 @@ namespace RPiSimulator
                     currPressure[i] = Math.Min(currPressure[i], 100);
                 }
 
-                dataPoint datapoint = new dataPoint(deviceId, DateTime.Now, currPressure);
-                messageStruct<dataPoint> messagestruct = new messageStruct<dataPoint>(messageId.RpiServer_Datapoint, datapoint);
+                DataPoint datapoint = new DataPoint(deviceId, DateTime.Now, currPressure);
+                MessageStruct<DataPoint> messagestruct = new MessageStruct<DataPoint>(messageId.RpiServer_Datapoint, datapoint);
                 string messageString = JsonConvert.SerializeObject(messagestruct);
                 Message message = new Message(Encoding.ASCII.GetBytes(messageString));
                 Console.WriteLine("Sending message: {0}", messageString);
                 await deviceClient.SendEventAsync(message);
                 Console.WriteLine("Completed");
 
-                Task.Delay(1000).Wait();
+                Thread.Sleep(1000);
             }
         }
     }

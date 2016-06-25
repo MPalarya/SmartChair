@@ -123,6 +123,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Server\Resources.cs">
+      <Link>Resources.cs</Link>
+    </Compile>
     <Compile Include="ClientSimulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
