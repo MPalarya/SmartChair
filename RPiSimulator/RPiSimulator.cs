@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices.Client;
 using Newtonsoft.Json;
+using System.Threading;
 using System.Diagnostics;
 
 namespace RPiSimulator
 {
-    class Program
+    class RPiSimulator
     {
         static DeviceClient deviceClient;
         static string iotHubUri = "smartchair-iothub.azure-devices.net";
@@ -29,14 +30,15 @@ namespace RPiSimulator
             deviceKey = deviceData[0];
             deviceId = deviceData[1];
 
-            Console.WriteLine("Simulated device on key {0}\n", deviceId);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Simulated device on id = {0} ; key = {1}\n", deviceId, deviceKey);
             deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
 
-            SendDeviceToCloudMessagesAsync();
+            sendDatapointToServer();
             Console.ReadLine();
         }
 
-        private static async void SendDeviceToCloudMessagesAsync()
+        private static async void sendDatapointToServer()
         {
             int[] currPressure = new int[7];
             Random rand = new Random();
@@ -49,20 +51,15 @@ namespace RPiSimulator
                     currPressure[i] = Math.Min(currPressure[i], 100);
                 }
 
-                var telemetryDataPoint = new
-                {
-                    deviceId = deviceId,
-                    datetime = DateTime.Now,
-                    pressure = currPressure
-                };
-
-                var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
-                var message = new Message(Encoding.ASCII.GetBytes(messageString));
-
+                DataPoint datapoint = new DataPoint(deviceId, DateTime.Now, currPressure);
+                MessageStruct<DataPoint> messagestruct = new MessageStruct<DataPoint>(messageId.RpiServer_Datapoint, datapoint);
+                string messageString = JsonConvert.SerializeObject(messagestruct);
+                Message message = new Message(Encoding.ASCII.GetBytes(messageString));
+                Console.WriteLine("Sending message: {0}", messageString);
                 await deviceClient.SendEventAsync(message);
-                Console.WriteLine("Sending message: {0}\n", messageString);
+                Console.WriteLine("Completed");
 
-                Task.Delay(1000).Wait();
+                Thread.Sleep(1000);
             }
         }
     }
