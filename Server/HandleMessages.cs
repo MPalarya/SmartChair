@@ -16,7 +16,7 @@ namespace Server
     // Connects to IOT hub to receive messages and handle.
     // Holds Hash Table of key = deviceId value = DataPointsQueue. Therefore adding a datapoint to its correct queue can happen in O(1).
     // Adds every received message to a ThreadPool so a thread can process it. 
-    class HandleMessages
+    class CHandleMessages
     {
         #region Fields
 
@@ -24,9 +24,13 @@ namespace Server
         static string iotHubD2cEndpoint = "messages/events";
         static EventHubClient eventHubClient;
         static ServiceClient serviceClient;
-        static ConcurrentDictionary<string, DataPointsQueue> dict;
-        static DbInterface dbi;
+        static ConcurrentDictionary<string, CDataPointsQueue> dict;
+        static CDbInterface dbi;
 
+        #endregion
+
+        #region Constructors
+        private CHandleMessages(){}
         #endregion
 
         #region Main
@@ -36,8 +40,8 @@ namespace Server
             eventHubClient = EventHubClient.CreateFromConnectionString(connectionString, iotHubD2cEndpoint);
             serviceClient = ServiceClient.CreateFromConnectionString(connectionString);
             var d2cPartitions = eventHubClient.GetRuntimeInformation().PartitionIds;
-            dict = new ConcurrentDictionary<string, DataPointsQueue>();
-            dbi = new DbInterface();
+            dict = new ConcurrentDictionary<string, CDataPointsQueue>();
+            dbi = CDbInterface.Instance;
 
             // make sure to stop when we exit
             CancellationTokenSource cts = new CancellationTokenSource();
@@ -78,29 +82,29 @@ namespace Server
         static void processIncomingMessage(Object stateInfo)
         {
             string data = (string)stateInfo;
-            Client client;
+            CClient client;
             string clientId, deviceId;
-            MessageStruct<object> messagestruct = JsonConvert.DeserializeObject<MessageStruct<object>>(data);
+            SMessage<object> messagestruct = JsonConvert.DeserializeObject<SMessage<object>>(data);
 
             switch (messagestruct.messageid)
             {
-                case messageId.RpiServer_Datapoint:
-                    DataPoint datapoint = JsonConvert.DeserializeObject<DataPoint>(messagestruct.data.ToString());
+                case EMessageId.RpiServer_Datapoint:
+                    CDataPoint datapoint = JsonConvert.DeserializeObject<CDataPoint>(messagestruct.data.ToString());
                     addDatapointToQueue(datapoint);
                     client = dbi.getClient(datapoint.deviceId);
                     // TODO: can be more efficiant by saving client.sendRealTime in correct queue
                     if (client != null && client.sendRealTime)
                     {
-                        sendMessageToClient(client.clientId, datapoint, messageId.ServerClient_Datapoint);
+                        sendMessageToClient(client.clientId, datapoint, EMessageId.ServerClient_Datapoint);
                     }
                     break;
 
-                case messageId.ClientServer_ConnectDevice:
-                    client = JsonConvert.DeserializeObject<Client>(messagestruct.data.ToString());
+                case EMessageId.ClientServer_ConnectDevice:
+                    client = JsonConvert.DeserializeObject<CClient>(messagestruct.data.ToString());
                     dbi.setClient(client);
                     break;
 
-                case messageId.ClientServer_StartRealtime:
+                case EMessageId.ClientServer_StartRealtime:
                     clientId = (string)messagestruct.data;
                     deviceId = dbi.getDevice(clientId);
                     if (deviceId != null)
@@ -114,7 +118,7 @@ namespace Server
                     }
                     break;
 
-                case messageId.ClientServer_StopRealtime:
+                case EMessageId.ClientServer_StopRealtime:
                     clientId = (string)messagestruct.data;
                     deviceId = dbi.getDevice(clientId);
                     if (deviceId != null)
@@ -128,7 +132,7 @@ namespace Server
                     }
                     break;
 
-                case messageId.ClientServer_StartInit:
+                case EMessageId.ClientServer_StartInit:
                     clientId = (string)messagestruct.data;
                     deviceId = dbi.getDevice(clientId);
                     if (deviceId != null)
@@ -141,14 +145,14 @@ namespace Server
                     }
                     break;
 
-                case messageId.ClientServer_GetLogs:
-                    LogsDate logsdate = JsonConvert.DeserializeObject<LogsDate>(messagestruct.data.ToString());
+                case EMessageId.ClientServer_GetLogs:
+                    CLogsDate logsdate = JsonConvert.DeserializeObject<CLogsDate>(messagestruct.data.ToString());
                     clientId = logsdate.clientId;
                     deviceId = dbi.getDevice(clientId);
                     if (deviceId != null)
                     {
                         var logs = getDeviceLogs(deviceId, logsdate.startdate, logsdate.enddate);
-                        sendMessageToClient(clientId, logs, messageId.ServerClient_DayData);
+                        sendMessageToClient(clientId, logs, EMessageId.ServerClient_DayData);
                     }
                     break;
             }
@@ -156,23 +160,23 @@ namespace Server
 
         // Thread adds the message data to its correct DataPointsQueue by using the Hash Table. 
         // If there is no queue for the key then it is added.
-        private static void addDatapointToQueue(DataPoint datapoint)
+        private static void addDatapointToQueue(CDataPoint datapoint)
         {
-            DataPointsQueue dpqueue;
+            CDataPointsQueue dpqueue;
             if (dict.TryGetValue(datapoint.deviceId, out dpqueue))
             {
                 dpqueue.addDataPoint(datapoint);
             }
             else
             {
-                dict.TryAdd(datapoint.deviceId, new DataPointsQueue(datapoint));
+                dict.TryAdd(datapoint.deviceId, new CDataPointsQueue(datapoint));
             }
         }
 
         // Tells correct devices queue know to start collecting init data
         private static void startInit(string deviceId)
         {
-            DataPointsQueue dpqueue;
+            CDataPointsQueue dpqueue;
             if (dict.TryGetValue(deviceId, out dpqueue))
             {
                 dpqueue.startInit();
@@ -213,9 +217,9 @@ namespace Server
         }
 
         // Sends async message to client
-        public static async void sendMessageToClient<T>(string clientId, T data, messageId messageid)
+        public static async void sendMessageToClient<T>(string clientId, T data, EMessageId messageid)
         {
-            MessageStruct<T> messagestruct = new MessageStruct<T>(messageid, data);
+            SMessage<T> messagestruct = new SMessage<T>(messageid, data);
             string messageString = JsonConvert.SerializeObject(messagestruct);
             Message message = new Message(Encoding.ASCII.GetBytes(messageString));
             Console.WriteLine("Sending message {0} to client {1}", messageid.ToString(), clientId);
@@ -226,7 +230,7 @@ namespace Server
     }
 
     // Provides a Queue to save the last CAPACITY datapoints and perform calculations on them
-    class DataPointsQueue
+    class CDataPointsQueue
     {
         #region Fields
 
@@ -234,8 +238,8 @@ namespace Server
         int[] initPressure;
         int size = 0;
         int count;
-        Queue<DataPoint> queue;
-        DbInterface dbi;
+        Queue<CDataPoint> queue;
+        CDbInterface dbi;
         bool saveInit;
 
         #endregion
@@ -245,16 +249,16 @@ namespace Server
         #endregion
 
         #region Constructors
-        public DataPointsQueue()
+        public CDataPointsQueue()
         {
             currSum = new int[7];
             count = 0;
-            queue = new Queue<DataPoint>(CAPACITY);
-            dbi = new DbInterface();
+            queue = new Queue<CDataPoint>(CAPACITY);
+            dbi = CDbInterface.Instance;
             saveInit = false;
         }
 
-        public DataPointsQueue(DataPoint datapoint)
+        public CDataPointsQueue(CDataPoint datapoint)
             : this()
         {
             addDataPoint(datapoint);
@@ -264,10 +268,11 @@ namespace Server
         #region Methods
         // Enqueues a datapoint. If the queue is full a datapoint is dequeued and 
         // the average of the past CAPACITY datapoints is added to the database
-        public void addDataPoint(DataPoint datapoint)
+        public void addDataPoint(CDataPoint datapoint)
         {
             int[] averagePressure = new int[7];
-            DataPoint oldest = new DataPoint(0);
+            CDataPoint oldest = new CDataPoint(0);
+            ClassifySitting cs = ClassifySitting.Instance;
 
             // enqueue and dequeue if full
             count++;
@@ -295,29 +300,29 @@ namespace Server
                     averagePressure[i] = currSum[i] / CAPACITY;
                 }
 
-                addToDatabase(new DataPoint(datapoint.deviceId, datapoint.datetime, averagePressure));
+                addToDatabase(new CDataPoint(datapoint.deviceId, datapoint.datetime, averagePressure));
 
                 if (initPressure == null)
                     initPressure = dbi.getInit(datapoint.deviceId);
 
-                if(!ClassifySitting.testSitting(averagePressure, initPressure))
+                if(!cs.testSitting(averagePressure, initPressure))
                 {
-                    Client client = dbi.getClient(datapoint.deviceId);
-                    HandleMessages.sendMessageToClient(client.clientId, "", messageId.ServerClient_fixPosture);
+                    CClient client = dbi.getClient(datapoint.deviceId);
+                    CHandleMessages.sendMessageToClient(client.clientId, "", EMessageId.ServerClient_fixPosture);
                 }
             }
         }
 
         // Adds a datapoint to the database
-        private void addToDatabase(DataPoint datapoint)
+        private void addToDatabase(CDataPoint datapoint)
         {
             dbi.updateLog(datapoint);
             if(saveInit)
             {
                 saveInit = false;
                 dbi.setInit(datapoint);
-                Client client = dbi.getClient(datapoint.deviceId);
-                HandleMessages.sendMessageToClient(client.clientId, "", messageId.ServerClient_StopInit);
+                CClient client = dbi.getClient(datapoint.deviceId);
+                CHandleMessages.sendMessageToClient(client.clientId, "", EMessageId.ServerClient_StopInit);
             }
         }
 
