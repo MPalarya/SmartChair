@@ -88,6 +88,7 @@ namespace Server
                     DataPoint datapoint = JsonConvert.DeserializeObject<DataPoint>(messagestruct.data.ToString());
                     addDatapointToQueue(datapoint);
                     client = dbi.getClient(datapoint.deviceId);
+                    // TODO: can be more efficiant by saving client.sendRealTime in correct queue
                     if (client != null && client.sendRealTime)
                     {
                         sendMessageToClient(client.clientId, datapoint, messageId.ServerClient_Datapoint);
@@ -320,6 +321,7 @@ namespace Server
             }
         }
 
+        // Starts the calculations of device init data
         public void startInit()
         {
             count = 0;

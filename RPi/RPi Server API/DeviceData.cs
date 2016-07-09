@@ -1,6 +1,11 @@
 ﻿using RPi.RPi_Hardware;
 using System;
 using System.Collections.Generic;
+using Microsoft.Azure.Devices.Client;
+using Newtonsoft.Json;
+using System.Text;
+using System.Threading;
+using System.Diagnostics;
 
 namespace RPi.RPi_Server_API
 {
@@ -13,6 +18,10 @@ namespace RPi.RPi_Server_API
 
         private static volatile CDeviceData m_instance;
         private static object syncRoot = new object();
+        static DeviceClient deviceClient;
+        static string iotHubUri = "smartchair-iothub.azure-devices.net";
+        static string deviceKey;
+        static string deviceId;
 
         #endregion
 
@@ -20,7 +29,21 @@ namespace RPi.RPi_Server_API
 
         private CDeviceData()
         {
-            Id = Convert.ToUInt32((new Random().Next()));
+            // TODO Michael: the code in this function needs to run in main and pass the deviceKey and deviceId to this class
+            /*
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.FileName = "..\\..\\..\\GetDeviceIdentity\\bin\\Release\\GetDeviceIdentity.exe";
+            p.Start();
+
+            string[] deviceData = p.StandardOutput.ReadLine().Split();
+            p.Close();
+            deviceKey = deviceData[0];
+            deviceId = deviceData[1];
+
+            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
+            */
         }
 
         #endregion
@@ -70,29 +93,24 @@ namespace RPi.RPi_Server_API
         /// RPi sends data to Azure server, including device id, a list of normalized measurements and an end of sample timestamp
         /// keeps sending until returned success
         /// </summary>
-        public bool RPiServer_newDataSample(System.DateTime timestamp)
+        public async void RPiServer_newDataSample(System.DateTime timestamp)
         {
-            // CDeviceData data == this
-            // of type: Dictionary<EChairPart, Dictionary<EChairPartArea, int>> see documentation
-            // TODO: to be implemented by Orr
+            List<int> pressureList = new List<int>();
+            foreach (KeyValuePair<EChairPart, Dictionary<EChairPartArea, int>> part in Data)
+            {
+                foreach (KeyValuePair<EChairPartArea, int> partarea in part.Value)
+                {
+                    pressureList.Add(partarea.Value);
+                }
+            }
 
-            return true;
-        }
+            DataPoint datapoint = new DataPoint(deviceId, timestamp, pressureList.ToArray());
+            MessageStruct<DataPoint> messagestruct = new MessageStruct<DataPoint>(messageId.RpiServer_Datapoint, datapoint);
+            string messageString = JsonConvert.SerializeObject(messagestruct);
+            Message message = new Message(Encoding.ASCII.GetBytes(messageString));
+            await deviceClient.SendEventAsync(message);
 
-        /// <summary>
-        /// assumes only chair's own weight is applied on the sensors.
-        /// </summary>
-        public void ServerRPi_CalibrateSystem()
-        {
-            CSensor.CalibrateSystem();
-        }
-
-        /// <summary>
-        /// assumes user is sitten correctly (guided).
-        /// </summary>
-        public void ServerRPi_CalibrateUser()
-        {
-            CSensor.CalibrateUser();
+            //TODO Michael: for debugging purposes output 'messageString' to app
         }
 
         public void Clear()

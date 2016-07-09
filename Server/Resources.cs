@@ -23,6 +23,43 @@ public enum messageId
     #endregion
 }
 
+/// <summary>
+/// represents the part of chair that populates sensors.
+/// computations logic is different depending on selected part.
+/// </summary>
+public enum EChairPart
+{
+    #region Fields
+
+    Seat,
+    Back,
+    Handles,
+
+    #endregion
+}
+
+/// <summary>
+/// roughly divided into 3 rows and 2 coloumns to indicate the specific area onto part's surface.
+/// </summary>
+public enum EChairPartArea
+{
+    #region Fields
+
+    LeftFront,
+    LeftMid,
+    LeftRear,
+    LeftTop = LeftFront,
+    LeftBottom = LeftRear,
+
+    RightFront,
+    RightMid,
+    RightRear,
+    RightTop = RightFront,
+    RightBottom = RightRear,
+
+    #endregion
+}
+
 // Struct to communicate through IOT hub with
 public struct MessageStruct<T>
 {

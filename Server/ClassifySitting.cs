@@ -8,6 +8,7 @@ namespace Server
 {
     class ClassifySitting
     {
+        // TODO: decide and implement classification algoritm
 
         public static bool testSitting(int[] curr, int[] init)
         {
