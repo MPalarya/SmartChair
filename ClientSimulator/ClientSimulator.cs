@@ -45,28 +45,28 @@ namespace ClientSimulator
 
                 if (line == "start")
                 {
-                    sendMessageToServer(new MessageStruct<string>(messageId.ClientServer_StartRealtime, deviceId));
+                    sendMessageToServer(new SMessage<string>(EMessageId.ClientServer_StartRealtime, deviceId));
                 }
                 else if (line == "stop")
                 {
-                    sendMessageToServer(new MessageStruct<string>(messageId.ClientServer_StopRealtime, deviceId));
+                    sendMessageToServer(new SMessage<string>(EMessageId.ClientServer_StopRealtime, deviceId));
                 }
                 else if (line == "init")
                 {
-                    sendMessageToServer(new MessageStruct<string>(messageId.ClientServer_StartInit, deviceId));
+                    sendMessageToServer(new SMessage<string>(EMessageId.ClientServer_StartInit, deviceId));
                 }
                 else if (line[0] == '%')
                 {
-                    sendMessageToServer(new MessageStruct<Client>(messageId.ClientServer_ConnectDevice, new Client(deviceId, line.Substring(1, line.Length - 1))));
+                    sendMessageToServer(new SMessage<CClient>(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, line.Substring(1, line.Length - 1))));
                 }
                 else if (line[0] == '<')
                 {
-                    sendMessageToServer(new MessageStruct<LogsDate>(messageId.ClientServer_GetLogs, new LogsDate(new DateTime(2016, 06, 25), new DateTime(2016, 06, 26), deviceId)));
+                    sendMessageToServer(new SMessage<CLogsDate>(EMessageId.ClientServer_GetLogs, new CLogsDate(new DateTime(2016, 06, 25), new DateTime(2016, 06, 26), deviceId)));
                 }
             }
         }
 
-        private static async void sendMessageToServer<T>(MessageStruct<T> messagestruct)
+        private static async void sendMessageToServer<T>(SMessage<T> messagestruct)
         {
             string messageString = JsonConvert.SerializeObject(messagestruct);
             Message message = new Message(Encoding.ASCII.GetBytes(messageString));
@@ -77,13 +77,13 @@ namespace ClientSimulator
 
         private static async void ReceiveC2dAsync()
         {
-            MessageStruct<object> messagestruct;
+            SMessage<object> messagestruct;
 
             while (true)
             {
                 Message receivedMessage = await deviceClient.ReceiveAsync();
                 if (receivedMessage == null) continue;
-                messagestruct = JsonConvert.DeserializeObject<MessageStruct<object>>(Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString());
+                messagestruct = JsonConvert.DeserializeObject<SMessage<object>>(Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString());
                 Console.WriteLine("!Received message {0}, data = {1}", messagestruct.messageid, messagestruct.data);
                 await deviceClient.CompleteAsync(receivedMessage);
             }

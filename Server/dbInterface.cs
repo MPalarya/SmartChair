@@ -17,21 +17,24 @@ namespace Server
 {   
     // Provides an interface to interact with the redis database
     // Interface methods can remain the same even if converting data to another database
+    // Class is a non blocking singleton instance
+     
     // Table 0: key = deviceId, value = device datapoint log
     // Table 1: key = deviceId, value = init dataset for device
     // Table 2: key = deviceId, value = Client class
     // Table 3: key = clientId, value = deviceId
-    class DbInterface
+    public sealed class CDbInterface
     {
         #region Fields
 
-        ConnectionMultiplexer conn;
-        IDatabase redisLogs, redisInit, redicClients, redisDevicesByClient;
+        private static CDbInterface instance;
+        private ConnectionMultiplexer conn;
+        private IDatabase redisLogs, redisInit, redicClients, redisDevicesByClient;
 
         #endregion
 
         #region Constructors
-        public DbInterface()
+        private CDbInterface()
         {
             // connect to database
             conn = ConnectionMultiplexer.Connect("smartchair.redis.cache.windows.net:6380,password=EcwNyqsaIKcM8JcnWbkP8FHy/xs/YHf6omQ2UaHvnlw=,ssl=True,abortConnect=False");
@@ -42,13 +45,29 @@ namespace Server
         }
         #endregion
 
+        #region Properties
+
+        public static CDbInterface Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new CDbInterface();
+                }
+                return instance;
+            }
+        }
+
+        #endregion
+
         #region Methods
         /* ----------------------------------------*
          * LOGS Table                               *
          * ----------------------------------------*/
         // Appends a datapoint encoded in JSON to the deviceId key in Logs table
         // If key does not exist it is added with the datapoint
-        public void updateLog(DataPoint datapoint)
+        public void updateLog(CDataPoint datapoint)
         {
             object[] data = { datapoint.datetime.ToString(), datapoint.pressure };
             string jsondata = JsonConvert.SerializeObject(data);
@@ -77,7 +96,7 @@ namespace Server
          * INIT Table                               *
          * ----------------------------------------*/
         // Sets init datapoint value for deviceId key in Init table
-        public void setInit(DataPoint datapoint)
+        public void setInit(CDataPoint datapoint)
         {
             string jsondata = JsonConvert.SerializeObject(datapoint.pressure);
             redisInit.StringSet(datapoint.deviceId, jsondata);
@@ -107,7 +126,7 @@ namespace Server
          * CLIENTS Table                            *
          * ----------------------------------------*/
         // Sets clientId value for deviceId key in Client table
-        public void setClient(Client client)
+        public void setClient(CClient client)
         {
             string jsonClient = JsonConvert.SerializeObject(client);
             redicClients.StringSet(client.deviceId, jsonClient);
@@ -116,22 +135,22 @@ namespace Server
         }
         public void setClient(string deviceId, string clientId)
         {
-            Client client = new Client(clientId, deviceId);
+            CClient client = new CClient(clientId, deviceId);
             setClient(client);
         }
         public void setClient(string deviceId, string clientId, bool sendRealTime)
         {
-            Client client = new Client(clientId, deviceId, sendRealTime);
+            CClient client = new CClient(clientId, deviceId, sendRealTime);
             setClient(client);
         }
 
         // Gets clientId value for deviceId key from Clients table
-        public Client getClient(string deviceId)
+        public CClient getClient(string deviceId)
         {
             string value = redicClients.StringGet(deviceId);
             Console.WriteLine("Got key = " + deviceId + " from redisClients");
             if (value != null)
-                return JsonConvert.DeserializeObject<Client>(value);
+                return JsonConvert.DeserializeObject<CClient>(value);
             else
                 return null;
         }
@@ -139,7 +158,7 @@ namespace Server
         // Deletes deviceId key from Clients table
         public void removeClient(string deviceId)
         {
-            Client client = getClient(deviceId);
+            CClient client = getClient(deviceId);
             redicClients.KeyDelete(deviceId);
             if (client != null)
                 removeDevice(client.clientId);

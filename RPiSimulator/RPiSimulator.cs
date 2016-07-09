@@ -51,8 +51,8 @@ namespace RPiSimulator
                     currPressure[i] = Math.Min(currPressure[i], 100);
                 }
 
-                DataPoint datapoint = new DataPoint(deviceId, DateTime.Now, currPressure);
-                MessageStruct<DataPoint> messagestruct = new MessageStruct<DataPoint>(messageId.RpiServer_Datapoint, datapoint);
+                CDataPoint datapoint = new CDataPoint(deviceId, DateTime.Now, currPressure);
+                SMessage<CDataPoint> messagestruct = new SMessage<CDataPoint>(EMessageId.RpiServer_Datapoint, datapoint);
                 string messageString = JsonConvert.SerializeObject(messagestruct);
                 Message message = new Message(Encoding.ASCII.GetBytes(messageString));
                 Console.WriteLine("Sending message: {0}", messageString);

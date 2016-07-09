@@ -6,13 +6,43 @@ using System.Threading.Tasks;
 
 namespace Server
 {
-    class ClassifySitting
-    {
-        // TODO: decide and implement classification algoritm
 
-        public static bool testSitting(int[] curr, int[] init)
+    public sealed class ClassifySitting
+    {
+        #region Fields
+
+        private static ClassifySitting instance;
+
+        #endregion
+
+        #region Constructors
+        private ClassifySitting(){}
+        #endregion
+
+        #region Properties
+
+        public static ClassifySitting Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new ClassifySitting();
+                }
+                return instance;
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        // TODO: decide and implement classification algoritm
+        public bool testSitting(int[] curr, int[] init)
         {
             return true;
         }
+        
+        #endregion
     }
 }
