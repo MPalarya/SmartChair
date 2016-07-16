@@ -95,6 +95,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Server\Resources.cs">
+      <Link>Resources.cs</Link>
+    </Compile>
     <Compile Include="alertData.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

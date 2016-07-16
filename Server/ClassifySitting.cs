@@ -38,7 +38,7 @@ namespace Server
         #region Methods
 
         // TODO: decide and implement classification algoritm
-        public bool testSitting(int[] curr, int[] init)
+        public bool isSittingCorrectly(int[] curr, int[] init)
         {
             return true;
         }
