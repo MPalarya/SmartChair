@@ -76,7 +76,7 @@ namespace Server
         }
 
         // Gets Log value for deviceId key from Logs table in encoded JSON array
-        // Returns string [[string datetime, int pressure[7]], [string datetime, int pressure[7]], ... ]
+        // Returns string [[string datetime, int pressure[numOfSensors]], [string datetime, int pressure[7]], ... ]
         public string getLog(string deviceId)
         {
             string value = redisLogs.StringGet(deviceId);
@@ -145,7 +145,7 @@ namespace Server
         }
 
         // Gets clientId value for deviceId key from Clients table
-        public CClient getClient(string deviceId)
+        public CClient getClientByDevice(string deviceId)
         {
             string value = redicClients.StringGet(deviceId);
             Console.WriteLine("Got key = " + deviceId + " from redisClients");
@@ -158,7 +158,7 @@ namespace Server
         // Deletes deviceId key from Clients table
         public void removeClient(string deviceId)
         {
-            CClient client = getClient(deviceId);
+            CClient client = getClientByDevice(deviceId);
             redicClients.KeyDelete(deviceId);
             if (client != null)
                 removeDevice(client.clientId);
@@ -177,7 +177,7 @@ namespace Server
         }
 
         // Gets deviceId data value for clientId key
-        public string getDevice(string clientId)
+        public string getDeviceByClient(string clientId)
         {
             string value = redisDevicesByClient.StringGet(clientId);
             Console.WriteLine("Got key = " + clientId.ToString() + " from redisDevicesByClient");
