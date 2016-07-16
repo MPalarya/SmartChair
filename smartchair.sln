@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPi", "RPi\RPi.csproj", "{B18518A8-46CD-410E-9560-7BB071A6216E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{634D6169-5762-4EA8-BFC2-282A125E64F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{D9ED4085-7933-4CDA-BCAD-8B1921C56E0B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{634D6169-5762-4EA8-BFC2-282A125E64F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,22 +77,6 @@ Global
 		{D9ED4085-7933-4CDA-BCAD-8B1921C56E0B}.Release|x86.ActiveCfg = Release|x86
 		{D9ED4085-7933-4CDA-BCAD-8B1921C56E0B}.Release|x86.Build.0 = Release|x86
 		{D9ED4085-7933-4CDA-BCAD-8B1921C56E0B}.Release|x86.Deploy.0 = Release|x86
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Debug|ARM.Build.0 = Debug|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Debug|x64.Build.0 = Debug|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Debug|x86.Build.0 = Debug|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Release|ARM.ActiveCfg = Release|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Release|ARM.Build.0 = Release|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Release|x64.ActiveCfg = Release|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Release|x64.Build.0 = Release|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Release|x86.ActiveCfg = Release|Any CPU
-		{634D6169-5762-4EA8-BFC2-282A125E64F2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
