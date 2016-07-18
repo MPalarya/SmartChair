@@ -17,9 +17,11 @@ namespace ClientSimulator
         static string iotHubUri = "smartchair-iothub.azure-devices.net";
         static string deviceKey;
         static string deviceId;
+        static CMessageConvert messageConvert;
 
         static void Main(string[] args)
         {
+            messageConvert = CMessageConvert.Instance;
             Process p = new Process();
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardOutput = true;
@@ -45,30 +47,29 @@ namespace ClientSimulator
 
                 if (line == "start")
                 {
-                    sendMessageToServer(new SMessage<string>(EMessageId.ClientServer_StartRealtime, deviceId));
+                    sendMessageToServer(messageConvert.encode(EMessageId.ClientServer_StartRealtime, deviceId));
                 }
                 else if (line == "stop")
                 {
-                    sendMessageToServer(new SMessage<string>(EMessageId.ClientServer_StopRealtime, deviceId));
+                    sendMessageToServer(messageConvert.encode(EMessageId.ClientServer_StopRealtime, deviceId));
                 }
                 else if (line == "init")
                 {
-                    sendMessageToServer(new SMessage<string>(EMessageId.ClientServer_StartInit, deviceId));
+                    sendMessageToServer(messageConvert.encode(EMessageId.ClientServer_StartInit, deviceId));
                 }
                 else if (line[0] == '%')
                 {
-                    sendMessageToServer(new SMessage<CClient>(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, line.Substring(1, line.Length - 1))));
+                    sendMessageToServer(messageConvert.encode(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, line.Substring(1, line.Length - 1))));
                 }
                 else if (line[0] == '<')
                 {
-                    sendMessageToServer(new SMessage<CLogsDate>(EMessageId.ClientServer_GetLogs, new CLogsDate(new DateTime(2016, 06, 25), new DateTime(2016, 06, 26), deviceId)));
+                    sendMessageToServer(messageConvert.encode(EMessageId.ClientServer_GetLogs, new CLogLimits(new DateTime(2016, 07, 11), new DateTime(2016, 07, 12), deviceId)));
                 }
             }
         }
 
-        private static async void sendMessageToServer<T>(SMessage<T> messagestruct)
+        private static async void sendMessageToServer(string messageString)
         {
-            string messageString = JsonConvert.SerializeObject(messagestruct);
             Message message = new Message(Encoding.ASCII.GetBytes(messageString));
             Console.WriteLine("Sending message: {0}", messageString);
             await deviceClient.SendEventAsync(message);
