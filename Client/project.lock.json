@@ -34,6 +34,51 @@
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.3": {
+        "dependencies": {
+          "Microsoft.Net.Http": "[2.2.22, )",
+          "Newtonsoft.Json": "[6.0.4, )"
+        },
+        "compile": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.Azure.Amqp/1.1.5": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        }
+      },
+      "Microsoft.Azure.Devices.Client/1.0.13": {
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "[5.2.3, )",
+          "Microsoft.Azure.Amqp": "[1.1.5, )",
+          "PCLCrypto": "[1.0.86, )"
+        },
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        }
+      },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -58,6 +103,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "[1.1.9, )",
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.0": {
@@ -232,12 +291,31 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
+      "Newtonsoft.Json/6.0.4": {
+        "compile": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        }
+      },
       "NotificationsExtensions.Win10/14332.0.0": {
         "compile": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
         },
         "runtime": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
+        }
+      },
+      "PCLCrypto/1.0.86": {
+        "dependencies": {
+          "Validation": "[2.0.6, 3.0.0)"
+        },
+        "compile": {
+          "lib/win81/PCLCrypto.dll": {}
+        },
+        "runtime": {
+          "lib/win81/PCLCrypto.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -1583,6 +1661,14 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "Validation/2.0.6.15003": {
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        }
+      },
       "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
         "dependencies": {
           "WinRTXamlToolkit.Windows": "[1.8.1, )"
@@ -1635,6 +1721,51 @@
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.3": {
+        "dependencies": {
+          "Microsoft.Net.Http": "[2.2.22, )",
+          "Newtonsoft.Json": "[6.0.4, )"
+        },
+        "compile": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.Azure.Amqp/1.1.5": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        }
+      },
+      "Microsoft.Azure.Devices.Client/1.0.13": {
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "[5.2.3, )",
+          "Microsoft.Azure.Amqp": "[1.1.5, )",
+          "PCLCrypto": "[1.0.86, )"
+        },
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        }
+      },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -1659,6 +1790,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "[1.1.9, )",
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.0": {
@@ -1876,12 +2021,31 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
+      "Newtonsoft.Json/6.0.4": {
+        "compile": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        }
+      },
       "NotificationsExtensions.Win10/14332.0.0": {
         "compile": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
         },
         "runtime": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
+        }
+      },
+      "PCLCrypto/1.0.86": {
+        "dependencies": {
+          "Validation": "[2.0.6, 3.0.0)"
+        },
+        "compile": {
+          "lib/win81/PCLCrypto.dll": {}
+        },
+        "runtime": {
+          "lib/win81/PCLCrypto.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -3274,6 +3438,14 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "Validation/2.0.6.15003": {
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        }
+      },
       "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
         "dependencies": {
           "WinRTXamlToolkit.Windows": "[1.8.1, )"
@@ -3326,6 +3498,51 @@
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.3": {
+        "dependencies": {
+          "Microsoft.Net.Http": "[2.2.22, )",
+          "Newtonsoft.Json": "[6.0.4, )"
+        },
+        "compile": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.Azure.Amqp/1.1.5": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        }
+      },
+      "Microsoft.Azure.Devices.Client/1.0.13": {
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "[5.2.3, )",
+          "Microsoft.Azure.Amqp": "[1.1.5, )",
+          "PCLCrypto": "[1.0.86, )"
+        },
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        }
+      },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -3350,6 +3567,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "[1.1.9, )",
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.0": {
@@ -3553,12 +3784,31 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
+      "Newtonsoft.Json/6.0.4": {
+        "compile": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        }
+      },
       "NotificationsExtensions.Win10/14332.0.0": {
         "compile": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
         },
         "runtime": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
+        }
+      },
+      "PCLCrypto/1.0.86": {
+        "dependencies": {
+          "Validation": "[2.0.6, 3.0.0)"
+        },
+        "compile": {
+          "lib/win81/PCLCrypto.dll": {}
+        },
+        "runtime": {
+          "lib/win81/PCLCrypto.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -4937,6 +5187,14 @@
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "Validation/2.0.6.15003": {
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        }
+      },
       "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
         "dependencies": {
           "WinRTXamlToolkit.Windows": "[1.8.1, )"
@@ -4989,6 +5247,51 @@
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.3": {
+        "dependencies": {
+          "Microsoft.Net.Http": "[2.2.22, )",
+          "Newtonsoft.Json": "[6.0.4, )"
+        },
+        "compile": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.Azure.Amqp/1.1.5": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        }
+      },
+      "Microsoft.Azure.Devices.Client/1.0.13": {
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "[5.2.3, )",
+          "Microsoft.Azure.Amqp": "[1.1.5, )",
+          "PCLCrypto": "[1.0.86, )"
+        },
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        }
+      },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -5013,6 +5316,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "[1.1.9, )",
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.0": {
@@ -5235,12 +5552,31 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
+      "Newtonsoft.Json/6.0.4": {
+        "compile": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        }
+      },
       "NotificationsExtensions.Win10/14332.0.0": {
         "compile": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
         },
         "runtime": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
+        }
+      },
+      "PCLCrypto/1.0.86": {
+        "dependencies": {
+          "Validation": "[2.0.6, 3.0.0)"
+        },
+        "compile": {
+          "lib/win81/PCLCrypto.dll": {}
+        },
+        "runtime": {
+          "lib/win81/PCLCrypto.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -6633,6 +6969,14 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "Validation/2.0.6.15003": {
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        }
+      },
       "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
         "dependencies": {
           "WinRTXamlToolkit.Windows": "[1.8.1, )"
@@ -6685,6 +7029,51 @@
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.3": {
+        "dependencies": {
+          "Microsoft.Net.Http": "[2.2.22, )",
+          "Newtonsoft.Json": "[6.0.4, )"
+        },
+        "compile": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.Azure.Amqp/1.1.5": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        }
+      },
+      "Microsoft.Azure.Devices.Client/1.0.13": {
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "[5.2.3, )",
+          "Microsoft.Azure.Amqp": "[1.1.5, )",
+          "PCLCrypto": "[1.0.86, )"
+        },
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        }
+      },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -6709,6 +7098,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "[1.1.9, )",
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.0": {
@@ -6912,12 +7315,31 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
+      "Newtonsoft.Json/6.0.4": {
+        "compile": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        }
+      },
       "NotificationsExtensions.Win10/14332.0.0": {
         "compile": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
         },
         "runtime": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
+        }
+      },
+      "PCLCrypto/1.0.86": {
+        "dependencies": {
+          "Validation": "[2.0.6, 3.0.0)"
+        },
+        "compile": {
+          "lib/win81/PCLCrypto.dll": {}
+        },
+        "runtime": {
+          "lib/win81/PCLCrypto.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -8296,6 +8718,14 @@
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "Validation/2.0.6.15003": {
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        }
+      },
       "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
         "dependencies": {
           "WinRTXamlToolkit.Windows": "[1.8.1, )"
@@ -8348,6 +8778,51 @@
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.3": {
+        "dependencies": {
+          "Microsoft.Net.Http": "[2.2.22, )",
+          "Newtonsoft.Json": "[6.0.4, )"
+        },
+        "compile": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.Azure.Amqp/1.1.5": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        }
+      },
+      "Microsoft.Azure.Devices.Client/1.0.13": {
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "[5.2.3, )",
+          "Microsoft.Azure.Amqp": "[1.1.5, )",
+          "PCLCrypto": "[1.0.86, )"
+        },
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        }
+      },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -8372,6 +8847,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "[1.1.9, )",
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.0": {
@@ -8594,12 +9083,31 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
+      "Newtonsoft.Json/6.0.4": {
+        "compile": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        }
+      },
       "NotificationsExtensions.Win10/14332.0.0": {
         "compile": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
         },
         "runtime": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
+        }
+      },
+      "PCLCrypto/1.0.86": {
+        "dependencies": {
+          "Validation": "[2.0.6, 3.0.0)"
+        },
+        "compile": {
+          "lib/win81/PCLCrypto.dll": {}
+        },
+        "runtime": {
+          "lib/win81/PCLCrypto.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -9992,6 +10500,14 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "Validation/2.0.6.15003": {
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        }
+      },
       "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
         "dependencies": {
           "WinRTXamlToolkit.Windows": "[1.8.1, )"
@@ -10044,6 +10560,51 @@
           "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.3": {
+        "dependencies": {
+          "Microsoft.Net.Http": "[2.2.22, )",
+          "Newtonsoft.Json": "[6.0.4, )"
+        },
+        "compile": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.Azure.Amqp/1.1.5": {
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll": {}
+        }
+      },
+      "Microsoft.Azure.Devices.Client/1.0.13": {
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "[5.2.3, )",
+          "Microsoft.Azure.Amqp": "[1.1.5, )",
+          "PCLCrypto": "[1.0.86, )"
+        },
+        "compile": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        },
+        "runtime": {
+          "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd": {}
+        }
+      },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.0": {
         "dependencies": {
           "System.Collections": "[4.0.10, )",
@@ -10068,6 +10629,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "[1.1.9, )",
+          "Microsoft.Bcl.Build": "[1.0.14, )"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.0": {
@@ -10271,12 +10846,31 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
+      "Newtonsoft.Json/6.0.4": {
+        "compile": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Newtonsoft.Json.dll": {}
+        }
+      },
       "NotificationsExtensions.Win10/14332.0.0": {
         "compile": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
         },
         "runtime": {
           "lib/uap10.0/NotificationsExtensions.winmd": {}
+        }
+      },
+      "PCLCrypto/1.0.86": {
+        "dependencies": {
+          "Validation": "[2.0.6, 3.0.0)"
+        },
+        "compile": {
+          "lib/win81/PCLCrypto.dll": {}
+        },
+        "runtime": {
+          "lib/win81/PCLCrypto.dll": {}
         }
       },
       "Prism.Core/6.1.0": {
@@ -11655,6 +12249,14 @@
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "Validation/2.0.6.15003": {
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll": {}
+        }
+      },
       "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
         "dependencies": {
           "WinRTXamlToolkit.Windows": "[1.8.1, )"
@@ -11727,6 +12329,171 @@
         "package/services/metadata/core-properties/4f6f732debe548beaa1183418e8d65cc.psmdcp"
       ]
     },
+    "Microsoft.AspNet.WebApi.Client/5.2.3": {
+      "sha512": "3kiI8peSXbXHDDrRuo+QaX0iCEVRe0nvn2dBDRw656uPX32UalbBlSIDUDlJxu05eau4tnuhsikiUuugvvoUoQ==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "lib/net45/System.Net.Http.Formatting.dll",
+        "lib/net45/System.Net.Http.Formatting.xml",
+        "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll",
+        "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.xml",
+        "Microsoft.AspNet.WebApi.Client.nuspec",
+        "package/services/metadata/core-properties/912f593b0a6b453a8eaeaa06c571a1ae.psmdcp"
+      ]
+    },
+    "Microsoft.Azure.Amqp/1.1.5": {
+      "sha512": "6+3lPVW46h3H2NvjGtrHv+C0P3PVH11pZyCePm+w8AuhmX59OY+fvbA9/wll0MRAj81LPpz1i55oIQm41wOv7g==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "lib/net451/Microsoft.Azure.Amqp.dll",
+        "lib/net451/Microsoft.Azure.Amqp.XML",
+        "lib/uap10.0/Microsoft.Azure.Amqp.Uwp.dll",
+        "Microsoft.Azure.Amqp.nuspec",
+        "package/services/metadata/core-properties/88a5e9d99333463eb3a685e66106a3d0.psmdcp"
+      ]
+    },
+    "Microsoft.Azure.Devices.Client/1.0.13": {
+      "sha512": "jlI5C5UTr5Yo4ggVwQi1FE76hFIDWhVAysfQaTzOX9nwOM+b9kevWvMtAuiIfxOxmEMLbRQvz4yUWEEGI9IiYg==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "build/native/Microsoft.Azure.Devices.Client.targets",
+        "lib/native/Microsoft.Azure.Devices.Client.winmd",
+        "lib/net45/Microsoft.Azure.Devices.Client.dll",
+        "lib/uap10.0/Microsoft.Azure.Devices.Client.winmd",
+        "Microsoft.Azure.Devices.Client.nuspec",
+        "package/services/metadata/core-properties/1cded8819b0f4719aa7d4da971d8a378.psmdcp",
+        "thirdpartynotice.txt"
+      ]
+    },
+    "Microsoft.Bcl/1.1.9": {
+      "sha512": "USQ55innJy8K+tAXvVa1O8dUTp2s7pmJ5cJj6Tl02HtGc2xBDj0P2QH5620HbGXIWKWYhydoeQF8Rm/JRDBGhw==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "content/monoandroid/_._",
+        "content/monotouch/_._",
+        "content/net45/_._",
+        "content/portable-net45+win8+wp8+wpa81/_._",
+        "content/portable-net45+win8+wpa81/_._",
+        "content/portable-net451+win81/_._",
+        "content/portable-net451+win81+wpa81/_._",
+        "content/portable-win81+wp81+wpa81/_._",
+        "content/sl4/_._",
+        "content/sl5/_._",
+        "content/win8/_._",
+        "content/wp8/_._",
+        "content/wpa81/_._",
+        "lib/monoandroid/_._",
+        "lib/monotouch/_._",
+        "lib/net40/ensureRedirect.xml",
+        "lib/net40/System.IO.dll",
+        "lib/net40/System.IO.xml",
+        "lib/net40/System.Runtime.dll",
+        "lib/net40/System.Runtime.xml",
+        "lib/net40/System.Threading.Tasks.dll",
+        "lib/net40/System.Threading.Tasks.xml",
+        "lib/net45/_._",
+        "lib/portable-net40+sl4+win8/ensureRedirect.xml",
+        "lib/portable-net40+sl4+win8/System.IO.dll",
+        "lib/portable-net40+sl4+win8/System.IO.xml",
+        "lib/portable-net40+sl4+win8/System.Runtime.dll",
+        "lib/portable-net40+sl4+win8/System.Runtime.xml",
+        "lib/portable-net40+sl4+win8/System.Threading.Tasks.dll",
+        "lib/portable-net40+sl4+win8/System.Threading.Tasks.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/ensureRedirect.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.IO.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.IO.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Runtime.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Runtime.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Threading.Tasks.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Threading.Tasks.xml",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/ensureRedirect.xml",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.IO.dll",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.IO.xml",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.Runtime.dll",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.Runtime.xml",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.Threading.Tasks.dll",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.Threading.Tasks.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/ensureRedirect.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.IO.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.IO.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.Runtime.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.Runtime.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.Threading.Tasks.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.Threading.Tasks.xml",
+        "lib/portable-net40+win8/ensureRedirect.xml",
+        "lib/portable-net40+win8/System.IO.dll",
+        "lib/portable-net40+win8/System.IO.xml",
+        "lib/portable-net40+win8/System.Runtime.dll",
+        "lib/portable-net40+win8/System.Runtime.xml",
+        "lib/portable-net40+win8/System.Threading.Tasks.dll",
+        "lib/portable-net40+win8/System.Threading.Tasks.xml",
+        "lib/portable-net40+win8+wp8+wpa81/ensureRedirect.xml",
+        "lib/portable-net40+win8+wp8+wpa81/System.IO.dll",
+        "lib/portable-net40+win8+wp8+wpa81/System.IO.xml",
+        "lib/portable-net40+win8+wp8+wpa81/System.Runtime.dll",
+        "lib/portable-net40+win8+wp8+wpa81/System.Runtime.xml",
+        "lib/portable-net40+win8+wp8+wpa81/System.Threading.Tasks.dll",
+        "lib/portable-net40+win8+wp8+wpa81/System.Threading.Tasks.xml",
+        "lib/portable-net45+win8+wp8+wpa81/_._",
+        "lib/portable-net45+win8+wpa81/_._",
+        "lib/portable-net451+win81/_._",
+        "lib/portable-net451+win81+wpa81/_._",
+        "lib/portable-win81+wp81+wpa81/_._",
+        "lib/sl4/System.IO.dll",
+        "lib/sl4/System.IO.xml",
+        "lib/sl4/System.Runtime.dll",
+        "lib/sl4/System.Runtime.xml",
+        "lib/sl4/System.Threading.Tasks.dll",
+        "lib/sl4/System.Threading.Tasks.xml",
+        "lib/sl4-windowsphone71/ensureRedirect.xml",
+        "lib/sl4-windowsphone71/System.IO.dll",
+        "lib/sl4-windowsphone71/System.IO.xml",
+        "lib/sl4-windowsphone71/System.Runtime.dll",
+        "lib/sl4-windowsphone71/System.Runtime.xml",
+        "lib/sl4-windowsphone71/System.Threading.Tasks.dll",
+        "lib/sl4-windowsphone71/System.Threading.Tasks.xml",
+        "lib/sl5/System.IO.dll",
+        "lib/sl5/System.IO.xml",
+        "lib/sl5/System.Runtime.dll",
+        "lib/sl5/System.Runtime.xml",
+        "lib/sl5/System.Threading.Tasks.dll",
+        "lib/sl5/System.Threading.Tasks.xml",
+        "lib/win8/_._",
+        "lib/wp8/_._",
+        "lib/wpa81/_._",
+        "License-Stable.rtf",
+        "Microsoft.Bcl.nuspec",
+        "package/services/metadata/core-properties/a2c2e4aac469425ea858153a6ad602c0.psmdcp"
+      ]
+    },
+    "Microsoft.Bcl.Build/1.0.14": {
+      "sha512": "cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "content/net40/_._",
+        "content/netcore45/_._",
+        "content/portable-net40+win8+sl4+wp71+wpa81/_._",
+        "content/sl4/_._",
+        "content/sl4-windowsphone71/_._",
+        "License-Stable.rtf",
+        "Microsoft.Bcl.Build.nuspec",
+        "package/services/metadata/core-properties/ded9cfb683144eaba586f13af4ae979c.psmdcp",
+        "tools/Install.ps1",
+        "tools/Microsoft.Bcl.Build.targets",
+        "tools/Microsoft.Bcl.Build.Tasks.dll",
+        "tools/Uninstall.ps1"
+      ]
+    },
     "Microsoft.CSharp/4.0.0": {
       "sha512": "oWqeKUxHXdK6dL2CFjgMcaBISbkk+AqEg+yvJHE4DElNzS4QaTsCflgkkqZwVlWby1Dg9zo9n+iCAMFefFdJ/A==",
       "type": "Package",
@@ -11766,6 +12533,70 @@
         "ref/wpa81/_._",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._"
+      ]
+    },
+    "Microsoft.Net.Http/2.2.22": {
+      "sha512": "bqVLJ2UimlAEs2bn3y28lB1pmFRxuysv9pFyB0A86WEMYGYTfDyfjAGjm0fiaSRjlMNU1jVnp8Mxt8qe4OmpXQ==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "lib/monoandroid/System.Net.Http.Extensions.dll",
+        "lib/monoandroid/System.Net.Http.Extensions.XML",
+        "lib/monoandroid/System.Net.Http.Primitives.dll",
+        "lib/monoandroid/System.Net.Http.Primitives.xml",
+        "lib/monotouch/System.Net.Http.Extensions.dll",
+        "lib/monotouch/System.Net.Http.Extensions.XML",
+        "lib/monotouch/System.Net.Http.Primitives.dll",
+        "lib/monotouch/System.Net.Http.Primitives.xml",
+        "lib/net40/ensureRedirect.xml",
+        "lib/net40/System.Net.Http.dll",
+        "lib/net40/System.Net.Http.Extensions.dll",
+        "lib/net40/System.Net.Http.Extensions.XML",
+        "lib/net40/System.Net.Http.Primitives.dll",
+        "lib/net40/System.Net.Http.Primitives.xml",
+        "lib/net40/System.Net.Http.WebRequest.dll",
+        "lib/net40/System.Net.Http.WebRequest.xml",
+        "lib/net40/System.Net.Http.xml",
+        "lib/net45/ensureRedirect.xml",
+        "lib/net45/System.Net.Http.Extensions.dll",
+        "lib/net45/System.Net.Http.Extensions.XML",
+        "lib/net45/System.Net.Http.Primitives.dll",
+        "lib/net45/System.Net.Http.Primitives.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/ensureRedirect.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.Extensions.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.Extensions.XML",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.Primitives.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.Primitives.XML",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.xml",
+        "lib/portable-net45+win8/ensureRedirect.xml",
+        "lib/portable-net45+win8/System.Net.Http.Extensions.dll",
+        "lib/portable-net45+win8/System.Net.Http.Extensions.XML",
+        "lib/portable-net45+win8/System.Net.Http.Primitives.dll",
+        "lib/portable-net45+win8/System.Net.Http.Primitives.xml",
+        "lib/portable-net45+win8+wpa81/ensureRedirect.xml",
+        "lib/portable-net45+win8+wpa81/System.Net.Http.Extensions.dll",
+        "lib/portable-net45+win8+wpa81/System.Net.Http.Extensions.XML",
+        "lib/portable-net45+win8+wpa81/System.Net.Http.Primitives.dll",
+        "lib/portable-net45+win8+wpa81/System.Net.Http.Primitives.xml",
+        "lib/sl4-windowsphone71/System.Net.Http.dll",
+        "lib/sl4-windowsphone71/System.Net.Http.Extensions.dll",
+        "lib/sl4-windowsphone71/System.Net.Http.Extensions.XML",
+        "lib/sl4-windowsphone71/System.Net.Http.Primitives.dll",
+        "lib/sl4-windowsphone71/System.Net.Http.Primitives.XML",
+        "lib/sl4-windowsphone71/System.Net.Http.xml",
+        "lib/win8/System.Net.Http.Extensions.dll",
+        "lib/win8/System.Net.Http.Extensions.XML",
+        "lib/win8/System.Net.Http.Primitives.dll",
+        "lib/win8/System.Net.Http.Primitives.xml",
+        "lib/wpa81/System.Net.Http.Extensions.dll",
+        "lib/wpa81/System.Net.Http.Extensions.XML",
+        "lib/wpa81/System.Net.Http.Primitives.dll",
+        "lib/wpa81/System.Net.Http.Primitives.xml",
+        "License-Stable.rtf",
+        "Microsoft.Net.Http.nuspec",
+        "package/services/metadata/core-properties/4bcd5cfc1347448983b7f3ddb3d6d517.psmdcp"
       ]
     },
     "Microsoft.NETCore/5.0.0": {
@@ -12380,6 +13211,31 @@
         "ref/xamarinmac20/_._"
       ]
     },
+    "Newtonsoft.Json/6.0.4": {
+      "sha512": "FyQLmEpjsCrEP+znauLDGAi+h6i9YnaMkITlfIoiM4RYyX3nki306bTHsr/0okiIvIc7BJhQTbOAIZVocccFUw==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netcore45/Newtonsoft.Json.dll",
+        "lib/netcore45/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.xml",
+        "Newtonsoft.Json.nuspec",
+        "package/services/metadata/core-properties/87a0a4e28d50417ea282e20f81bc6477.psmdcp",
+        "tools/install.ps1"
+      ]
+    },
     "NotificationsExtensions.Win10/14332.0.0": {
       "sha512": "CIzo4poYFVeHmF+O1RSwytqUgU49DOq8QIWcaTWyDgmrEkw2qRyXR7k2LzxybicrCaNlTQuCNMJ+mjNbACrWnA==",
       "type": "Package",
@@ -12399,6 +13255,36 @@
         "lib/uap10.0/NotificationsExtensions.xml",
         "NotificationsExtensions.Win10.nuspec",
         "package/services/metadata/core-properties/366f45ea14c84fe2b1444a08f90ea667.psmdcp"
+      ]
+    },
+    "PCLCrypto/1.0.86": {
+      "sha512": "rcmxw9Bb5GuEW1ubVBegCCbR7YU8Ptr8tGfmyVHBnK+UQlk29TuBryHXmsTglt64ZNDXpi8rWl8x5l55JylpOw==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "lib/monoandroid/PCLCrypto.dll",
+        "lib/monoandroid/PCLCrypto.xml",
+        "lib/monotouch/PCLCrypto.dll",
+        "lib/monotouch/PCLCrypto.xml",
+        "lib/net40-Client/PCLCrypto.dll",
+        "lib/net40-Client/PCLCrypto.xml",
+        "lib/portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10/PCLCrypto.dll",
+        "lib/portable-net40+sl50+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10/PCLCrypto.xml",
+        "lib/sl5/PCLCrypto.dll",
+        "lib/sl5/PCLCrypto.xml",
+        "lib/win81/PCLCrypto.dll",
+        "lib/win81/PCLCrypto.pri",
+        "lib/win81/PCLCrypto.xml",
+        "lib/wp8/PCLCrypto.dll",
+        "lib/wp8/PCLCrypto.xml",
+        "lib/wpa81/PCLCrypto.dll",
+        "lib/wpa81/PCLCrypto.pri",
+        "lib/wpa81/PCLCrypto.xml",
+        "lib/Xamarin.iOS/PCLCrypto.dll",
+        "lib/Xamarin.iOS/PCLCrypto.xml",
+        "package/services/metadata/core-properties/ff0214e864344d49a93de070164a395f.psmdcp",
+        "PCLCrypto.nuspec"
       ]
     },
     "Prism.Core/6.1.0": {
@@ -15122,6 +16008,18 @@
         "System.Xml.XmlSerializer.nuspec"
       ]
     },
+    "Validation/2.0.6.15003": {
+      "sha512": "8vgCOG9mPeOd3xwyL20OT9RyOKq9PmJb0Iltzwj6eay38Cq2v6ojvpSDbc+sc6YXit+iAVyyvHTS29rBvDpdDQ==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.dll",
+        "lib/portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/Validation.xml",
+        "package/services/metadata/core-properties/3b1340c05ca1419dbf9ab6244fcd0b7c.psmdcp",
+        "Validation.nuspec"
+      ]
+    },
     "WinRTXamlToolkit.Controls.DataVisualization.Windows/1.8.1": {
       "sha512": "qjOgfq3tW6qog7YawQzfJydHvtL+Z6719NP4dPBsiro/noBA5NfRwHiY+HF+ZD3vK/2ihBdl/hvX694Ih3DRpw==",
       "type": "Package",
@@ -15205,6 +16103,7 @@
       "Microsoft.ApplicationInsights >= 1.0.0",
       "Microsoft.ApplicationInsights.PersistenceChannel >= 1.0.0",
       "Microsoft.ApplicationInsights.WindowsApps >= 1.0.0",
+      "Microsoft.Azure.Devices.Client >= 1.0.13",
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
       "NotificationsExtensions.Win10 >= 14332.0.0",
       "Prism.Core >= 6.1.0",
