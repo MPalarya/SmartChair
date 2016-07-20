@@ -19,7 +19,7 @@ namespace Server
         #region Fields
 
         private static ConcurrentDictionary<string, CDataPointsBuffer> dataPointsBufferDict;
-        private static CDbInterface dbInterface;
+        private static DbInterface dbInterface;
         private static CMessageConvert messageConvert;
         public static CServerMessagesSendReceive serverMessagesSendReceive;
 
@@ -261,7 +261,7 @@ namespace Server
         private bool bCollectingInitDatapoints;
         private CDataPoint oldest;
         private Queue<CDataPoint> queue;
-        private CDbInterface dbInterface;
+        private DbInterface dbInterface;
         private CMessageConvert messageConvert;
         private ClassifySitting classifySitting;
         #endregion

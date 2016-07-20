@@ -150,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClassifySitting.cs" />
+    <Compile Include="CDbInterface.cs" />
     <Compile Include="DbInterface.cs" />
     <Compile Include="HandleMessages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

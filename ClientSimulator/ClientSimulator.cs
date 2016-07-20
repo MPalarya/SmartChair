@@ -16,8 +16,8 @@ namespace ClientSimulator
 {
     class ClientSimulator
     {
-        static CMessageConvert messageConvert;
-        static CDeviceMessagesSendReceive deviceMessagesSendReceive;
+        static private CMessageConvert messageConvert;
+        static private CDeviceMessagesSendReceive deviceMessagesSendReceive;
 
         static void Main(string[] args)
         {

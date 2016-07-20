@@ -3,42 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.Devices.Client;
 using Newtonsoft.Json;
 using System.Threading;
 using System.Diagnostics;
+using System.Management;
+using Microsoft.Azure.Devices;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Common.Exceptions;
 
 namespace RPiSimulator
 {
     class RPiSimulator
     {
-        static DeviceClient deviceClient;
-        static string iotHubUri = "smartchair-iothub.azure-devices.net";
-        static string deviceKey;
-        static string deviceId;
+        static private CDeviceMessagesSendReceive deviceMessagesSendReceive;
+        static private string deviceId;
 
         static void Main(string[] args)
         {
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.FileName = "..\\..\\..\\GetDeviceIdentity\\bin\\Release\\GetDeviceIdentity.exe";
-            p.Start();
-
-            string[] deviceData = p.StandardOutput.ReadLine().Split();
-            p.Close();
-            deviceKey = deviceData[0];
-            deviceId = deviceData[1];
+            deviceMessagesSendReceive = new CDeviceMessagesSendReceive();
+            deviceId = deviceMessagesSendReceive.getDeviceId();
 
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Simulated device on id = {0} ; key = {1}\n", deviceId, deviceKey);
-            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
+            Console.WriteLine("Simulated device on id = {0}\n", deviceId);
 
-            sendDatapointToServer();
+            createAndSendTelemetryDatapointToServer();
             Console.ReadLine();
         }
 
-        private static async void sendDatapointToServer()
+        private static void createAndSendTelemetryDatapointToServer()
         {
             int[] currPressure = new int[7];
             Random rand = new Random();
@@ -54,13 +46,95 @@ namespace RPiSimulator
                 CDataPoint datapoint = new CDataPoint(deviceId, DateTime.Now, currPressure);
                 SMessage<CDataPoint> messagestruct = new SMessage<CDataPoint>(EMessageId.RpiServer_Datapoint, datapoint);
                 string messageString = JsonConvert.SerializeObject(messagestruct);
-                Message message = new Message(Encoding.ASCII.GetBytes(messageString));
-                Console.WriteLine("Sending message: {0}", messageString);
-                await deviceClient.SendEventAsync(message);
-                Console.WriteLine("Completed");
+                deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
 
                 Thread.Sleep(1000);
             }
         }
+    }
+
+    public class CDeviceMessagesSendReceive
+    {
+        #region Fields
+        private static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
+        private static string iotHubUri = "smartchair-iothub.azure-devices.net";
+        private string deviceKey;
+        private string deviceId;
+        private DeviceClient deviceClient;
+        private RegistryManager registryManager;
+        private Action<string> callbackOnReceiveMessage;
+        #endregion Fields
+
+        #region Constuctors
+
+        public CDeviceMessagesSendReceive()
+        {
+            registryManager = RegistryManager.CreateFromConnectionString(connectionString);
+            addOrGetDeviceAsync().Wait();
+            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
+        }
+
+        #endregion
+
+        #region Methods
+
+        private async Task addOrGetDeviceAsync()
+        {
+            deviceId = getOsSerialNumber();
+            Device device;
+            try
+            {
+                device = await registryManager.AddDeviceAsync(new Device(deviceId));
+            }
+            catch (DeviceAlreadyExistsException)
+            {
+                device = await registryManager.GetDeviceAsync(deviceId);
+            }
+
+            deviceKey = device.Authentication.SymmetricKey.PrimaryKey;
+        }
+
+        private string getOsSerialNumber()
+        {
+            ManagementObject o = new ManagementObject("Win32_OperatingSystem=@");
+            string serial = (string)o["SerialNumber"];
+
+            return serial;
+        }
+
+        public void receiveMessages(Action<string> callbackOnReceiveMessage)
+        {
+            this.callbackOnReceiveMessage = callbackOnReceiveMessage;
+            receiveMessagesAsync();
+        }
+
+        private async void receiveMessagesAsync()
+        {
+            string messageString;
+
+            while (true)
+            {
+                Microsoft.Azure.Devices.Client.Message receivedMessage = await deviceClient.ReceiveAsync();
+                if (receivedMessage == null) continue;
+                messageString = Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString();
+                callbackOnReceiveMessage(messageString);
+                await deviceClient.CompleteAsync(receivedMessage);
+            }
+        }
+
+        public async void sendMessageToServerAsync(string messageString)
+        {
+            Microsoft.Azure.Devices.Client.Message message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));
+            Console.WriteLine("Sending message: {0}", messageString);
+            await deviceClient.SendEventAsync(message);
+            Console.WriteLine("Completed");
+        }
+
+        public string getDeviceId()
+        {
+            return deviceId;
+        }
+
+        #endregion
     }
 }
