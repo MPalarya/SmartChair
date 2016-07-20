@@ -13,7 +13,7 @@ namespace Client
         /// </summary>
         /// <param name="email"></param>
         /// <returns>returns true if this user have logged in before, otherwise false</returns>
-        bool login(string email);
+        bool login(string email, string deviceId, string deviceKey);
 
         /// <summary>
         /// Calibarates smartchair according to the person. Occurs only on the first time, when we
@@ -30,7 +30,9 @@ namespace Client
         /// <returns>A list of the the int value that was measured and the time it was measured in</returns>
         Dictionary<DateTime, int> getLastWeekData(string email);
 
-
+        void startCommunicationWithServer();
+        void stopCommunicationWithServer();
+        
 
     }
 }
