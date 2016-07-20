@@ -4,40 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices;
+using Microsoft.Azure.Devices.Common.Exceptions;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Management;
 
 // id = 00326-10000-00000-AA800
- 
+
 namespace ClientSimulator
 {
     class ClientSimulator
     {
-        static DeviceClient deviceClient;
-        static string iotHubUri = "smartchair-iothub.azure-devices.net";
-        static string deviceKey;
-        static string deviceId;
         static CMessageConvert messageConvert;
+        static CDeviceMessagesSendReceive deviceMessagesSendReceive;
 
         static void Main(string[] args)
         {
             messageConvert = CMessageConvert.Instance;
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.FileName = "..\\..\\..\\GetDeviceIdentity\\bin\\Release\\GetDeviceIdentity.exe";
-            p.Start();
-
-            string[] deviceData = p.StandardOutput.ReadLine().Split();
-            p.Close();
-            deviceKey = deviceData[0];
-            deviceId = deviceData[1];
+            deviceMessagesSendReceive = new CDeviceMessagesSendReceive(printMessage);
+            string deviceId = deviceMessagesSendReceive.getDeviceId();
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Receiving cloud to device messages from service\n");
-            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
 
-            ReceiveC2dAsync();
+            deviceMessagesSendReceive.receiveMessages();
+
             string line;
             while(true)
             {
@@ -47,47 +39,118 @@ namespace ClientSimulator
 
                 if (line == "start")
                 {
-                    sendMessageToServer(messageConvert.encode(EMessageId.ClientServer_StartRealtime, deviceId));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StartRealtime, deviceId));
                 }
                 else if (line == "stop")
                 {
-                    sendMessageToServer(messageConvert.encode(EMessageId.ClientServer_StopRealtime, deviceId));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StopRealtime, deviceId));
                 }
                 else if (line == "init")
                 {
-                    sendMessageToServer(messageConvert.encode(EMessageId.ClientServer_StartInit, deviceId));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StartInit, deviceId));
                 }
                 else if (line[0] == '%')
                 {
-                    sendMessageToServer(messageConvert.encode(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, line.Substring(1, line.Length - 1))));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, line.Substring(1, line.Length - 1))));
                 }
                 else if (line[0] == '<')
                 {
-                    sendMessageToServer(messageConvert.encode(EMessageId.ClientServer_GetLogs, new CLogLimits(new DateTime(2016, 07, 11), new DateTime(2016, 07, 12), deviceId)));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new CLogLimits(new DateTime(2016, 07, 11), new DateTime(2016, 07, 12), deviceId)));
                 }
             }
         }
 
-        private static async void sendMessageToServer(string messageString)
+        public static void printMessage(string messageString)
         {
-            Message message = new Message(Encoding.ASCII.GetBytes(messageString));
+            SMessage<object> messageStruct;
+            messageStruct = JsonConvert.DeserializeObject<SMessage<object>>(messageString);
+            Console.WriteLine("!Received message {0}, data = {1}", messageStruct.messageid, messageStruct.data);
+        }
+    }
+
+
+    public class CDeviceMessagesSendReceive
+    {
+        #region Fields
+        private static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
+        private static string iotHubUri = "smartchair-iothub.azure-devices.net";
+        private string deviceKey;
+        private string deviceId;
+        private DeviceClient deviceClient;
+        private RegistryManager registryManager;
+        private Action<string> callbackOnReceiveMessage;
+        #endregion Fields
+
+        #region Constuctors
+
+        public CDeviceMessagesSendReceive(Action<string> callbackOnReceiveMessage)
+        {
+            this.callbackOnReceiveMessage = callbackOnReceiveMessage;
+            registryManager = RegistryManager.CreateFromConnectionString(connectionString);
+            addOrGetDeviceAsync().Wait();
+            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
+        }
+
+        #endregion
+
+        #region Methods
+
+        private async Task addOrGetDeviceAsync()
+        {
+            deviceId = getOsSerialNumber();
+            Device device;
+            try
+            {
+                device = await registryManager.AddDeviceAsync(new Device(deviceId));
+            }
+            catch (DeviceAlreadyExistsException)
+            {
+                device = await registryManager.GetDeviceAsync(deviceId);
+            }
+
+            deviceKey = device.Authentication.SymmetricKey.PrimaryKey;
+        }
+
+        private string getOsSerialNumber()
+        {
+            ManagementObject o = new ManagementObject("Win32_OperatingSystem=@");
+            string serial = (string)o["SerialNumber"];
+
+            return serial;
+        }
+
+        public void receiveMessages()
+        {
+            receiveMessagesAsync();
+        }
+
+        private async void receiveMessagesAsync()
+        {
+            string messageString;
+
+            while (true)
+            {
+                Microsoft.Azure.Devices.Client.Message receivedMessage = await deviceClient.ReceiveAsync();
+                if (receivedMessage == null) continue;
+                messageString = Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString();
+                callbackOnReceiveMessage(messageString);
+                await deviceClient.CompleteAsync(receivedMessage);
+            }
+        }
+
+        public async void sendMessageToServerAsync(string messageString)
+        {
+            Microsoft.Azure.Devices.Client.Message message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));
             Console.WriteLine("Sending message: {0}", messageString);
             await deviceClient.SendEventAsync(message);
             Console.WriteLine("Completed");
         }
 
-        private static async void ReceiveC2dAsync()
+        public string getDeviceId()
         {
-            SMessage<object> messagestruct;
-
-            while (true)
-            {
-                Message receivedMessage = await deviceClient.ReceiveAsync();
-                if (receivedMessage == null) continue;
-                messagestruct = JsonConvert.DeserializeObject<SMessage<object>>(Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString());
-                Console.WriteLine("!Received message {0}, data = {1}", messagestruct.messageid, messagestruct.data);
-                await deviceClient.CompleteAsync(receivedMessage);
-            }
+            return deviceId;
         }
+
+        #endregion
     }
 }

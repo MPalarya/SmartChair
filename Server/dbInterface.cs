@@ -23,12 +23,12 @@ namespace Server
     // Table 1: key = deviceId, value = init dataset for device
     // Table 2: key = deviceId, value = Client class
     // Table 3: key = clientId, value = deviceId
-    public sealed class CDbInterface
+    public class CDbInterface
     {
         #region Fields
 
         private static CDbInterface instance;
-        private ConnectionMultiplexer conn;
+        private ConnectionMultiplexer connection;
         private IDatabase redisLogs, redisInit, redicClients, redisDevicesByClient;
 
         #endregion
@@ -36,12 +36,11 @@ namespace Server
         #region Constructors
         private CDbInterface()
         {
-            // connect to database
-            conn = ConnectionMultiplexer.Connect("smartchair.redis.cache.windows.net:6380,password=EcwNyqsaIKcM8JcnWbkP8FHy/xs/YHf6omQ2UaHvnlw=,ssl=True,abortConnect=False");
-            redisLogs = conn.GetDatabase(0);
-            redisInit = conn.GetDatabase(1);
-            redicClients = conn.GetDatabase(2);
-            redisDevicesByClient = conn.GetDatabase(3);
+            connection = ConnectionMultiplexer.Connect("smartchair.redis.cache.windows.net:6380,password=EcwNyqsaIKcM8JcnWbkP8FHy/xs/YHf6omQ2UaHvnlw=,ssl=True,abortConnect=False");
+            redisLogs = connection.GetDatabase(0);
+            redisInit = connection.GetDatabase(1);
+            redicClients = connection.GetDatabase(2);
+            redisDevicesByClient = connection.GetDatabase(3);
         }
         #endregion
 

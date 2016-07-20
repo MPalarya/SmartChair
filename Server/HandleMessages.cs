@@ -8,85 +8,56 @@ using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using Microsoft.Azure.Devices;
 
-// TODO: predict if sitting incorrectly and alert client
-
 namespace Server
 {
     // Runs the main code.
     // Connects to IOT hub to receive messages and handle.
     // Holds Hash Table of key = deviceId value = CDataPointsBuffer. Therefore adding a datapoint to its correct queue can happen in O(1).
     // Adds every received message to a ThreadPool so a thread can process it. 
-    class CMessagesHandler
+    internal static class CServerMessagesHandler
     {
         #region Fields
 
-        static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
-        static string iotHubD2cEndpoint = "messages/events";
-        static EventHubClient eventHubClient;
-        static ServiceClient serviceClient;
-        static ConcurrentDictionary<string, CDataPointsBuffer> dataPointsBufferDict;
-        static CDbInterface dbInterface;
-        static CMessageConvert messageConvert;
+        private static ConcurrentDictionary<string, CDataPointsBuffer> dataPointsBufferDict;
+        private static CDbInterface dbInterface;
+        private static CMessageConvert messageConvert;
+        public static CServerMessagesSendReceive serverMessagesSendReceive;
 
-        #endregion
-
-        #region Constructors
-        private CMessagesHandler(){}
         #endregion
 
         #region Main
         static void Main(string[] args)
         {
             Console.WriteLine("Receiving and Handling messages:\n");
-            eventHubClient = EventHubClient.CreateFromConnectionString(connectionString, iotHubD2cEndpoint);
-            serviceClient = ServiceClient.CreateFromConnectionString(connectionString);
-            var deviceToCloudPartitions = eventHubClient.GetRuntimeInformation().PartitionIds;
+
             dataPointsBufferDict = new ConcurrentDictionary<string, CDataPointsBuffer>();
             dbInterface = CDbInterface.Instance;
             messageConvert = CMessageConvert.Instance;
+            serverMessagesSendReceive = new CServerMessagesSendReceive(distributeMessageStringsToThreads);
 
-            // make sure to stop when we exit
-            CancellationTokenSource cts = new CancellationTokenSource();
-            System.Console.CancelKeyPress += (s, e) =>
-            {
-                e.Cancel = true;
-                cts.Cancel();
-                Console.WriteLine("Exiting...");
-            };
-
-            // receive messages
-            var receiveMessagesTask = new List<Task>();
-            foreach (string partition in deviceToCloudPartitions)
-            {
-                receiveMessagesTask.Add(receiveMessagesFromDeviceAsync(partition, cts.Token));
-            }
-            Task.WaitAll(receiveMessagesTask.ToArray());
+            serverMessagesSendReceive.receiveMessages();
         }
         #endregion
 
         #region Methods
-        // Receives a message and adds it to the ThreadPool to be processed
-        private static async Task receiveMessagesFromDeviceAsync(string partition, CancellationToken ct)
-        {
-            var eventHubReceiver = eventHubClient.GetDefaultConsumerGroup().CreateReceiver(partition, DateTime.UtcNow);
-            while (true)
-            {
-                if (ct.IsCancellationRequested) break;
-                EventData eventData = await eventHubReceiver.ReceiveAsync();
-                if (eventData == null) continue;
 
-                string messageString = Encoding.UTF8.GetString(eventData.GetBytes());
-                ThreadPool.QueueUserWorkItem(new WaitCallback(processIncomingMessageByMessageId), messageString);
-            }
+        public static void distributeMessageStringsToThreads(string messageString)
+        {
+            ThreadPool.QueueUserWorkItem(new WaitCallback(decodeMessageAndProcess), messageString);
         }
 
-        // Thread deserializes message and handles each message by messageId
-        static void processIncomingMessageByMessageId(Object stateInfo)
+        public static void decodeMessageAndProcess(Object stateInfo)
         {
             string messageString = (string)stateInfo;
+            SMessage<object> messageStruct = messageConvert.decode(messageString);
+
+            processIncomingMessageByMessageId(messageStruct);
+        }
+
+        private static void processIncomingMessageByMessageId(SMessage<object> messageStruct)
+        {
             CClient client;
             string clientId, deviceId;
-            SMessage<object> messageStruct = messageConvert.decode(messageString);
 
             switch (messageStruct.messageid)
             {
@@ -97,7 +68,7 @@ namespace Server
                     // TODO: can be more efficiant by saving client.sendRealTime in correct queue
                     if (client != null && client.bReceiveRealTime)
                     {
-                        sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_Datapoint, datapoint));
+                        CServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_Datapoint, datapoint));
                     }
                     break;
 
@@ -153,8 +124,8 @@ namespace Server
                     deviceId = dbInterface.getDeviceByClient(clientId);
                     if (deviceId != null)
                     {
-                        var logs = getDeviceLogsAsJson(deviceId, logLimits.startdate, logLimits.enddate);
-                        sendMessageToClient(clientId, messageConvert.encode(EMessageId.ServerClient_DayData, logs));
+                        var logs = getDeviceLogsInJson(deviceId, logLimits.startdate, logLimits.enddate);
+                        CServerMessagesSendReceive.sendMessageToClient(clientId, messageConvert.encode(EMessageId.ServerClient_DayData, logs));
                     }
                     break;
             }
@@ -184,7 +155,7 @@ namespace Server
         }
 
         // Returns logs as JSON string for date
-        private static object getDeviceLogsAsJson(string deviceId, DateTime startdate, DateTime enddate)
+        private static object getDeviceLogsInJson(string deviceId, DateTime startdate, DateTime enddate)
         {
             if (startdate > enddate)
                 return null;
@@ -213,6 +184,56 @@ namespace Server
         }
 
         // Sends async message to client
+
+        #endregion
+    }
+
+    internal class CServerMessagesSendReceive
+    {
+        #region Fields
+
+        private static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
+        private static string iotHubD2cEndpoint = "messages/events";
+        private static EventHubClient eventHubClient = EventHubClient.CreateFromConnectionString(connectionString, iotHubD2cEndpoint);
+        private static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(connectionString);
+        private Action<string> callbackOnReceiveMessage;
+
+        #endregion
+
+        #region Constructors
+
+        public CServerMessagesSendReceive(Action<string> callbackOnReceiveMessage)
+        {
+            this.callbackOnReceiveMessage = callbackOnReceiveMessage;
+        }
+        #endregion
+
+        #region Methods
+
+        public void receiveMessages()
+        {
+            string[] deviceToCloudPartitions = eventHubClient.GetRuntimeInformation().PartitionIds;
+            var receiveMessagesTask = new List<Task>();
+            foreach (string partition in deviceToCloudPartitions)
+            {
+                receiveMessagesTask.Add(receiveMessagesFromDeviceAsync(partition));
+            }
+            Task.WaitAll(receiveMessagesTask.ToArray());
+        }
+
+        private async Task receiveMessagesFromDeviceAsync(string partition)
+        {
+            var eventHubReceiver = eventHubClient.GetDefaultConsumerGroup().CreateReceiver(partition, DateTime.UtcNow);
+            while (true)
+            {
+                EventData eventData = await eventHubReceiver.ReceiveAsync();
+                if (eventData == null) continue;
+
+                string messageString = Encoding.UTF8.GetString(eventData.GetBytes());
+                callbackOnReceiveMessage(messageString);
+            }
+        }
+
         public static async void sendMessageToClient(string clientId, string messageString)
         {
             Message message = new Message(Encoding.ASCII.GetBytes(messageString));
@@ -223,46 +244,50 @@ namespace Server
         #endregion
     }
 
-    // Provides a Buffer to save the last CAPACITY datapoints and perform calculations on them
-    class CDataPointsBuffer
+
+    // Provides a buffer to save the last CAPACITY datapoints, calculates average pressure and saves to database
+    internal class CDataPointsBuffer
     {
         #region Fields
 
-        int[] currPressureSum;
-        int[] initPressure;
-        int numOfSensors;
-        int size;
-        int count;
-        bool bCollectingInitDatapoints;
-        CDataPoint oldest;
-        Queue<CDataPoint> queue;
-        CDbInterface dbInterface;
-        CMessageConvert messageConvert;
-
-        #endregion
-
-        #region Properties
-        static int CAPACITY = 3;
+        private static int CAPACITY = 3;
+        private int[] currPressureSum;
+        private int[] initPressure;
+        private int[] averagePressure;
+        private int numOfSensors;
+        private int size;
+        private int count;
+        private string deviceId;
+        private bool bCollectingInitDatapoints;
+        private CDataPoint oldest;
+        private Queue<CDataPoint> queue;
+        private CDbInterface dbInterface;
+        private CMessageConvert messageConvert;
+        private ClassifySitting classifySitting;
         #endregion
 
         #region Constructors
-        public CDataPointsBuffer(int numOfSensors)
-        {
-            count = 0;
-            size = 0;
-            this.numOfSensors = numOfSensors;
-            currPressureSum = new int[numOfSensors];
-            bCollectingInitDatapoints = false;
-            oldest = new CDataPoint(numOfSensors, 0);
-            queue = new Queue<CDataPoint>(CAPACITY);
-            dbInterface = CDbInterface.Instance;
-            messageConvert = CMessageConvert.Instance;
-        }
-
         public CDataPointsBuffer(int numOfSensors, CDataPoint datapoint)
             : this(numOfSensors)
         {
-            addDataPoint(datapoint);
+            this.deviceId = datapoint.deviceId;
+            this.initPressure = dbInterface.getInit(deviceId);
+            this.addDataPoint(datapoint);
+        }
+
+        private CDataPointsBuffer(int numOfSensors)
+        {
+            this.count = 0;
+            this.size = 0;
+            this.numOfSensors = numOfSensors;
+            this.currPressureSum = new int[numOfSensors];
+            this.averagePressure = new int[numOfSensors];
+            this.bCollectingInitDatapoints = false;
+            this.oldest = new CDataPoint(numOfSensors, 0);
+            this.queue = new Queue<CDataPoint>(CAPACITY);
+            this.dbInterface = CDbInterface.Instance;
+            this.messageConvert = CMessageConvert.Instance;
+            this.classifySitting = ClassifySitting.Instance;
         }
         #endregion
 
@@ -271,14 +296,18 @@ namespace Server
         // the average of the past CAPACITY datapoints is added to the database
         public void addDataPoint(CDataPoint datapoint)
         {
-            storeDatapointAndUpdateSum(datapoint);
+            enqueueDatapoint(datapoint);
+            updatePressureSumArray(datapoint);
             if (count == CAPACITY)
-                saveAndClassifyDatapointsAverage(datapoint);
+            {
+                calculateAveragePressure();
+                saveAverageAndInitPresseureToDb(datapoint.datetime);
+                notifyClientAboutSittingCorrectness();
+            }
         }
 
-        private void storeDatapointAndUpdateSum(CDataPoint datapoint)
+        private void enqueueDatapoint(CDataPoint datapoint)
         {
-            // enqueue and dequeue if full
             count++;
             size++;
             queue.Enqueue(datapoint);
@@ -286,9 +315,11 @@ namespace Server
             {
                 oldest = queue.Dequeue();
                 size--;
-            }
+            }   
+        }
 
-            // update sum array
+        private void updatePressureSumArray(CDataPoint datapoint)
+        {
             for (int i = 0; i < currPressureSum.Length; i++)
             {
                 currPressureSum[i] += datapoint.pressure[i];
@@ -296,31 +327,27 @@ namespace Server
             }
         }
 
-        private void saveAndClassifyDatapointsAverage(CDataPoint datapoint)
+        private void notifyClientAboutSittingCorrectness()
         {
-            int[] averagePressure = new int[numOfSensors];
-            ClassifySitting classifySitting = ClassifySitting.Instance;
+            if (!classifySitting.isSittingCorrectly(averagePressure, initPressure))
+            {
+                CClient client = dbInterface.getClientByDevice(deviceId);
+                CServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_fixPosture, ""));
+            }
+        }
 
+        private void calculateAveragePressure()
+        {
             count = 0;
             for (int i = 0; i < currPressureSum.Length; i++)
             {
                 averagePressure[i] = currPressureSum[i] / CAPACITY;
             }
-
-            saveToDb(new CDataPoint(datapoint.deviceId, datapoint.datetime, averagePressure));
-
-            if (initPressure == null)
-                initPressure = dbInterface.getInit(datapoint.deviceId);
-
-            if (!classifySitting.isSittingCorrectly(averagePressure, initPressure))
-            {
-                CClient client = dbInterface.getClientByDevice(datapoint.deviceId);
-                CMessagesHandler.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_fixPosture, ""));
-            }
         }
 
-        private void saveToDb(CDataPoint datapoint)
+        private void saveAverageAndInitPresseureToDb(DateTime datetime)
         {
+            CDataPoint datapoint = new CDataPoint(deviceId, datetime, averagePressure);
             saveAverageToDb(datapoint);
             if (bCollectingInitDatapoints)
                 saveInitToDb(datapoint);
@@ -336,10 +363,9 @@ namespace Server
             bCollectingInitDatapoints = false;
             dbInterface.setInit(datapoint);
             CClient client = dbInterface.getClientByDevice(datapoint.deviceId);
-            CMessagesHandler.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_StopInit, ""));
+            CServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_StopInit, ""));
         }
 
-        // Starts the calculations of device init data
         public void startCollectingInitDatapoints()
         {
             count = 0;
