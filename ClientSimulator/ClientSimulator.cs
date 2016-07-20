@@ -93,7 +93,7 @@ namespace ClientSimulator
 
         #endregion
 
-        #region Methods
+         #region Methods
 
         private async Task addOrGetDeviceAsync()
         {
