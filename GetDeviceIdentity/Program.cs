@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Common.Exceptions;
+using System.Threading;
 
 namespace GetDeviceIdentity
 {
@@ -33,6 +34,8 @@ namespace GetDeviceIdentity
                 device = await registryManager.GetDeviceAsync(deviceId);
             }
             Console.WriteLine(device.Authentication.SymmetricKey.PrimaryKey + " " + deviceId);
+            Thread.Sleep(20000);
+           
         }
 
         private static string OsSerialNumber()
