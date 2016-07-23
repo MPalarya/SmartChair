@@ -33,20 +33,19 @@ namespace Server
             dataPointsBufferDict = new ConcurrentDictionary<string, CDataPointsBuffer>();
             dbInterface = CDbInterface.Instance;
             messageConvert = CMessageConvert.Instance;
-            serverMessagesSendReceive = new CServerMessagesSendReceive(distributeMessageStringsToThreads);
-
+            serverMessagesSendReceive = new CServerMessagesSendReceive(scheduleMessageStringHandling);
             serverMessagesSendReceive.receiveMessages();
         }
         #endregion
 
         #region Methods
 
-        public static void distributeMessageStringsToThreads(string messageString)
+        private static void scheduleMessageStringHandling(string messageString)
         {
             ThreadPool.QueueUserWorkItem(new WaitCallback(decodeMessageAndProcess), messageString);
         }
 
-        public static void decodeMessageAndProcess(Object stateInfo)
+        private static void decodeMessageAndProcess(Object stateInfo)
         {
             string messageString = (string)stateInfo;
             SMessage<object> messageStruct = messageConvert.decode(messageString);
