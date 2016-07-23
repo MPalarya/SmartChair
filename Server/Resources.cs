@@ -27,6 +27,19 @@ public enum EMessageId
     #endregion
 }
 
+public enum EPostureErrorType
+{
+    #region Fields
+    Correct,
+    HighPressureLeftSeat,
+    HighPressureRightSeat,
+    HighPressureLeftBack,
+    HighPressureRightBack,
+    HighPressureLeftHandle,
+    HighPressureRightHandle,
+    #endregion
+}
+
 /// <summary>
 /// represents the part of chair that populates sensors.
 /// computations logic is different depending on selected part.
@@ -121,6 +134,13 @@ public class CDataPoint
         this.deviceId = deviceId;
         this.datetime = datetime;
         this.pressure = pressure;
+    }
+
+    public CDataPoint(List<object> rawDataPoint)
+    {
+        this.deviceId = "";
+        this.datetime = DateTime.Parse((string)rawDataPoint[0]);
+        this.pressure = (int[])rawDataPoint[1];
     }
     #endregion
 }
@@ -222,7 +242,7 @@ public class CMessageConvert
         messageIdToStructMap[(int)EMessageId.ServerClient_Datapoint] = typeof(CDataPoint);
         messageIdToStructMap[(int)EMessageId.ServerClient_StopInit] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ServerClient_DayData] = typeof(List<List<object>>);
-        messageIdToStructMap[(int)EMessageId.ServerClient_fixPosture] = typeof(CDataPoint);
+        messageIdToStructMap[(int)EMessageId.ServerClient_fixPosture] = typeof(EPostureErrorType);
         messageIdToStructMap[(int)EMessageId.ClientServer_StartRealtime] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ClientServer_StopRealtime] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ClientServer_StartInit] = typeof(string);
@@ -282,5 +302,17 @@ public class CMessageConvert
 
         return messageString;
     }
+
+    public List<CDataPoint> convertRawLogsToDatapointsList(List<List<object>> logs)
+    {
+        List<CDataPoint> retList = new List<CDataPoint>();
+        foreach (var rawDatapoint in logs)
+        {
+            retList.Add(new CDataPoint(rawDatapoint));
+        }
+
+        return retList;
+    }
+
     #endregion
 }
