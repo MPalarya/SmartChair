@@ -18,11 +18,20 @@ namespace Client
         private CMessageConvert messageConvert;
         private CDeviceMessagesSendReceive deviceMessagesSendReceive;
 
+        public delegate void ChangedEventHandler(object sender, EventArgs e);
+        public delegate void PostureErrorEventHandler(object sender, postureErrorTypeEventArgs e);
+        public event ChangedEventHandler HandleFinish;
+        public event PostureErrorEventHandler postureError;
+
         public smartChairServerClient()
         {
             messageConvert = CMessageConvert.Instance;
             deviceMessagesSendReceive = new CDeviceMessagesSendReceive(deviceId, deviceKey);
             deviceMessagesSendReceive.receiveMessages(handleMessagesReceivedFromServer);
+
+            pairWithOrrsDeviceTest();
+            startCollectingInitData();
+            //startCommunicationWithServer(); gives raw data- no need in client
         }
 
         private void handleMessagesReceivedFromServer(string messageString)
@@ -30,7 +39,7 @@ namespace Client
             SMessage<object> messageStruct = messageConvert.decode(messageString);
             switch (messageStruct.messageid)
             {
-                case EMessageId.ServerClient_Datapoint:
+                case EMessageId.ServerClient_Datapoint: //delete this case
                     CDataPoint datapoint = (CDataPoint)messageStruct.data;
                     handleRealtimeDatapoint(datapoint);
                     break;
@@ -53,7 +62,7 @@ namespace Client
 
         private void handleRealtimeDatapoint(CDataPoint datapoint)
         {
-            // TODO Sivan: display data point in real time screen
+            // TODO Sivan: display data point in real time screen ---not needed
         }
 
         private void handleReceiveDataLogs(List<List<object>> rawLogs)
@@ -64,12 +73,26 @@ namespace Client
 
         private void handlePostureError(EPostureErrorType postureErrorType)
         {
-            // TODO Sivan: notify user of posture error
+            OnPostureError(new postureErrorTypeEventArgs(postureErrorType));
+
+        }
+
+        protected virtual void OnPostureError(EventArgs e)
+        {
+            if (postureError != null)
+                postureError(this, e);
+        }
+
+        protected virtual void OnHandleFinish(EventArgs e)
+        {
+            if (HandleFinish != null)
+                HandleFinish(this, e);
         }
 
         private void handleFinishedInit()
         {
             // TODO Sivan: notify user we have finished collecting initializing data
+            OnHandleFinish(EventArgs.Empty);
         }
 
         public void getLogsByDateTimeBounds(DateTime startdate, DateTime enddate)
@@ -164,5 +187,16 @@ namespace Client
         }
 
         #endregion
+    }
+
+    public class postureErrorTypeEventArgs : EventArgs
+    {
+        private EPostureErrorType m_errorType;
+        public postureErrorTypeEventArgs(EPostureErrorType errorType)
+        {
+            m_errorType = errorType;
+        }
+
+        public EPostureErrorType ErrorType {get { return m_errorType; }}
     }
 }
