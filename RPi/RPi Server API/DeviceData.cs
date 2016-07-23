@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Text;
 using System.Threading;
 using System.Diagnostics;
+using Windows.UI.Core;
 
 namespace RPi.RPi_Server_API
 {
@@ -18,10 +19,13 @@ namespace RPi.RPi_Server_API
 
         private static volatile CDeviceData m_instance;
         private static object syncRoot = new object();
+
         static DeviceClient deviceClient;
         static string iotHubUri = "smartchair-iothub.azure-devices.net";
         static string deviceKey;
         static string deviceId;
+
+        internal Windows.UI.Xaml.Controls.TextBlock guiDebugging = null;
 
         #endregion
 
@@ -51,9 +55,9 @@ namespace RPi.RPi_Server_API
         #region Properties
 
         /// <summary>
-        /// time to wait in minutes before sending next data-set to Server
+        /// time to wait in seconds before sending next data-set to Server
         /// </summary>
-        public static double frequencyToReport { get; } = 1;
+        public static int frequencyToReport { get; } = 60;
 
         /// <summary>
         /// CDeviceData Singleton class uses double lock methodology,
@@ -98,19 +102,28 @@ namespace RPi.RPi_Server_API
             List<int> pressureList = new List<int>();
             foreach (KeyValuePair<EChairPart, Dictionary<EChairPartArea, int>> part in Data)
             {
-                foreach (KeyValuePair<EChairPartArea, int> partarea in part.Value)
+                foreach (KeyValuePair<EChairPartArea, int> partArea in part.Value)
                 {
-                    pressureList.Add(partarea.Value);
+                    pressureList.Add(partArea.Value);
                 }
             }
 
-            CDataPoint datapoint = new CDataPoint(deviceId, timestamp, pressureList.ToArray());
-            SMessage<CDataPoint> messagestruct = new SMessage<CDataPoint>(EMessageId.RpiServer_Datapoint, datapoint);
-            string messageString = JsonConvert.SerializeObject(messagestruct);
+            CDataPoint dataPoint = new CDataPoint(deviceId, timestamp, pressureList.ToArray());
+            SMessage<CDataPoint> messageStruct = new SMessage<CDataPoint>(EMessageId.RpiServer_Datapoint, dataPoint);
+            string messageString = JsonConvert.SerializeObject(messageStruct);
             Message message = new Message(Encoding.ASCII.GetBytes(messageString));
             await deviceClient.SendEventAsync(message);
 
-            //TODO Michael: for debugging purposes output 'messageString' to app
+            if (guiDebugging != null)
+            {
+                // call dispacher to update gui from another thread:
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    CoreDispatcherPriority.Normal,
+                    () =>
+                    {
+                        guiDebugging.Text += "\n\n" + messageString;
+                    });
+            }
         }
 
         public void Clear()
