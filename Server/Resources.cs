@@ -78,7 +78,7 @@ public enum EChairPartArea
 }
 
 // Struct to communicate through IOT hub with
-public struct SMessage<T>
+public struct Message<T>
 {
     #region Fields
 
@@ -88,7 +88,7 @@ public struct SMessage<T>
     #endregion
 
     #region Constructors
-    public SMessage(EMessageId messageid, T data)
+    public Message(EMessageId messageid, T data)
     {
         this.messageid = messageid;
         this.data = data;
@@ -97,7 +97,7 @@ public struct SMessage<T>
 }
 
 // Basic struct for each datapoint received from hardware
-public class CDataPoint
+public class Datapoint
 {
     #region Fields
 
@@ -108,35 +108,35 @@ public class CDataPoint
     #endregion
 
     #region Constructors
-    public CDataPoint()
+    public Datapoint()
     {
         this.deviceId = "";
         this.datetime = DateTime.Now;
         this.pressure = new int[0];
     }
 
-    public CDataPoint(int numOfSensors)
+    public Datapoint(int numOfSensors)
     {
         this.deviceId = "";
         this.datetime = DateTime.Now;
         this.pressure = new int[numOfSensors];
     }
 
-    public CDataPoint(int numOfSensors, int initValue)
+    public Datapoint(int numOfSensors, int initValue)
         :this(numOfSensors)
     {
         for (int i = 0; i < numOfSensors; i++)
             pressure[i] = initValue;
     }
 
-    public CDataPoint(string deviceId, DateTime datetime, int[] pressure)
+    public Datapoint(string deviceId, DateTime datetime, int[] pressure)
     {
         this.deviceId = deviceId;
         this.datetime = datetime;
         this.pressure = pressure;
     }
 
-    public CDataPoint(List<object> rawDataPoint)
+    public Datapoint(List<object> rawDataPoint)
     {
         this.deviceId = "";
         this.datetime = DateTime.Parse((string)rawDataPoint[0]);
@@ -146,7 +146,7 @@ public class CDataPoint
 }
 
 // Stores clientId and bool whether to send data realtime
-public class CClient
+public class ClientProperties
 {
     #region Fields
 
@@ -157,20 +157,20 @@ public class CClient
     #endregion
 
     #region Constructors
-    public CClient()
+    public ClientProperties()
     {
         this.clientId = "";
         this.deviceId = "";
         this.bReceiveRealTime = false;
     }
-    public CClient(string clientId, string deviceId)
+    public ClientProperties(string clientId, string deviceId)
     {
         this.clientId = clientId;
         this.deviceId = deviceId;
         this.bReceiveRealTime = false;
     }
 
-    public CClient(string clientId, string deviceId, bool sendRealTime)
+    public ClientProperties(string clientId, string deviceId, bool sendRealTime)
     {
         this.clientId = clientId;
         this.deviceId = deviceId;
@@ -180,7 +180,7 @@ public class CClient
 }
 
 // Stores clientId and bool whether to send data realtime
-public class CLogLimits
+public class LogBounds
 {
     #region Fields
 
@@ -191,13 +191,13 @@ public class CLogLimits
     #endregion
 
     #region Constructors
-    public CLogLimits()
+    public LogBounds()
     {
         this.startdate = DateTime.Today;
         this.enddate = DateTime.Today;
         this.clientId = "";
     }
-    public CLogLimits(DateTime startdate, DateTime enddate, string clientId)
+    public LogBounds(DateTime startdate, DateTime enddate, string clientId)
     {
         this.startdate = startdate;
         this.enddate = enddate;
@@ -206,15 +206,15 @@ public class CLogLimits
     #endregion
 }
 
-public class CMessageConvert
+public class MessageConverter
 {
     #region Fields
-    private static CMessageConvert instance;
+    private static MessageConverter instance;
     private static Type[] messageIdToStructMap;
     #endregion
 
     #region Constructors
-    private CMessageConvert()
+    private MessageConverter()
     {
         messageIdToStructMap = new Type[(int)EMessageId.Length];
         MapMessageIdToStruct();
@@ -222,13 +222,13 @@ public class CMessageConvert
     #endregion
 
     #region Properties
-    public static CMessageConvert Instance
+    public static MessageConverter Instance
     {
         get
         {
             if (instance == null)
             {
-                instance = new CMessageConvert();
+                instance = new MessageConverter();
             }
             return instance;
         }
@@ -238,16 +238,16 @@ public class CMessageConvert
     #region Methods
     private void MapMessageIdToStruct()
     {
-        messageIdToStructMap[(int)EMessageId.RpiServer_Datapoint] = typeof(CDataPoint);
-        messageIdToStructMap[(int)EMessageId.ServerClient_Datapoint] = typeof(CDataPoint);
+        messageIdToStructMap[(int)EMessageId.RpiServer_Datapoint] = typeof(Datapoint);
+        messageIdToStructMap[(int)EMessageId.ServerClient_Datapoint] = typeof(Datapoint);
         messageIdToStructMap[(int)EMessageId.ServerClient_StopInit] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ServerClient_DayData] = typeof(List<List<object>>);
         messageIdToStructMap[(int)EMessageId.ServerClient_fixPosture] = typeof(EPostureErrorType);
         messageIdToStructMap[(int)EMessageId.ClientServer_StartRealtime] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ClientServer_StopRealtime] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ClientServer_StartInit] = typeof(string);
-        messageIdToStructMap[(int)EMessageId.ClientServer_PairDevice] = typeof(CClient);
-        messageIdToStructMap[(int)EMessageId.ClientServer_GetLogs] = typeof(CLogLimits);
+        messageIdToStructMap[(int)EMessageId.ClientServer_PairDevice] = typeof(ClientProperties);
+        messageIdToStructMap[(int)EMessageId.ClientServer_GetLogs] = typeof(LogBounds);
     }
 
     public Type getTypeByMessageId(EMessageId messageId)
@@ -255,9 +255,9 @@ public class CMessageConvert
         return messageIdToStructMap[(int)messageId];
     }
 
-    public SMessage<object> decode(string messageString)
+    public Message<object> decode(string messageString)
     {
-        SMessage<object> messageStruct;
+        Message<object> messageStruct;
         try
         {
             messageStruct = deserializeMessageTry(messageString);
@@ -270,9 +270,9 @@ public class CMessageConvert
         return messageStruct;
     }
 
-    private SMessage<object> deserializeMessageTry(string messageString)
+    private Message<object> deserializeMessageTry(string messageString)
     {
-        SMessage<object> messageStruct = JsonConvert.DeserializeObject<SMessage<object>>(messageString);
+        Message<object> messageStruct = JsonConvert.DeserializeObject<Message<object>>(messageString);
         Type typeToDeserialize = getTypeByMessageId(messageStruct.messageid);
         try
         {
@@ -285,28 +285,28 @@ public class CMessageConvert
         return messageStruct;
     }
 
-    private SMessage<object> deserializeMessageError(string messageString)
+    private Message<object> deserializeMessageError(string messageString)
     {
-        SMessage<object> messageStruct = new SMessage<object>();
+        Message<object> messageStruct = new Message<object>();
         return messageStruct;
     }
 
     public string encode(EMessageId messageId, object data)
     {
         Type typeToSerialize = getTypeByMessageId(messageId);
-        Type typeOfData = typeof(SMessage<>).MakeGenericType(typeToSerialize);
+        Type typeOfData = typeof(Message<>).MakeGenericType(typeToSerialize);
         object messageStruct = Activator.CreateInstance(typeOfData, messageId, data);
         string messageString = JsonConvert.SerializeObject(messageStruct);
 
         return messageString;
     }
 
-    public List<CDataPoint> convertRawLogsToDatapointsList(List<List<object>> logs)
+    public List<Datapoint> convertRawLogsToDatapointsList(List<List<object>> logs)
     {
-        List<CDataPoint> retList = new List<CDataPoint>();
+        List<Datapoint> retList = new List<Datapoint>();
         foreach (var rawDatapoint in logs)
         {
-            retList.Add(new CDataPoint(rawDatapoint));
+            retList.Add(new Datapoint(rawDatapoint));
         }
 
         return retList;

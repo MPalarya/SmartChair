@@ -16,13 +16,13 @@ namespace RPiSimulator
     class RPiSimulator
     {
         private static CDeviceMessagesSendReceive deviceMessagesSendReceive;
-        private static CMessageConvert messageConvert;
+        private static MessageConverter messageConvert;
 
         static private string deviceId;
 
         static void Main(string[] args)
         {
-            messageConvert = CMessageConvert.Instance;
+            messageConvert = MessageConverter.Instance;
             deviceMessagesSendReceive = new CDeviceMessagesSendReceive();
             deviceId = deviceMessagesSendReceive.getDeviceId();
 
@@ -46,8 +46,8 @@ namespace RPiSimulator
                     currPressure[i] = Math.Min(currPressure[i], 100);
                 }
 
-                CDataPoint datapoint = new CDataPoint(deviceId, DateTime.Now, currPressure);
-                SMessage<CDataPoint> messagestruct = new SMessage<CDataPoint>(EMessageId.RpiServer_Datapoint, datapoint);
+                Datapoint datapoint = new Datapoint(deviceId, DateTime.Now, currPressure);
+                Message<Datapoint> messagestruct = new Message<Datapoint>(EMessageId.RpiServer_Datapoint, datapoint);
                 string messageString = JsonConvert.SerializeObject(messagestruct);
 
                 Console.WriteLine("Sending message: {0}", messageString);

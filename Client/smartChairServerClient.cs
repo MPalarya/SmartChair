@@ -15,23 +15,23 @@ namespace Client
         private static string deviceId = "00326-10000-00000-AA340";
         private static string RPiId = "00326-10000-00000-AA800"; //orr's computer
         private static string iotHubUri = "smartchair-iothub.azure-devices.net";
-        private CMessageConvert messageConvert;
+        private MessageConverter messageConvert;
         private CDeviceMessagesSendReceive deviceMessagesSendReceive;
 
         public smartChairServerClient()
         {
-            messageConvert = CMessageConvert.Instance;
+            messageConvert = MessageConverter.Instance;
             deviceMessagesSendReceive = new CDeviceMessagesSendReceive(deviceId, deviceKey);
             deviceMessagesSendReceive.receiveMessages(handleMessagesReceivedFromServer);
         }
 
         private void handleMessagesReceivedFromServer(string messageString)
         {
-            SMessage<object> messageStruct = messageConvert.decode(messageString);
+            Message<object> messageStruct = messageConvert.decode(messageString);
             switch (messageStruct.messageid)
             {
                 case EMessageId.ServerClient_Datapoint:
-                    CDataPoint datapoint = (CDataPoint)messageStruct.data;
+                    Datapoint datapoint = (Datapoint)messageStruct.data;
                     handleRealtimeDatapoint(datapoint);
                     break;
 
@@ -51,14 +51,14 @@ namespace Client
             }
         }
 
-        private void handleRealtimeDatapoint(CDataPoint datapoint)
+        private void handleRealtimeDatapoint(Datapoint datapoint)
         {
             // TODO Sivan: display data point in real time screen
         }
 
         private void handleReceiveDataLogs(List<List<object>> rawLogs)
         {
-            List<CDataPoint> logs = messageConvert.convertRawLogsToDatapointsList(rawLogs);
+            List<Datapoint> logs = messageConvert.convertRawLogsToDatapointsList(rawLogs);
             // TODO Sivan: display logs received
         }
 
@@ -74,17 +74,17 @@ namespace Client
 
         public void getLogsByDateTimeBounds(DateTime startdate, DateTime enddate)
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new CLogLimits(startdate, enddate, deviceId)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new LogBounds(startdate, enddate, deviceId)));
         }
 
         public void pairWithDevice(string deviceIdtoPairWith)
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new CClient(deviceId, deviceIdtoPairWith)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, deviceIdtoPairWith)));
         }
 
         public void pairWithOrrsDeviceTest()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new CClient(deviceId, RPiId)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, RPiId)));
         }
 
         public void startCollectingInitData()
