@@ -79,12 +79,12 @@ namespace Client
 
         public void pairWithDevice(string deviceIdtoPairWith)
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, deviceIdtoPairWith)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new CClient(deviceId, deviceIdtoPairWith)));
         }
 
         public void pairWithOrrsDeviceTest()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, RPiId)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new CClient(deviceId, RPiId)));
         }
 
         public void startCollectingInitData()

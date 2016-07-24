@@ -19,7 +19,7 @@ public enum EMessageId
     ClientServer_StartRealtime,
     ClientServer_StopRealtime,
     ClientServer_StartInit,
-    ClientServer_ConnectDevice,
+    ClientServer_PairDevice,
     ClientServer_GetLogs,
 
     Length
@@ -246,7 +246,7 @@ public class CMessageConvert
         messageIdToStructMap[(int)EMessageId.ClientServer_StartRealtime] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ClientServer_StopRealtime] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ClientServer_StartInit] = typeof(string);
-        messageIdToStructMap[(int)EMessageId.ClientServer_ConnectDevice] = typeof(CClient);
+        messageIdToStructMap[(int)EMessageId.ClientServer_PairDevice] = typeof(CClient);
         messageIdToStructMap[(int)EMessageId.ClientServer_GetLogs] = typeof(CLogLimits);
     }
 
@@ -280,7 +280,6 @@ public class CMessageConvert
         }
         catch (JsonReaderException)
         {
-            //Console.WriteLine("Error parsing message data: {0}. If this is a string there is no error.", messageStruct.data.ToString());
         }
 
         return messageStruct;
@@ -289,7 +288,6 @@ public class CMessageConvert
     private SMessage<object> deserializeMessageError(string messageString)
     {
         SMessage<object> messageStruct = new SMessage<object>();
-        //Console.WriteLine("Error parsing message: {0}", messageString);
         return messageStruct;
     }
 

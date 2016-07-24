@@ -15,11 +15,14 @@ namespace RPiSimulator
 {
     class RPiSimulator
     {
-        static private CDeviceMessagesSendReceive deviceMessagesSendReceive;
+        private static CDeviceMessagesSendReceive deviceMessagesSendReceive;
+        private static CMessageConvert messageConvert;
+
         static private string deviceId;
 
         static void Main(string[] args)
         {
+            messageConvert = CMessageConvert.Instance;
             deviceMessagesSendReceive = new CDeviceMessagesSendReceive();
             deviceId = deviceMessagesSendReceive.getDeviceId();
 
@@ -46,6 +49,8 @@ namespace RPiSimulator
                 CDataPoint datapoint = new CDataPoint(deviceId, DateTime.Now, currPressure);
                 SMessage<CDataPoint> messagestruct = new SMessage<CDataPoint>(EMessageId.RpiServer_Datapoint, datapoint);
                 string messageString = JsonConvert.SerializeObject(messagestruct);
+
+                Console.WriteLine("Sending message: {0}", messageString);
                 deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
 
                 Thread.Sleep(1000);
@@ -125,9 +130,7 @@ namespace RPiSimulator
         public async void sendMessageToServerAsync(string messageString)
         {
             Microsoft.Azure.Devices.Client.Message message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));
-            Console.WriteLine("Sending message: {0}", messageString);
             await deviceClient.SendEventAsync(message);
-            Console.WriteLine("Completed");
         }
 
         public string getDeviceId()

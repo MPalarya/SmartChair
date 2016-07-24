@@ -51,7 +51,7 @@ namespace ClientSimulator
                 }
                 else if (line[0] == '%')
                 {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, line.Substring(1, line.Length - 1))));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new CClient(deviceId, line.Substring(1, line.Length - 1))));
                 }
                 else if (line[0] == '<')
                 {
