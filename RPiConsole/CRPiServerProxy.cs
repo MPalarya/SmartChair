@@ -1,75 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Client;
-using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Common.Exceptions;
 using Newtonsoft.Json;
-using System.Diagnostics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Management;
+using System.Text;
+using System.Threading.Tasks;
 
-// id = 00326-10000-00000-AA800
-
-namespace ClientSimulator
+namespace RPiConsole
 {
-    class ClientSimulator
+    public class CRPiServerProxy : IRPiServerProxy
     {
-        static private MessageConverter messageConvert;
-        static private CDeviceMessagesSendReceive deviceMessagesSendReceive;
+        #region Fields
+        private static CRPiServerProxy instance;
+        private static DeviceMessagesSendReceive deviceMessagesSendReceive;
+        private static MessageConverter messageConvert;
+        #endregion
 
-        static void Main(string[] args)
+        #region Constructors
+        private CRPiServerProxy()
         {
             messageConvert = MessageConverter.Instance;
-            deviceMessagesSendReceive = new CDeviceMessagesSendReceive(printMessage);
-            string deviceId = deviceMessagesSendReceive.getDeviceId();
+            deviceMessagesSendReceive = new DeviceMessagesSendReceive();
+        }
+        #endregion
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Receiving cloud to device messages from service\n");
-
-            deviceMessagesSendReceive.receiveMessages();
-
-            string line;
-            while(true)
+        #region Properties
+        public static CRPiServerProxy Instance
+        {
+            get
             {
-                line = Console.ReadLine();
-                if (line[0] == '!')
-                    continue;
-
-                if (line == "start")
+                if (instance == null)
                 {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StartRealtime, deviceId));
+                    instance = new CRPiServerProxy();
                 }
-                else if (line == "stop")
-                {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StopRealtime, deviceId));
-                }
-                else if (line == "init")
-                {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StartInit, deviceId));
-                }
-                else if (line[0] == '%')
-                {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, line.Substring(1, line.Length - 1))));
-                }
-                else if (line[0] == '<')
-                {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new LogBounds(new DateTime(2016, 07, 11), new DateTime(2016, 07, 12), deviceId)));
-                }
+                return instance;
             }
         }
+        #endregion
 
-        public static void printMessage(string messageString)
+        #region Methods
+        public void RPiServer_newDataSample(DateTime datetime, int[] pressure)
         {
-            Message<object> messageStruct;
-            messageStruct = JsonConvert.DeserializeObject<Message<object>>(messageString);
-            Console.WriteLine("!Received message {0}, data = {1}", messageStruct.messageid, messageStruct.data);
+            Datapoint datapoint = new Datapoint(deviceMessagesSendReceive.getDeviceId(), datetime, pressure);
+            Message<Datapoint> messagestruct = new Message<Datapoint>(EMessageId.RpiServer_Datapoint, datapoint);
+            string messageString = JsonConvert.SerializeObject(messagestruct);
+
+            Console.WriteLine("Sending message: {0}", messageString);
+            deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
         }
+        #endregion
     }
 
-
-    public class CDeviceMessagesSendReceive
+    public class DeviceMessagesSendReceive
     {
         #region Fields
         private static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
@@ -83,9 +68,8 @@ namespace ClientSimulator
 
         #region Constuctors
 
-        public CDeviceMessagesSendReceive(Action<string> callbackOnReceiveMessage)
+        public DeviceMessagesSendReceive()
         {
-            this.callbackOnReceiveMessage = callbackOnReceiveMessage;
             registryManager = RegistryManager.CreateFromConnectionString(connectionString);
             addOrGetDeviceAsync().Wait();
             deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
@@ -93,7 +77,7 @@ namespace ClientSimulator
 
         #endregion
 
-         #region Methods
+        #region Methods
 
         private async Task addOrGetDeviceAsync()
         {
@@ -119,8 +103,9 @@ namespace ClientSimulator
             return serial;
         }
 
-        public void receiveMessages()
+        public void receiveMessages(Action<string> callbackOnReceiveMessage)
         {
+            this.callbackOnReceiveMessage = callbackOnReceiveMessage;
             receiveMessagesAsync();
         }
 
@@ -141,9 +126,7 @@ namespace ClientSimulator
         public async void sendMessageToServerAsync(string messageString)
         {
             Microsoft.Azure.Devices.Client.Message message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));
-            Console.WriteLine("Sending message: {0}", messageString);
             await deviceClient.SendEventAsync(message);
-            Console.WriteLine("Completed");
         }
 
         public string getDeviceId()

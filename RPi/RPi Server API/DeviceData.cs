@@ -108,8 +108,8 @@ namespace RPi.RPi_Server_API
                 }
             }
 
-            CDataPoint dataPoint = new CDataPoint(deviceId, timestamp, pressureList.ToArray());
-            SMessage<CDataPoint> messageStruct = new SMessage<CDataPoint>(EMessageId.RpiServer_Datapoint, dataPoint);
+            Datapoint dataPoint = new Datapoint(deviceId, timestamp, pressureList.ToArray());
+            Message<Datapoint> messageStruct = new Message<Datapoint>(EMessageId.RpiServer_Datapoint, dataPoint);
             string messageString = JsonConvert.SerializeObject(messageStruct);
             Message message = new Message(Encoding.ASCII.GetBytes(messageString));
             await deviceClient.SendEventAsync(message);
