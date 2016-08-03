@@ -1,4 +1,4 @@
-﻿using RPi.RPi_Hardware;
+﻿using RPi2.RPi_Hardware;
 using System;
 using System.Collections.Generic;
 using Microsoft.Azure.Devices.Client;
@@ -9,7 +9,7 @@ using System.Diagnostics;
 using Windows.UI.Core;
 //using Windows.System.
 
-namespace RPi.RPi_Server_API
+namespace RPi2.RPi_Server_API
 {
     /// <summary>
     /// CDeviceData is a Singleton. use CDeviceData.Instace.
