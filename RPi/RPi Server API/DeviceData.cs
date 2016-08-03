@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Diagnostics;
 using Windows.UI.Core;
+//using Windows.System.
 
 namespace RPi.RPi_Server_API
 {
@@ -19,11 +20,23 @@ namespace RPi.RPi_Server_API
 
         private static volatile CDeviceData m_instance;
         private static object syncRoot = new object();
+        private static DeviceClient m_client = null;
 
-        static DeviceClient deviceClient;
-        static string iotHubUri = "smartchair-iothub.azure-devices.net";
-        static string deviceKey;
-        static string deviceId;
+        private static readonly string iotHubUri = "smartchair-iothub.azure-devices.net";
+        private static readonly string deviceId = "SmartChair01";
+        private static readonly string deviceKey = "Sgerz/a7KV2M8/kJ+As5XH5u/o9fJtIIuDsQZYpLsGU=";
+
+        public static DeviceClient Client
+        {
+            get
+            {
+                if (m_client == null)
+                {
+                    m_client = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
+                }
+                return m_client;
+            }
+        }
 
         internal Windows.UI.Xaml.Controls.TextBlock guiDebugging = null;
 
@@ -33,21 +46,7 @@ namespace RPi.RPi_Server_API
 
         private CDeviceData()
         {
-            // TODO Michael: the code in this function needs to run in main and pass the deviceKey and deviceId to this class
-            /*
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.FileName = "..\\..\\..\\GetDeviceIdentity\\bin\\Release\\GetDeviceIdentity.exe";
-            p.Start();
-
-            string[] deviceData = p.StandardOutput.ReadLine().Split();
-            p.Close();
-            deviceKey = deviceData[0];
-            deviceId = deviceData[1];
-
-            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
-            */
+            
         }
 
         #endregion
@@ -112,7 +111,7 @@ namespace RPi.RPi_Server_API
             Message<Datapoint> messageStruct = new Message<Datapoint>(EMessageId.RpiServer_Datapoint, dataPoint);
             string messageString = JsonConvert.SerializeObject(messageStruct);
             Message message = new Message(Encoding.ASCII.GetBytes(messageString));
-            await deviceClient.SendEventAsync(message);
+            await Client.SendEventAsync(message);
 
             if (guiDebugging != null)
             {
