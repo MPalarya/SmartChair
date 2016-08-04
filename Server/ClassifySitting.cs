@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace Server
 {
-
     public sealed class ClassifySitting
     {
         #region Fields
 
         private static ChairPartConverter chairPartConverter = ChairPartConverter.Instance;
-        private static double CORRECT_RATIO_THRESHOLD = 0.4; // = 10%
+        private static double CORRECT_RATIO_THRESHOLD = 0.4; // = 40%
 
         private double[] normalizedInitMultipliers;
 
@@ -94,6 +93,10 @@ namespace Server
 
             switch (errorType)
             {
+                case EPostureErrorType.Correct:
+                case EPostureErrorType.CannotAnalyzeData:
+                    return EPostureErrorType.Correct;
+
                 case EPostureErrorType.HighPressureLeftBack:
                     highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftMid);
                     lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.RightMid);

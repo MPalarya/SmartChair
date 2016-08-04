@@ -355,12 +355,10 @@ public class ChairPartConverter
 
         mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.LeftMid, 0);
         mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.RightMid, 1);
-        mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.LeftFront, 2);
-        mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.RightFront, 3);
-        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.LeftMid, 4);
-        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.RightMid, 5);
-        mapChairPartToIndex[EChairPart.Handles].Add(EChairPartArea.LeftMid, 6);
-        mapChairPartToIndex[EChairPart.Handles].Add(EChairPartArea.RightMid, 7);
+        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.LeftMid, 2);
+        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.RightMid, 3);
+        mapChairPartToIndex[EChairPart.Handles].Add(EChairPartArea.LeftMid, 4);
+        mapChairPartToIndex[EChairPart.Handles].Add(EChairPartArea.RightMid, 5);
     }
 
     public int getIndexByChairPart(EChairPart chairPart, EChairPartArea chairPartArea)
