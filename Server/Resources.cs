@@ -316,10 +316,73 @@ public class MessageConverter
     #endregion
 }
 
-public class CDeviceMessagesSendReceive
+public class ChairPartConverter
 {
     #region Fields
-    private static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
+    private static ChairPartConverter instance;
+    private static Dictionary<EChairPart, Dictionary<EChairPartArea, int>> mapChairPartToIndex;
+    #endregion
+
+    #region Constructors
+    private ChairPartConverter()
+    {
+        mapChairPartToIndex = new Dictionary<EChairPart, Dictionary<EChairPartArea, int>>();
+        MapChairPartToIndex();
+    }
+    #endregion
+
+    #region Properties
+    public static ChairPartConverter Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new ChairPartConverter();
+            }
+            return instance;
+        }
+    }
+    #endregion
+
+    #region Methods
+    private void MapChairPartToIndex()
+    {
+        mapChairPartToIndex.Add(EChairPart.Back, new Dictionary<EChairPartArea, int>());
+        mapChairPartToIndex.Add(EChairPart.Handles, new Dictionary<EChairPartArea, int>());
+        mapChairPartToIndex.Add(EChairPart.Seat, new Dictionary<EChairPartArea, int>());
+
+        mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.LeftMid, 0);
+        mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.RightMid, 1);
+        mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.LeftFront, 2);
+        mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.RightFront, 3);
+        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.LeftMid, 4);
+        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.RightMid, 5);
+        mapChairPartToIndex[EChairPart.Handles].Add(EChairPartArea.LeftMid, 6);
+        mapChairPartToIndex[EChairPart.Handles].Add(EChairPartArea.RightMid, 7);
+    }
+
+    public int getIndexByChairPart(EChairPart chairPart, EChairPartArea chairPartArea)
+    {
+        Dictionary<EChairPartArea, int> chairPartAreaDict;
+        if (mapChairPartToIndex.TryGetValue(chairPart, out chairPartAreaDict))
+        {
+            int index;
+            if (chairPartAreaDict.TryGetValue(chairPartArea, out index))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    #endregion
+}
+
+public class DeviceMessagesSendReceive
+{
+    #region Fields
     private static string iotHubUri = "smartchair-iothub.azure-devices.net";
     private string deviceKey;
     private string deviceId;
@@ -329,7 +392,7 @@ public class CDeviceMessagesSendReceive
 
     #region Constuctors
 
-    public CDeviceMessagesSendReceive(string deviceId, string deviceKey)
+    public DeviceMessagesSendReceive(string deviceId, string deviceKey)
     {
         this.deviceId = deviceId;
         this.deviceKey = deviceKey;

@@ -20,7 +20,7 @@ namespace RPi2.RPi_Server_API
         private static volatile CDeviceData m_instance;
         private static object syncRoot = new object();
         private MessageConverter messageConvert;
-        private CDeviceMessagesSendReceive deviceMessagesSendReceive;
+        private DeviceMessagesSendReceive deviceMessagesSendReceive;
 
         private static readonly string deviceId = "SmartChair01";
         private static readonly string deviceKey = "Sgerz/a7KV2M8/kJ+As5XH5u/o9fJtIIuDsQZYpLsGU=";
@@ -34,7 +34,7 @@ namespace RPi2.RPi_Server_API
         private CDeviceData()
         {
             messageConvert = MessageConverter.Instance;
-            deviceMessagesSendReceive = new CDeviceMessagesSendReceive(deviceId, deviceKey);
+            deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
         }
 
         #endregion
