@@ -1,4 +1,4 @@
-﻿using RPi.RPi_Hardware;
+﻿using RPi2.RPi_Hardware;
 using System;
 using System.Collections.Generic;
 using Microsoft.Azure.Devices.Client;
@@ -6,8 +6,9 @@ using Newtonsoft.Json;
 using System.Text;
 using System.Threading;
 using System.Diagnostics;
+using Windows.UI.Core;
 
-namespace RPi.RPi_Server_API
+namespace RPi2.RPi_Server_API
 {
     /// <summary>
     /// CDeviceData is a Singleton. use CDeviceData.Instace.
@@ -15,13 +16,16 @@ namespace RPi.RPi_Server_API
     public sealed class CDeviceData
     {
         #region Fields
-
+        
         private static volatile CDeviceData m_instance;
         private static object syncRoot = new object();
-        static DeviceClient deviceClient;
-        static string iotHubUri = "smartchair-iothub.azure-devices.net";
-        static string deviceKey;
-        static string deviceId;
+        private MessageConverter messageConvert;
+        private DeviceMessagesSendReceive deviceMessagesSendReceive;
+
+        private static readonly string deviceId = "SmartChair01";
+        private static readonly string deviceKey = "Sgerz/a7KV2M8/kJ+As5XH5u/o9fJtIIuDsQZYpLsGU=";
+
+        internal Windows.UI.Xaml.Controls.TextBlock guiDebugging = null;
 
         #endregion
 
@@ -29,21 +33,8 @@ namespace RPi.RPi_Server_API
 
         private CDeviceData()
         {
-            // TODO Michael: the code in this function needs to run in main and pass the deviceKey and deviceId to this class
-            /*
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.FileName = "..\\..\\..\\GetDeviceIdentity\\bin\\Release\\GetDeviceIdentity.exe";
-            p.Start();
-
-            string[] deviceData = p.StandardOutput.ReadLine().Split();
-            p.Close();
-            deviceKey = deviceData[0];
-            deviceId = deviceData[1];
-
-            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
-            */
+            messageConvert = MessageConverter.Instance;
+            deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
         }
 
         #endregion
@@ -51,9 +42,9 @@ namespace RPi.RPi_Server_API
         #region Properties
 
         /// <summary>
-        /// time to wait in minutes before sending next data-set to Server
+        /// time to wait in seconds before sending next data-set to Server
         /// </summary>
-        public static double frequencyToReport { get; } = 1;
+        public static int frequencyToReport { get; } = 60;
 
         /// <summary>
         /// CDeviceData Singleton class uses double lock methodology,
@@ -93,24 +84,48 @@ namespace RPi.RPi_Server_API
         /// RPi sends data to Azure server, including device id, a list of normalized measurements and an end of sample timestamp
         /// keeps sending until returned success
         /// </summary>
-        public async void RPiServer_newDataSample(System.DateTime timestamp)
+        public void RPiServer_newDataSample(System.DateTime timestamp)
         {
-            List<int> pressureList = new List<int>();
-            foreach (KeyValuePair<EChairPart, Dictionary<EChairPartArea, int>> part in Data)
+            string messageString = createMessageStringFromData(timestamp);
+            deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
+            reportMessageSent(messageString);
+        }
+
+        private string createMessageStringFromData(DateTime timestamp)
+        {
+            int[] pressureArr = aggregateDataToArray();
+            Datapoint dataPoint = new Datapoint(deviceId, timestamp, pressureArr);
+            string messageString = messageConvert.encode(EMessageId.RpiServer_Datapoint, dataPoint);
+
+            return messageString;
+        }
+
+        private int[] aggregateDataToArray()
+        {
+            List<int> sensorDataList = new List<int>();
+            foreach (var chairPart in Data)
             {
-                foreach (KeyValuePair<EChairPartArea, int> partarea in part.Value)
+                foreach (var partArea in chairPart.Value)
                 {
-                    pressureList.Add(partarea.Value);
+                    sensorDataList.Add(partArea.Value);
                 }
             }
 
-            CDataPoint datapoint = new CDataPoint(deviceId, timestamp, pressureList.ToArray());
-            SMessage<CDataPoint> messagestruct = new SMessage<CDataPoint>(EMessageId.RpiServer_Datapoint, datapoint);
-            string messageString = JsonConvert.SerializeObject(messagestruct);
-            Message message = new Message(Encoding.ASCII.GetBytes(messageString));
-            await deviceClient.SendEventAsync(message);
+            return sensorDataList.ToArray();
+        }
 
-            //TODO Michael: for debugging purposes output 'messageString' to app
+        private async void reportMessageSent(string messageString)
+        {
+            if (guiDebugging != null)
+            {
+                // call dispacher to update gui from another thread:
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    CoreDispatcherPriority.Normal,
+                    () =>
+                    {
+                        guiDebugging.Text += "\n\n" + messageString;
+                    });
+            }
         }
 
         public void Clear()

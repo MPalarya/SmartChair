@@ -16,19 +16,22 @@ namespace ClientSimulator
 {
     class ClientSimulator
     {
-        static private CMessageConvert messageConvert;
-        static private CDeviceMessagesSendReceive deviceMessagesSendReceive;
+        static private MessageConverter messageConvert;
+        static private DeviceMessagesSendReceive deviceMessagesSendReceive;
+        static private CreateDevice createDevice;
 
         static void Main(string[] args)
         {
-            messageConvert = CMessageConvert.Instance;
-            deviceMessagesSendReceive = new CDeviceMessagesSendReceive(printMessage);
-            string deviceId = deviceMessagesSendReceive.getDeviceId();
+            messageConvert = MessageConverter.Instance;
+            createDevice = new CreateDevice();
+            string deviceId = createDevice.getDeviceId();
+            string deviceKey = createDevice.getDeviceKey();
+            deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Receiving cloud to device messages from service\n");
 
-            deviceMessagesSendReceive.receiveMessages();
+            deviceMessagesSendReceive.receiveMessages(printMessage);
 
             string line;
             while(true)
@@ -51,44 +54,39 @@ namespace ClientSimulator
                 }
                 else if (line[0] == '%')
                 {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, line.Substring(1, line.Length - 1))));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, line.Substring(1, line.Length - 1).Trim())));
                 }
                 else if (line[0] == '<')
                 {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new CLogLimits(new DateTime(2016, 07, 11), new DateTime(2016, 07, 12), deviceId)));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new LogBounds(new DateTime(2016, 07, 11), new DateTime(2016, 07, 12), deviceId)));
                 }
             }
         }
 
         public static void printMessage(string messageString)
         {
-            SMessage<object> messageStruct;
-            messageStruct = JsonConvert.DeserializeObject<SMessage<object>>(messageString);
+            Message<object> messageStruct;
+            messageStruct = JsonConvert.DeserializeObject<Message<object>>(messageString);
             Console.WriteLine("!Received message {0}, data = {1}", messageStruct.messageid, messageStruct.data);
         }
     }
 
 
-    public class CDeviceMessagesSendReceive
+    public class CreateDevice
     {
         #region Fields
         private static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
-        private static string iotHubUri = "smartchair-iothub.azure-devices.net";
         private string deviceKey;
         private string deviceId;
-        private DeviceClient deviceClient;
         private RegistryManager registryManager;
-        private Action<string> callbackOnReceiveMessage;
         #endregion Fields
 
         #region Constuctors
 
-        public CDeviceMessagesSendReceive(Action<string> callbackOnReceiveMessage)
+        public CreateDevice()
         {
-            this.callbackOnReceiveMessage = callbackOnReceiveMessage;
             registryManager = RegistryManager.CreateFromConnectionString(connectionString);
             addOrGetDeviceAsync().Wait();
-            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
         }
 
         #endregion
@@ -119,36 +117,14 @@ namespace ClientSimulator
             return serial;
         }
 
-        public void receiveMessages()
-        {
-            receiveMessagesAsync();
-        }
-
-        private async void receiveMessagesAsync()
-        {
-            string messageString;
-
-            while (true)
-            {
-                Microsoft.Azure.Devices.Client.Message receivedMessage = await deviceClient.ReceiveAsync();
-                if (receivedMessage == null) continue;
-                messageString = Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString();
-                callbackOnReceiveMessage(messageString);
-                await deviceClient.CompleteAsync(receivedMessage);
-            }
-        }
-
-        public async void sendMessageToServerAsync(string messageString)
-        {
-            Microsoft.Azure.Devices.Client.Message message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));
-            Console.WriteLine("Sending message: {0}", messageString);
-            await deviceClient.SendEventAsync(message);
-            Console.WriteLine("Completed");
-        }
-
         public string getDeviceId()
         {
             return deviceId;
+        }
+
+        public string getDeviceKey()
+        {
+            return deviceKey;
         }
 
         #endregion

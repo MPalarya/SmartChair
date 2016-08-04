@@ -1,10 +1,11 @@
-﻿using RPi.RPi_Hardware;
+﻿using RPi2.RPi_Hardware;
+using RPi2.RPi_Server_API;
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace RPi
+namespace RPi2
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -21,6 +22,8 @@ namespace RPi
 
         private List<double> m_weightsBigSensor2 = new List<double>();
         private List<double> m_voltagesBigSensor2 = new List<double>();
+
+        private DispatcherTimer m_dispatcherTimer;
 
         #endregion
 
@@ -49,6 +52,13 @@ namespace RPi
             myChair.Sensors[EChairPart.Seat] = myChair.Seat;
             myChair.Sensors[EChairPart.Back] = myChair.Back;
             myChair.Sensors[EChairPart.Handles] = myChair.Handles;
+
+            CDeviceData.Instance.guiDebugging = textReadAll;
+
+            m_dispatcherTimer = new DispatcherTimer();
+            m_dispatcherTimer.Tick += ReadAllTick;
+            m_dispatcherTimer.Interval = new TimeSpan(0, 0, CDeviceData.frequencyToReport);
+            m_dispatcherTimer.Start();
         }
 
         private void buttonRead1_Click(object sender, RoutedEventArgs e)
@@ -65,11 +75,10 @@ namespace RPi
 
         private void buttonReadAll_Click(object sender, RoutedEventArgs e)
         {
-            DispatcherTimer dispatcherTimer = new DispatcherTimer();
-
-            dispatcherTimer.Tick += ReadAllTick;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
-            dispatcherTimer.Start();
+            if (m_dispatcherTimer.IsEnabled)
+                m_dispatcherTimer.Stop();
+            else
+                m_dispatcherTimer.Start();
         }
 
         private void ReadAllTick(object sender, object e)

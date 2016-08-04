@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Spi;
 
-namespace RPi.RPi_Hardware
+namespace RPi2.RPi_Hardware
 {
     /// <summary>
     /// type of the FSR used defines the maximum load and way of calibration
@@ -82,7 +82,7 @@ namespace RPi.RPi_Hardware
         /// <para> (besides the weight of the system and physical deviations).                                      </para>
         /// <para> value is in kilograms - calculated in calibration proccess after the system is fully assembled.  </para>
         /// </summary>
-        private double MinLoadSystem { get; set; } = -1;
+        private double MinLoadSystem { get; set; } = 0;
 
         /// <summary>
         /// <para> min load is the effectice zero (adjusted to a specific user),                       </para>
@@ -90,20 +90,14 @@ namespace RPi.RPi_Hardware
         /// <para> compensates the asymmetricity of the user interation with the chair.                </para>
         /// <para> value is in kilograms - calculated in guided user calibration (using the Client).   </para>
         /// </summary>
-        private double MinLoadUser { get; set; } = -1;
+        private double MinLoadUser { get; set; } = 0; // set to 0 - implemented in server
 
         /// <summary>
         /// MinLoad is the considering both System imperfection and user's asymmetric use.
         /// </summary>
         public double MinLoad
         {
-            get
-            {
-                if (MinLoadUser >= 0)
-                    return MinLoadUser + MinLoadSystem;
-
-                return MinLoadSystem; // will return -1 to indicate lake of calibration
-            }
+            get { return MinLoadUser + MinLoadSystem; }
         }
 
         /// <summary>
@@ -162,9 +156,9 @@ namespace RPi.RPi_Hardware
         /// </summary>
         public int ReadKG()
         {
-            return (int) (Read() * Coefficient / 1000);
+            return (int)(Read() * Coefficient / 1000);
         }
-        
+
 
         /// <summary>
         /// return Sensor's averaged read value over several measures
@@ -248,7 +242,7 @@ namespace RPi.RPi_Hardware
                 IsWorking = false;
             }
             //XmlSerializer serializer = new XmlSerializer(typeof(CSensor));
-            
+
             //serializer.Serialize(new Writ
         }
 
@@ -266,13 +260,13 @@ namespace RPi.RPi_Hardware
         /// <summary>
         /// assumes user is sitted correctly (guided). sets MinLoadUser.
         /// </summary>
-        public static void CalibrateUser()
-        {
-            foreach (CSensor sensor in m_sensorList)
-            {
-                sensor.MinLoadUser = sensor.Read();
-            }
-        }
+        //public static void CalibrateUser()
+        //{
+        //    foreach (CSensor sensor in m_sensorList)
+        //    {
+        //        sensor.MinLoadUser = sensor.Read();
+        //    }
+        //} // implemented in server
 
         /// <summary>
         /// Fits a line to a collection of (x,y) points.

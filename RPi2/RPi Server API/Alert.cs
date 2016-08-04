@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RPi.RPi_Server_API
+namespace RPi2.RPi_Server_API
 {
     public enum EAlertMsg
     {

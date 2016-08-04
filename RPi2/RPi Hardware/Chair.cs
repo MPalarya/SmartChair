@@ -1,8 +1,8 @@
-﻿using RPi.RPi_Server_API;
+﻿using RPi2.RPi_Server_API;
 using System;
 using System.Collections.Generic;
 
-namespace RPi.RPi_Hardware
+namespace RPi2.RPi_Hardware
 {
     /// <summary>
     /// the chair holds record of sensors distribution on the surface of its different parts

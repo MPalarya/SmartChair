@@ -14,9 +14,8 @@ namespace Client
         private static string deviceKey = "Pz5l6+AVMj877mvG3/qqRThVutch4XrdnOjugMh5i+g=";
         private static string deviceId = "00326-10000-00000-AA340";
         private static string RPiId = "00326-10000-00000-AA800"; //orr's computer
-        private static string iotHubUri = "smartchair-iothub.azure-devices.net";
-        private CMessageConvert messageConvert;
-        private CDeviceMessagesSendReceive deviceMessagesSendReceive;
+        private MessageConverter messageConvert;
+        private DeviceMessagesSendReceive deviceMessagesSendReceive;
 
         public delegate void ChangedEventHandler(object sender, EventArgs e);
         public delegate void PostureErrorEventHandler(object sender, postureErrorTypeEventArgs e);
@@ -25,8 +24,8 @@ namespace Client
 
         public smartChairServerClient()
         {
-            messageConvert = CMessageConvert.Instance;
-            deviceMessagesSendReceive = new CDeviceMessagesSendReceive(deviceId, deviceKey);
+            messageConvert = MessageConverter.Instance;
+            deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
             deviceMessagesSendReceive.receiveMessages(handleMessagesReceivedFromServer);
 
             pairWithOrrsDeviceTest();
@@ -36,11 +35,11 @@ namespace Client
 
         private void handleMessagesReceivedFromServer(string messageString)
         {
-            SMessage<object> messageStruct = messageConvert.decode(messageString);
+            Message<object> messageStruct = messageConvert.decode(messageString);
             switch (messageStruct.messageid)
             {
-                case EMessageId.ServerClient_Datapoint: //delete this case
-                    CDataPoint datapoint = (CDataPoint)messageStruct.data;
+                case EMessageId.ServerClient_Datapoint:
+                    Datapoint datapoint = (Datapoint)messageStruct.data;
                     handleRealtimeDatapoint(datapoint);
                     break;
 
@@ -60,14 +59,14 @@ namespace Client
             }
         }
 
-        private void handleRealtimeDatapoint(CDataPoint datapoint)
+        private void handleRealtimeDatapoint(Datapoint datapoint)
         {
             // TODO Sivan: display data point in real time screen ---not needed
         }
 
         private void handleReceiveDataLogs(List<List<object>> rawLogs)
         {
-            List<CDataPoint> logs = messageConvert.convertRawLogsToDatapointsList(rawLogs);
+            List<Datapoint> logs = messageConvert.convertRawLogsToDatapointsList(rawLogs);
             // TODO Sivan: display logs received
         }
 
@@ -97,17 +96,17 @@ namespace Client
 
         public void getLogsByDateTimeBounds(DateTime startdate, DateTime enddate)
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new CLogLimits(startdate, enddate, deviceId)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new LogBounds(startdate, enddate, deviceId)));
         }
 
         public void pairWithDevice(string deviceIdtoPairWith)
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, deviceIdtoPairWith)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, deviceIdtoPairWith)));
         }
 
         public void pairWithOrrsDeviceTest()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_ConnectDevice, new CClient(deviceId, RPiId)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, RPiId)));
         }
 
         public void startCollectingInitData()
@@ -124,69 +123,6 @@ namespace Client
         {
             deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StopRealtime, deviceId));
         }
-    }
-
-    public class CDeviceMessagesSendReceive
-    {
-        #region Fields
-        private static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
-        private static string iotHubUri = "smartchair-iothub.azure-devices.net";
-        private string deviceKey;
-        private string deviceId;
-        private DeviceClient deviceClient;
-        private Action<string> callbackOnReceiveMessage;
-        #endregion Fields
-
-        #region Constuctors
-
-        public CDeviceMessagesSendReceive(string deviceId, string deviceKey)
-        {
-            this.deviceId = deviceId;
-            this.deviceKey = deviceKey;
-            connectToDeviceClient();
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void connectToDeviceClient()
-        {
-            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
-        }
-
-        public void receiveMessages(Action<string> callbackOnReceiveMessage)
-        {
-            this.callbackOnReceiveMessage = callbackOnReceiveMessage;
-            receiveMessagesAsync();
-        }
-
-        private async void receiveMessagesAsync()
-        {
-            string messageString;
-
-            while (true)
-            {
-                Message receivedMessage = await deviceClient.ReceiveAsync();
-                if (receivedMessage == null) continue;
-                messageString = Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString();
-                callbackOnReceiveMessage(messageString);
-                await deviceClient.CompleteAsync(receivedMessage);
-            }
-        }
-
-        public async void sendMessageToServerAsync(string messageString)
-        {
-            Message message = new Message(Encoding.ASCII.GetBytes(messageString));
-            await deviceClient.SendEventAsync(message);
-        }
-
-        public string getDeviceId()
-        {
-            return deviceId;
-        }
-
-        #endregion
     }
 
     public class postureErrorTypeEventArgs : EventArgs

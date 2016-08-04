@@ -40,10 +40,11 @@ namespace GetDeviceIdentity
 
         private static string OsSerialNumber()
         {
-            ManagementObject o = new ManagementObject("Win32_OperatingSystem=@");
-            string serial = (string)o["SerialNumber"];
+            return "SmartChair01";
+            //ManagementObject o = new ManagementObject("Win32_OperatingSystem=@");
+            //string serial = (string)o["SerialNumber"];
 
-            return serial;
+            //return serial;
         }
     }
 }
