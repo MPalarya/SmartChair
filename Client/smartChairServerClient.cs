@@ -15,12 +15,12 @@ namespace Client
         private static string deviceId = "00326-10000-00000-AA340";
         private static string RPiId = "00326-10000-00000-AA800"; //orr's computer
         private MessageConverter messageConvert;
-        private CDeviceMessagesSendReceive deviceMessagesSendReceive;
+        private DeviceMessagesSendReceive deviceMessagesSendReceive;
 
         public smartChairServerClient()
         {
             messageConvert = MessageConverter.Instance;
-            deviceMessagesSendReceive = new CDeviceMessagesSendReceive(deviceId, deviceKey);
+            deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
             deviceMessagesSendReceive.receiveMessages(handleMessagesReceivedFromServer);
         }
 

@@ -108,7 +108,7 @@ namespace Server
             string value = redisInit.StringGet(deviceId);
             Console.WriteLine("Got key = " + deviceId + " from redisInit");
             if (value == null)
-                return null;
+                return new int[0];
 
             return JsonConvert.DeserializeObject<int[]>(value);
         }
