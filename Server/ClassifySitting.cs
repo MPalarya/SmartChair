@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace Server
 {
-
     public sealed class ClassifySitting
     {
         #region Fields
 
         private static ChairPartConverter chairPartConverter = ChairPartConverter.Instance;
-        private static double CORRECT_RATIO_THRESHOLD = 0.4; // = 10%
+        private static double CORRECT_RATIO_THRESHOLD = 0.4; // = 40%
 
         private double[] normalizedInitMultipliers;
 
@@ -26,13 +25,14 @@ namespace Server
 
         #endregion
 
-        #region Properties
-        #endregion
-
         #region Methods
         private void normalizeInitData(int[] init)
         {
             normalizedInitMultipliers = new double[init.Length];
+
+            if (init.Length <= 0)
+                return;
+
             int max = init.Max();
 
             for(int i = 0; i < init.Length; i++)
@@ -49,7 +49,7 @@ namespace Server
         public EPostureErrorType isSittingCorrectly(int[] curr)
         {
             if (currAndInitDataIncomaptible(curr))
-                return EPostureErrorType.Correct;
+                return EPostureErrorType.CannotAnalyzeData;
 
             double[] currNormalized = normalizeCurrData(curr);
 
@@ -94,6 +94,7 @@ namespace Server
             switch (errorType)
             {
                 case EPostureErrorType.Correct:
+                case EPostureErrorType.CannotAnalyzeData:
                     return EPostureErrorType.Correct;
 
                 case EPostureErrorType.HighPressureLeftBack:
@@ -131,7 +132,7 @@ namespace Server
             }
 
             if (indeciesOutOfBounds(currNormalized, highIndex, lowIndex))
-                return EPostureErrorType.Correct;
+                return EPostureErrorType.CannotAnalyzeData;
 
             if (!testCorrectPostureByIndex(currNormalized, highIndex, lowIndex))
             {
