@@ -14,7 +14,6 @@ namespace Client
         private static string deviceKey = "Pz5l6+AVMj877mvG3/qqRThVutch4XrdnOjugMh5i+g=";
         private static string deviceId = "00326-10000-00000-AA340";
         private static string RPiId = "00326-10000-00000-AA800"; //orr's computer
-        private static string iotHubUri = "smartchair-iothub.azure-devices.net";
         private MessageConverter messageConvert;
         private CDeviceMessagesSendReceive deviceMessagesSendReceive;
 
@@ -101,68 +100,5 @@ namespace Client
         {
             deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StopRealtime, deviceId));
         }
-    }
-
-    public class CDeviceMessagesSendReceive
-    {
-        #region Fields
-        private static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
-        private static string iotHubUri = "smartchair-iothub.azure-devices.net";
-        private string deviceKey;
-        private string deviceId;
-        private DeviceClient deviceClient;
-        private Action<string> callbackOnReceiveMessage;
-        #endregion Fields
-
-        #region Constuctors
-
-        public CDeviceMessagesSendReceive(string deviceId, string deviceKey)
-        {
-            this.deviceId = deviceId;
-            this.deviceKey = deviceKey;
-            connectToDeviceClient();
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void connectToDeviceClient()
-        {
-            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
-        }
-
-        public void receiveMessages(Action<string> callbackOnReceiveMessage)
-        {
-            this.callbackOnReceiveMessage = callbackOnReceiveMessage;
-            receiveMessagesAsync();
-        }
-
-        private async void receiveMessagesAsync()
-        {
-            string messageString;
-
-            while (true)
-            {
-                Message receivedMessage = await deviceClient.ReceiveAsync();
-                if (receivedMessage == null) continue;
-                messageString = Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString();
-                callbackOnReceiveMessage(messageString);
-                await deviceClient.CompleteAsync(receivedMessage);
-            }
-        }
-
-        public async void sendMessageToServerAsync(string messageString)
-        {
-            Message message = new Message(Encoding.ASCII.GetBytes(messageString));
-            await deviceClient.SendEventAsync(message);
-        }
-
-        public string getDeviceId()
-        {
-            return deviceId;
-        }
-
-        #endregion
     }
 }

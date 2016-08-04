@@ -129,13 +129,6 @@ namespace RPiConsole
                 };
 
                 var spiQuery = SpiDevice.GetDeviceSelector("SPI0");
-                DeviceInformationCollection deviceInfo = await DeviceInformation.FindAllAsync(spiQuery);
-
-                if (deviceInfo != null && deviceInfo.Count > 0)
-                {
-                    AdcDevice = await SpiDevice.FromIdAsync(deviceInfo[0].Id, spiSettings);
-                    bIsConnected = true;
-                }
             }
 
             finally
