@@ -26,13 +26,14 @@ namespace Server
 
         #endregion
 
-        #region Properties
-        #endregion
-
         #region Methods
         private void normalizeInitData(int[] init)
         {
             normalizedInitMultipliers = new double[init.Length];
+
+            if (init.Length <= 0)
+                return;
+
             int max = init.Max();
 
             for(int i = 0; i < init.Length; i++)
@@ -49,7 +50,7 @@ namespace Server
         public EPostureErrorType isSittingCorrectly(int[] curr)
         {
             if (currAndInitDataIncomaptible(curr))
-                return EPostureErrorType.Correct;
+                return EPostureErrorType.CannotAnalyzeData;
 
             double[] currNormalized = normalizeCurrData(curr);
 
@@ -93,9 +94,6 @@ namespace Server
 
             switch (errorType)
             {
-                case EPostureErrorType.Correct:
-                    return EPostureErrorType.Correct;
-
                 case EPostureErrorType.HighPressureLeftBack:
                     highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftMid);
                     lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.RightMid);
@@ -131,7 +129,7 @@ namespace Server
             }
 
             if (indeciesOutOfBounds(currNormalized, highIndex, lowIndex))
-                return EPostureErrorType.Correct;
+                return EPostureErrorType.CannotAnalyzeData;
 
             if (!testCorrectPostureByIndex(currNormalized, highIndex, lowIndex))
             {

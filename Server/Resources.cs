@@ -38,6 +38,7 @@ public enum EPostureErrorType
     HighPressureRightBack,
     HighPressureLeftHandle,
     HighPressureRightHandle,
+    CannotAnalyzeData,
     #endregion
 }
 
