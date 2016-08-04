@@ -293,7 +293,6 @@ namespace Server
             private static ClassifySitting classifySitting;
             private static MessageConverter messageConvert;
             private int[] currPressureSum;
-            private int[] initPressure;
             private int[] averagePressure;
             private int numOfSensors;
             private int size;
