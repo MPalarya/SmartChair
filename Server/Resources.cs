@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Azure.Devices.Client;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,6 +38,7 @@ public enum EPostureErrorType
     HighPressureRightBack,
     HighPressureLeftHandle,
     HighPressureRightHandle,
+    CannotAnalyzeData,
     #endregion
 }
 
@@ -310,6 +312,130 @@ public class MessageConverter
         }
 
         return retList;
+    }
+
+    #endregion
+}
+
+public class ChairPartConverter
+{
+    #region Fields
+    private static ChairPartConverter instance;
+    private static Dictionary<EChairPart, Dictionary<EChairPartArea, int>> mapChairPartToIndex;
+    #endregion
+
+    #region Constructors
+    private ChairPartConverter()
+    {
+        mapChairPartToIndex = new Dictionary<EChairPart, Dictionary<EChairPartArea, int>>();
+        MapChairPartToIndex();
+    }
+    #endregion
+
+    #region Properties
+    public static ChairPartConverter Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new ChairPartConverter();
+            }
+            return instance;
+        }
+    }
+    #endregion
+
+    #region Methods
+    private void MapChairPartToIndex()
+    {
+        mapChairPartToIndex.Add(EChairPart.Back, new Dictionary<EChairPartArea, int>());
+        mapChairPartToIndex.Add(EChairPart.Handles, new Dictionary<EChairPartArea, int>());
+        mapChairPartToIndex.Add(EChairPart.Seat, new Dictionary<EChairPartArea, int>());
+
+        mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.LeftMid, 0);
+        mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.RightMid, 1);
+        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.LeftMid, 2);
+        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.RightMid, 3);
+        mapChairPartToIndex[EChairPart.Handles].Add(EChairPartArea.LeftMid, 4);
+        mapChairPartToIndex[EChairPart.Handles].Add(EChairPartArea.RightMid, 5);
+    }
+
+    public int getIndexByChairPart(EChairPart chairPart, EChairPartArea chairPartArea)
+    {
+        Dictionary<EChairPartArea, int> chairPartAreaDict;
+        if (mapChairPartToIndex.TryGetValue(chairPart, out chairPartAreaDict))
+        {
+            int index;
+            if (chairPartAreaDict.TryGetValue(chairPartArea, out index))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    #endregion
+}
+
+public class DeviceMessagesSendReceive
+{
+    #region Fields
+    private static string iotHubUri = "smartchair-iothub.azure-devices.net";
+    private string deviceKey;
+    private string deviceId;
+    private DeviceClient deviceClient;
+    private Action<string> callbackOnReceiveMessage;
+    #endregion Fields
+
+    #region Constuctors
+
+    public DeviceMessagesSendReceive(string deviceId, string deviceKey)
+    {
+        this.deviceId = deviceId;
+        this.deviceKey = deviceKey;
+        connectToDeviceClient();
+    }
+
+    #endregion
+
+    #region Methods
+
+    private void connectToDeviceClient()
+    {
+        deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
+    }
+
+    public void receiveMessages(Action<string> callbackOnReceiveMessage)
+    {
+        this.callbackOnReceiveMessage = callbackOnReceiveMessage;
+        receiveMessagesAsync();
+    }
+
+    private async void receiveMessagesAsync()
+    {
+        string messageString;
+
+        while (true)
+        {
+            Message receivedMessage = await deviceClient.ReceiveAsync();
+            if (receivedMessage == null) continue;
+            messageString = Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString();
+            callbackOnReceiveMessage(messageString);
+            await deviceClient.CompleteAsync(receivedMessage);
+        }
+    }
+
+    public async void sendMessageToServerAsync(string messageString)
+    {
+        Message message = new Message(Encoding.ASCII.GetBytes(messageString));
+        await deviceClient.SendEventAsync(message);
+    }
+
+    public string getDeviceId()
+    {
+        return deviceId;
     }
 
     #endregion

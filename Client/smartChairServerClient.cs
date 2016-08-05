@@ -14,15 +14,23 @@ namespace Client
         private static string deviceKey = "Pz5l6+AVMj877mvG3/qqRThVutch4XrdnOjugMh5i+g=";
         private static string deviceId = "00326-10000-00000-AA340";
         private static string RPiId = "00326-10000-00000-AA800"; //orr's computer
-        private static string iotHubUri = "smartchair-iothub.azure-devices.net";
         private MessageConverter messageConvert;
-        private CDeviceMessagesSendReceive deviceMessagesSendReceive;
+        private DeviceMessagesSendReceive deviceMessagesSendReceive;
+
+        public delegate void ChangedEventHandler(object sender, EventArgs e);
+        public delegate void PostureErrorEventHandler(object sender, postureErrorTypeEventArgs e);
+        public event ChangedEventHandler HandleFinish;
+        public event PostureErrorEventHandler postureError;
 
         public smartChairServerClient()
         {
             messageConvert = MessageConverter.Instance;
-            deviceMessagesSendReceive = new CDeviceMessagesSendReceive(deviceId, deviceKey);
+            deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
             deviceMessagesSendReceive.receiveMessages(handleMessagesReceivedFromServer);
+
+            pairWithOrrsDeviceTest();
+            startCollectingInitData();
+            //startCommunicationWithServer(); gives raw data- no need in client
         }
 
         private void handleMessagesReceivedFromServer(string messageString)
@@ -53,7 +61,7 @@ namespace Client
 
         private void handleRealtimeDatapoint(Datapoint datapoint)
         {
-            // TODO Sivan: display data point in real time screen
+            // TODO Sivan: display data point in real time screen ---not needed
         }
 
         private void handleReceiveDataLogs(List<List<object>> rawLogs)
@@ -64,12 +72,26 @@ namespace Client
 
         private void handlePostureError(EPostureErrorType postureErrorType)
         {
-            // TODO Sivan: notify user of posture error
+            OnPostureError(new postureErrorTypeEventArgs(postureErrorType));
+
+        }
+
+        protected virtual void OnPostureError(EventArgs e)
+        {
+            if (postureError != null)
+                postureError(this, e);
+        }
+
+        protected virtual void OnHandleFinish(EventArgs e)
+        {
+            if (HandleFinish != null)
+                HandleFinish(this, e);
         }
 
         private void handleFinishedInit()
         {
             // TODO Sivan: notify user we have finished collecting initializing data
+            OnHandleFinish(EventArgs.Empty);
         }
 
         public void getLogsByDateTimeBounds(DateTime startdate, DateTime enddate)
@@ -103,66 +125,14 @@ namespace Client
         }
     }
 
-    public class CDeviceMessagesSendReceive
+    public class postureErrorTypeEventArgs : EventArgs
     {
-        #region Fields
-        private static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
-        private static string iotHubUri = "smartchair-iothub.azure-devices.net";
-        private string deviceKey;
-        private string deviceId;
-        private DeviceClient deviceClient;
-        private Action<string> callbackOnReceiveMessage;
-        #endregion Fields
-
-        #region Constuctors
-
-        public CDeviceMessagesSendReceive(string deviceId, string deviceKey)
+        private EPostureErrorType m_errorType;
+        public postureErrorTypeEventArgs(EPostureErrorType errorType)
         {
-            this.deviceId = deviceId;
-            this.deviceKey = deviceKey;
-            connectToDeviceClient();
+            m_errorType = errorType;
         }
 
-        #endregion
-
-        #region Methods
-
-        private void connectToDeviceClient()
-        {
-            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
-        }
-
-        public void receiveMessages(Action<string> callbackOnReceiveMessage)
-        {
-            this.callbackOnReceiveMessage = callbackOnReceiveMessage;
-            receiveMessagesAsync();
-        }
-
-        private async void receiveMessagesAsync()
-        {
-            string messageString;
-
-            while (true)
-            {
-                Message receivedMessage = await deviceClient.ReceiveAsync();
-                if (receivedMessage == null) continue;
-                messageString = Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString();
-                callbackOnReceiveMessage(messageString);
-                await deviceClient.CompleteAsync(receivedMessage);
-            }
-        }
-
-        public async void sendMessageToServerAsync(string messageString)
-        {
-            Message message = new Message(Encoding.ASCII.GetBytes(messageString));
-            await deviceClient.SendEventAsync(message);
-        }
-
-        public string getDeviceId()
-        {
-            return deviceId;
-        }
-
-        #endregion
+        public EPostureErrorType ErrorType {get { return m_errorType; }}
     }
 }

@@ -261,14 +261,26 @@ namespace Server
 
             public static async void sendMessageToClient(string clientId, string messageString)
             {
-                Message message = new Message(Encoding.ASCII.GetBytes(messageString));
-                await serviceClient.SendAsync(clientId, message);
-                printMessageSentToClient(clientId, messageString);
+                try
+                {
+                    Message message = new Message(Encoding.ASCII.GetBytes(messageString));
+                    await serviceClient.SendAsync(clientId, message);
+                    printMessageSentToClient(clientId, messageString);
+                }
+                catch (Exception)
+                {
+                    printErrorSendingToClient(clientId, messageString);
+                }
             }
 
             private static void printMessageSentToClient(string clientId, string messageString)
             {
                 Console.WriteLine("Sent message {0} to client {1}", messageString, clientId);
+            }
+
+            private static void printErrorSendingToClient(string clientId, string messageString)
+            {
+                Console.WriteLine("ERROR SENDING message {0} to client {1}", messageString, clientId);
             }
             #endregion
         }
@@ -277,11 +289,10 @@ namespace Server
         {
             #region Fields
 
-            private static int CAPACITY = 30;
+            private static int CAPACITY = 5;
             private static ClassifySitting classifySitting;
             private static MessageConverter messageConvert;
             private int[] currPressureSum;
-            private int[] initPressure;
             private int[] averagePressure;
             private int numOfSensors;
             private int size;
@@ -299,14 +310,14 @@ namespace Server
                 : this(numOfSensors)
             {
                 this.deviceId = datapoint.deviceId;
-                this.initPressure = dbProxy.getInit(deviceId);
+                int[] initPressure = dbProxy.getInit(deviceId);
+                classifySitting = new ClassifySitting(initPressure);
                 this.addDataPoint(datapoint);
             }
 
             private DatapointsBuffer(int numOfSensors)
             {
                 messageConvert = MessageConverter.Instance;
-                classifySitting = ClassifySitting.Instance;
                 this.count = 0;
                 this.size = 0;
                 this.numOfSensors = numOfSensors;
@@ -361,10 +372,11 @@ namespace Server
 
             private void notifyClientAboutSittingCorrectness()
             {
-                if (!classifySitting.isSittingCorrectly(averagePressure, initPressure))
+                EPostureErrorType postureErrorType = classifySitting.isSittingCorrectly(averagePressure);
+                if (postureErrorType != EPostureErrorType.Correct)
                 {
                     ClientProperties client = dbProxy.getClientByDevice(deviceId);
-                    ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_fixPosture, ""));
+                    ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_fixPosture, postureErrorType));
                 }
             }
 
@@ -395,6 +407,7 @@ namespace Server
                 bCollectingInitDatapoints = false;
                 dbProxy.setInit(datapoint);
                 ClientProperties client = dbProxy.getClientByDevice(datapoint.deviceId);
+                classifySitting.updateInitData(datapoint.pressure);
                 ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_StopInit, ""));
             }
 

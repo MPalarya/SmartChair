@@ -15,16 +15,19 @@ namespace RPiSimulator
 {
     class RPiSimulator
     {
-        private static CDeviceMessagesSendReceive deviceMessagesSendReceive;
-        private static MessageConverter messageConvert;
+        static private MessageConverter messageConvert;
+        static private DeviceMessagesSendReceive deviceMessagesSendReceive;
+        static private CreateDevice createDevice;
 
         static private string deviceId;
 
         static void Main(string[] args)
         {
             messageConvert = MessageConverter.Instance;
-            deviceMessagesSendReceive = new CDeviceMessagesSendReceive();
-            deviceId = deviceMessagesSendReceive.getDeviceId();
+            createDevice = new CreateDevice();
+            deviceId = createDevice.getDeviceId();
+            string deviceKey = createDevice.getDeviceKey();
+            deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Simulated device on id = {0}\n", deviceId);
@@ -38,11 +41,16 @@ namespace RPiSimulator
             int[] currPressure = new int[7];
             Random rand = new Random();
 
+            for(int i = 0; i < currPressure.Length; i++)
+            {
+                currPressure[i] = 30;
+            }
+
             while (true)
             {
                 for (int i = 0; i < currPressure.Length; i++)
                 {
-                    currPressure[i] = Math.Max(0, currPressure[i] + rand.Next(-3, 3));
+                    currPressure[i] = Math.Max(1, currPressure[i] + rand.Next(-1, 2));
                     currPressure[i] = Math.Min(currPressure[i], 100);
                 }
 
@@ -58,25 +66,21 @@ namespace RPiSimulator
         }
     }
 
-    public class CDeviceMessagesSendReceive
+    public class CreateDevice
     {
         #region Fields
         private static string connectionString = "HostName=smartchair-iothub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1LHpY6zkPYMuj1pa9rBYYAz9EK3a4rNyOIbW8VYn1sk=";
-        private static string iotHubUri = "smartchair-iothub.azure-devices.net";
         private string deviceKey;
         private string deviceId;
-        private DeviceClient deviceClient;
         private RegistryManager registryManager;
-        private Action<string> callbackOnReceiveMessage;
         #endregion Fields
 
         #region Constuctors
 
-        public CDeviceMessagesSendReceive()
+        public CreateDevice()
         {
             registryManager = RegistryManager.CreateFromConnectionString(connectionString);
             addOrGetDeviceAsync().Wait();
-            deviceClient = DeviceClient.Create(iotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(deviceId, deviceKey));
         }
 
         #endregion
@@ -107,35 +111,14 @@ namespace RPiSimulator
             return serial;
         }
 
-        public void receiveMessages(Action<string> callbackOnReceiveMessage)
-        {
-            this.callbackOnReceiveMessage = callbackOnReceiveMessage;
-            receiveMessagesAsync();
-        }
-
-        private async void receiveMessagesAsync()
-        {
-            string messageString;
-
-            while (true)
-            {
-                Microsoft.Azure.Devices.Client.Message receivedMessage = await deviceClient.ReceiveAsync();
-                if (receivedMessage == null) continue;
-                messageString = Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString();
-                callbackOnReceiveMessage(messageString);
-                await deviceClient.CompleteAsync(receivedMessage);
-            }
-        }
-
-        public async void sendMessageToServerAsync(string messageString)
-        {
-            Microsoft.Azure.Devices.Client.Message message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));
-            await deviceClient.SendEventAsync(message);
-        }
-
         public string getDeviceId()
         {
             return deviceId;
+        }
+
+        public string getDeviceKey()
+        {
+            return deviceKey;
         }
 
         #endregion
