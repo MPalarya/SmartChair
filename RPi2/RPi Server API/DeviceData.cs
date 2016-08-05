@@ -33,6 +33,7 @@ namespace RPi2.RPi_Server_API
 
         private CDeviceData()
         {
+
             messageConvert = MessageConverter.Instance;
             deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
         }
@@ -44,7 +45,7 @@ namespace RPi2.RPi_Server_API
         /// <summary>
         /// time to wait in seconds before sending next data-set to Server
         /// </summary>
-        public static int frequencyToReport { get; } = 60;
+        public static int frequencyToReport { get; } = 5;
 
         /// <summary>
         /// CDeviceData Singleton class uses double lock methodology,
@@ -74,7 +75,7 @@ namespace RPi2.RPi_Server_API
         /// <para>access example: int particular_measurement = Data[Seat][RightMid];                                 </para>
         /// <para>or: foreach (var chairPart in Data.Keys) { foreach (var chairPartArea in Data[chairPart]) { .. } } </para>
         /// </summary>
-        public Dictionary<EChairPart, Dictionary<EChairPartArea, int>> Data { get; set; }
+        public Dictionary<EChairPart, Dictionary<EChairPartArea, int>> Data { get; set; } = new Dictionary<EChairPart, Dictionary<EChairPartArea, int>>();
 
         #endregion Properties
 
