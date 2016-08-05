@@ -15,13 +15,59 @@ namespace Client
 {
     public class smartChairController
     {
+        smartChairServerClient smartClientServerClient = new smartChairServerClient(); 
         public smartChairController()
         {
             this.InitializeCommand = new DelegateCommand<object>(this.onInitialize, this.canExecute);
             this.ViewWeeklySummaryCommand = new DelegateCommand<object>(this.onViewWeeklySummary, this.canExecute);
             this.LoginCommand = new DelegateCommand<object>(this.onLogin);
+
+            smartClientServerClient.HandleFinish += SmartClientServerClient_HandleFinish;
+            smartClientServerClient.postureError += SmartClientServerClient_postureError;
             
-            createNotification();
+            //createNotification("Welcome!");
+        }
+
+        private void SmartClientServerClient_postureError(object sender, postureErrorTypeEventArgs e)
+        {
+            string message;
+            switch (e.ErrorType)
+            {
+                case EPostureErrorType.Correct:
+                    break;
+                case EPostureErrorType.HighPressureLeftSeat:
+                    message = "You are linning on your left side";
+                    createNotification("Posture Error " + message);
+                    break;
+                case EPostureErrorType.HighPressureRightSeat:
+                    message = "You are linning on your left side";
+                    createNotification("Posture Error " + message);
+                    break;
+                case EPostureErrorType.HighPressureLeftBack:
+                    message = "Your back is not straight";
+                    createNotification("Posture Error " + message);
+                    break;
+                case EPostureErrorType.HighPressureRightBack:
+                    message = "Your back is not straight";
+                    createNotification("Posture Error " + message);
+                    break;
+                case EPostureErrorType.HighPressureLeftHandle:
+                    message = "You are linning on your left side";
+                    createNotification("Posture Error " + message);
+                    break;
+                case EPostureErrorType.HighPressureRightHandle:
+                    message = "You are linning on your right side";
+                    createNotification("Posture Error " + message);
+                    break;
+                default:
+                    break;
+            }  
+        }
+
+        private void SmartClientServerClient_HandleFinish(object sender, EventArgs e)
+        {
+            isLogined = true;
+            createNotification("You are all set");
         }
 
         public bool isLogined { get; set; }
@@ -52,22 +98,14 @@ namespace Client
             //new screen- asks the data from the server and presents it
         }
 
-        private void createNotification()
+        private void createNotification(string message)
         {
-            //// In a real app, these would be initialized with actual data
-            //string from = "smartchair App";
-            //string subject = "Sitting alatam";
-            //string body = "You are sitting way too long. Take a walk";
-
-
-          
-
             var xmlToastTemplate = "<toast launch=\"app-defined-string\">" +
                          "<visual>" +
                            "<binding template =\"ToastGeneric\">" +
                              "<text>smartchair App - sitting alaram</text>" +
                              "<text>" +
-                               "You are sitting way too long. Take a walk" +
+                               message +
                              "</text>" +
                            "</binding>" +
                          "</visual>" +

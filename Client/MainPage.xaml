@@ -9,9 +9,9 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <!--<Button x:Name="button" Content="Initialize" FontSize="45" Command="{Binding InitializeCommand}" HorizontalAlignment="Left" Margin="171,146,0,0" VerticalAlignment="Top"/>-->
-        <HyperlinkButton Click="HyperlinkButton_Click" Margin="249,124,0,539" FontSize="24" Height="57" Width="123">Initialize</HyperlinkButton>
+        <!--<HyperlinkButton Click="HyperlinkButton_Click" Margin="249,124,0,539" FontSize="24" Height="57" Width="123">Initialize</HyperlinkButton>-->
         <HyperlinkButton Click="HyperlinkButton2_Click" Margin="198,217,0,453" FontSize="24" Height="50" Width="299">Last Week Summary</HyperlinkButton>
-        <HyperlinkButton Click="HyperlinkButton3_Click" Margin="262,304,0,364" FontSize="24" Height="52" Width="110">Login</HyperlinkButton>
+        <!--<HyperlinkButton Click="HyperlinkButton3_Click" Margin="262,304,0,364" FontSize="24" Height="52" Width="110">Login</HyperlinkButton>-->
         <!--<Button x:Name="button1" Content="Last Week Summary" FontSize="45" Command="{Binding ViewWeeklySummaryCommand}" HorizontalAlignment="Left" Margin="171,290,0,0" VerticalAlignment="Top"/>-->
         <TextBlock x:Name="textBlock" FontSize="45" HorizontalAlignment="Left" Margin="171,10,0,0" TextWrapping="Wrap" Text="Smart Chair App" VerticalAlignment="Top"/>
         <!--<Button x:Name="button2" Content="Login" FontSize="45" Command="{Binding LoginCommand}" HorizontalAlignment="Left" Height="97" Margin="171,426,0,0" VerticalAlignment="Top" Width="339"/>-->
