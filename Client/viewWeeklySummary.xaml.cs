@@ -23,11 +23,27 @@ namespace Client
     /// </summary>
     public sealed partial class viewWeeklySummary : Page
     {
+        smartChairServerClient smartClientServerClient = smartChairServerClient.Instance;
         public viewWeeklySummary()
         {
             this.DataContext = new weeklySummaryController();
             this.InitializeComponent();
-            this.Loaded += ViewWeeklySummary_Loaded;
+            //this.Loaded += ViewWeeklySummary_Loaded;
+            smartClientServerClient.dayData += SmartClientServerClient_dayData;
+            var today = System.DateTime.Today;
+            var tomorrow = today.AddDays(1);
+            smartClientServerClient.getLogsByDateTimeBounds(today, tomorrow);
+        }
+
+        private void SmartClientServerClient_dayData(object sender, dayDataEventArgs e)
+        {
+            List<alertData> data = new List<alertData>();
+            foreach (var item in e.DayDataPoints)
+            {
+                data.Add(new alertData() { time = item.datetime, alertScale = item.pressure });
+            }
+
+            (weeklySummary.Series[0] as LineSeries).ItemsSource = data;
         }
 
         private void ViewWeeklySummary_Loaded(object sender, RoutedEventArgs e)
@@ -40,6 +56,11 @@ namespace Client
 
             (weeklySummary.Series[0] as LineSeries).ItemsSource = data;
             
+        }
+
+        private void HyperlinkButton2_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(MainPage));
         }
     }
 }

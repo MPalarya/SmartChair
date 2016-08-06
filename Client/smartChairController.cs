@@ -15,18 +15,21 @@ namespace Client
 {
     public class smartChairController
     {
-        smartChairServerClient smartClientServerClient = new smartChairServerClient(); 
+        smartChairServerClient smartClientServerClient = smartChairServerClient.Instance; 
         public smartChairController()
         {
-            this.InitializeCommand = new DelegateCommand<object>(this.onInitialize, this.canExecute);
+            //this.InitializeCommand = new DelegateCommand<object>(this.onInitialize, this.canExecute);
             this.ViewWeeklySummaryCommand = new DelegateCommand<object>(this.onViewWeeklySummary, this.canExecute);
             this.LoginCommand = new DelegateCommand<object>(this.onLogin);
 
             smartClientServerClient.HandleFinish += SmartClientServerClient_HandleFinish;
             smartClientServerClient.postureError += SmartClientServerClient_postureError;
             
+            
             //createNotification("Welcome!");
         }
+
+        
 
         private void SmartClientServerClient_postureError(object sender, postureErrorTypeEventArgs e)
         {
@@ -40,7 +43,7 @@ namespace Client
                     createNotification("Posture Error " + message);
                     break;
                 case EPostureErrorType.HighPressureRightSeat:
-                    message = "You are linning on your left side";
+                    message = "You are linning on your right side";
                     createNotification("Posture Error " + message);
                     break;
                 case EPostureErrorType.HighPressureLeftBack:
@@ -87,9 +90,10 @@ namespace Client
             isLogined = true;
         }
 
-        private void onInitialize(object arg)
+        public void onInitialize()
         {
-
+            createNotification("Stay stright while we collect your posture data");
+            smartClientServerClient.startCollectingInitData();
             //new screen- asks to sit straight and gets approval/error from server 
         }
 
