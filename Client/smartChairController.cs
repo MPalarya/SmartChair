@@ -54,14 +54,6 @@ namespace Client
                     message = "Your back is not straight";
                     createNotification("Posture Error " + message);
                     break;
-                case EPostureErrorType.HighPressureLeftHandle:
-                    message = "You are linning on your left side";
-                    createNotification("Posture Error " + message);
-                    break;
-                case EPostureErrorType.HighPressureRightHandle:
-                    message = "You are linning on your right side";
-                    createNotification("Posture Error " + message);
-                    break;
                 default:
                     break;
             }  
