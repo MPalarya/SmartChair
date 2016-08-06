@@ -419,18 +419,33 @@ public class DeviceMessagesSendReceive
 
         while (true)
         {
-            Message receivedMessage = await deviceClient.ReceiveAsync();
-            if (receivedMessage == null) continue;
-            messageString = Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString();
-            callbackOnReceiveMessage(messageString);
-            await deviceClient.CompleteAsync(receivedMessage);
+            try
+            {
+                Message receivedMessage = await deviceClient.ReceiveAsync();
+                if (receivedMessage == null) continue;
+                messageString = Encoding.ASCII.GetString(receivedMessage.GetBytes()).ToString();
+                callbackOnReceiveMessage(messageString);
+                await deviceClient.CompleteAsync(receivedMessage);
+            }
+            catch(Exception e)
+            {
+
+            }
         }
     }
 
     public async void sendMessageToServerAsync(string messageString)
     {
-        Message message = new Message(Encoding.ASCII.GetBytes(messageString));
-        await deviceClient.SendEventAsync(message);
+        try
+        {
+            Message message = new Message(Encoding.ASCII.GetBytes(messageString));
+            await deviceClient.SendEventAsync(message);
+        }
+        catch(Exception e)
+        {
+            //Console.WriteLine(e);
+        }
+        
     }
 
     public string getDeviceId()

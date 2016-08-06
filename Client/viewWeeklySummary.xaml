@@ -11,8 +11,8 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
         <Charting:Chart x:Name="weeklySummary" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="609,100,300,0" Width="800" Height="600">
-            <Charting:LineSeries Title="Last Week Alerts" Margin="0" IndependentValuePath="time" DependentValuePath="alertScale" IsSelectionEnabled="True"/>
+            <Charting:LineSeries Title="Last Week Alerts" Margin="0" IndependentValuePath="datetime" DependentValuePath="pressure" IsSelectionEnabled="True"/>
         </Charting:Chart>
-
+        <HyperlinkButton Click="HyperlinkButton2_Click">Finish</HyperlinkButton>
     </Grid>
 </Page>

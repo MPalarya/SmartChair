@@ -25,8 +25,11 @@ namespace Client
             smartClientServerClient.HandleFinish += SmartClientServerClient_HandleFinish;
             smartClientServerClient.postureError += SmartClientServerClient_postureError;
             
+            
             //createNotification("Welcome!");
         }
+
+        
 
         private void SmartClientServerClient_postureError(object sender, postureErrorTypeEventArgs e)
         {

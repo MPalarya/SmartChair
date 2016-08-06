@@ -19,8 +19,10 @@ namespace Client
 
         public delegate void ChangedEventHandler(object sender, EventArgs e);
         public delegate void PostureErrorEventHandler(object sender, postureErrorTypeEventArgs e);
+        public delegate void DayDataEventHandler(object sender, dayDataEventArgs e);
         public event ChangedEventHandler HandleFinish;
         public event PostureErrorEventHandler postureError;
+        public event DayDataEventHandler dayData;
 
         public smartChairServerClient()
         {
@@ -45,7 +47,7 @@ namespace Client
 
                 case EMessageId.ServerClient_DayData:
                     List<List<object>> rawLogs = (List<List<object>>)messageStruct.data;
-                    
+                    handleReceiveDataLogs(rawLogs);
                     break;
 
                 case EMessageId.ServerClient_fixPosture:
@@ -64,10 +66,18 @@ namespace Client
             // TODO Sivan: display data point in real time screen ---not needed
         }
 
+        private void onDayData(dayDataEventArgs e)
+        {
+            if (dayData != null)
+                dayData(this, e);
+        }
+
         private void handleReceiveDataLogs(List<List<object>> rawLogs)
         {
             List<Datapoint> logs = messageConvert.convertRawLogsToDatapointsList(rawLogs);
-            // TODO Sivan: display logs received
+
+            onDayData(new dayDataEventArgs(logs));
+            
         }
 
         private void handlePostureError(EPostureErrorType postureErrorType)
@@ -76,7 +86,7 @@ namespace Client
 
         }
 
-        protected virtual void OnPostureError(EventArgs e)
+        protected virtual void OnPostureError(postureErrorTypeEventArgs e)
         {
             if (postureError != null)
                 postureError(this, e);
@@ -134,5 +144,16 @@ namespace Client
         }
 
         public EPostureErrorType ErrorType {get { return m_errorType; }}
+    }
+
+    public class dayDataEventArgs: EventArgs
+    {
+        private List<Datapoint> m_dataPoints;
+        public dayDataEventArgs(List<Datapoint> dataPoints)
+        {
+            m_dataPoints = dataPoints;
+        }
+
+        public List<Datapoint> DayDataPoints { get { return m_dataPoints; } }
     }
 }
