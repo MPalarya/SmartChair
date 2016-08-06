@@ -102,8 +102,8 @@ public class Datapoint
     #region Fields
 
     public string deviceId;
-    public DateTime datetime {get; set; }
-    public long pressure { get; set; }
+    public DateTime datetime;
+    public int[] pressure;
 
     #endregion
 
@@ -112,24 +112,24 @@ public class Datapoint
     {
         this.deviceId = "";
         this.datetime = DateTime.Now;
-        this.pressure = 0;
+        this.pressure = new int[0];
     }
 
     public Datapoint(int numOfSensors)
     {
         this.deviceId = "";
         this.datetime = DateTime.Now;
-        this.pressure = 0;
+        this.pressure = new int[numOfSensors];
     }
 
     public Datapoint(int numOfSensors, int initValue)
-        :this(numOfSensors)
+        : this(numOfSensors)
     {
-        //for (int i = 0; i < numOfSensors; i++)
-            //pressure[i] = initValue;
+        for (int i = 0; i < numOfSensors; i++)
+            pressure[i] = initValue;
     }
 
-    public Datapoint(string deviceId, DateTime datetime, long pressure)
+    public Datapoint(string deviceId, DateTime datetime, int[] pressure)
     {
         this.deviceId = deviceId;
         this.datetime = datetime;
@@ -140,7 +140,7 @@ public class Datapoint
     {
         this.deviceId = "";
         this.datetime = DateTime.Parse((string)rawDataPoint[0]);
-        this.pressure = (long)rawDataPoint[1];
+        this.pressure = (int[])rawDataPoint[1];
     }
     #endregion
 }
@@ -301,18 +301,30 @@ public class MessageConverter
         return messageString;
     }
 
-    public List<Datapoint> convertRawLogsToDatapointsList(List<List<object>> logs)
+    public List<toClientDataPoint> convertRawLogsToDatapointsList(List<List<object>> logs)
     {
-        List<Datapoint> retList = new List<Datapoint>();
+        List<toClientDataPoint> retList = new List<toClientDataPoint>();
         foreach (var rawDatapoint in logs)
         {
-            retList.Add(new Datapoint(rawDatapoint));
+            retList.Add(new toClientDataPoint(rawDatapoint));
         }
 
         return retList;
     }
 
     #endregion
+}
+
+public class toClientDataPoint
+{
+    public DateTime datetime { get; set; }
+    public long pressure { get; set; }
+
+    public toClientDataPoint(List<object> rawDataPoint)
+    {
+        this.datetime = DateTime.Parse((string)rawDataPoint[0]);
+        this.pressure = (long)rawDataPoint[1];
+    }
 }
 
 public class ChairPartConverter
