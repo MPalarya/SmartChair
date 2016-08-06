@@ -13,7 +13,6 @@ namespace RPi2.RPi_Hardware
 
         private static volatile CChair m_instance;
         private static object syncRoot = new object();
-        private static DateTime lastReported = DateTime.Now;
 
         #endregion
 
@@ -71,20 +70,21 @@ namespace RPi2.RPi_Hardware
         /// </summary>
         public void ReadAndReport()
         {
-            DateTime curTime = DateTime.Now;
-
-            if (curTime.Subtract(lastReported).TotalMinutes < CDeviceData.frequencyToReport)
-                return;
-
-            lastReported = curTime;
-
             CDeviceData deviceData = CDeviceData.Instance;
             deviceData.Data.Clear();
+
             foreach (var chairPart in Sensors)
             {
                 foreach (var partArea in chairPart.Value)
                 {
-                    deviceData.Data[chairPart.Key][partArea.Key] = partArea.Value.ReadKG();
+                    if (!deviceData.Data.ContainsKey(chairPart.Key))
+                        deviceData.Data.Add(chairPart.Key, new Dictionary<EChairPartArea, int>());
+
+                    if (!deviceData.Data[chairPart.Key].ContainsKey(partArea.Key))
+                        deviceData.Data[chairPart.Key].Add(partArea.Key, partArea.Value.ReadKG());
+
+                    else
+                        deviceData.Data[chairPart.Key][partArea.Key] = partArea.Value.ReadKG();
                 }
             }
             deviceData.RPiServer_newDataSample(DateTime.Now);

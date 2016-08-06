@@ -159,8 +159,19 @@ namespace Server
             string deviceId = dbProxy.getDeviceByClient(clientId);
             if (deviceId != null)
             {
-                var logs = getDeviceLogsInJson(deviceId, logLimits.startdate, logLimits.enddate);
-                ServerMessagesSendReceive.sendMessageToClient(clientId, messageConvert.encode(EMessageId.ServerClient_DayData, logs));
+                List<List<object>> logs = getDeviceLogsInJson(deviceId, logLimits.startdate, logLimits.enddate);
+                List<List<object>> logsStdErr;
+                int[] init = dbProxy.getInit(deviceId);
+                if (init.Length > 0)
+                {
+                    ClassifySitting classifySitting = new ClassifySitting(init);
+                    logsStdErr = classifySitting.convertLogsToStdErr(logs);
+                }
+                else
+                {
+                    logsStdErr = null;
+                }
+                ServerMessagesSendReceive.sendMessageToClient(clientId, messageConvert.encode(EMessageId.ServerClient_DayData, logsStdErr));
             }
         }
 
@@ -184,7 +195,7 @@ namespace Server
                 return;// TODO: return device not getting data
         }
 
-        private static object getDeviceLogsInJson(string deviceId, DateTime startdate, DateTime enddate)
+        private static List<List<object>> getDeviceLogsInJson(string deviceId, DateTime startdate, DateTime enddate)
         {
             if (startdate > enddate)
                 return null;
@@ -251,11 +262,18 @@ namespace Server
                 var eventHubReceiver = eventHubClient.GetDefaultConsumerGroup().CreateReceiver(partition, DateTime.UtcNow);
                 while (true)
                 {
-                    EventData eventData = await eventHubReceiver.ReceiveAsync();
-                    if (eventData == null) continue;
+                    try
+                    {
+                        EventData eventData = await eventHubReceiver.ReceiveAsync();
+                        if (eventData == null) continue;
 
-                    string messageString = Encoding.UTF8.GetString(eventData.GetBytes());
-                    callbackOnReceiveMessage(messageString);
+                        string messageString = Encoding.UTF8.GetString(eventData.GetBytes());
+                        callbackOnReceiveMessage(messageString);
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
                 }
             }
 
@@ -289,7 +307,7 @@ namespace Server
         {
             #region Fields
 
-            private static int CAPACITY = 5;
+            private static int CAPACITY = 1;
             private static ClassifySitting classifySitting;
             private static MessageConverter messageConvert;
             private int[] currPressureSum;
@@ -376,7 +394,8 @@ namespace Server
                 if (postureErrorType != EPostureErrorType.Correct)
                 {
                     ClientProperties client = dbProxy.getClientByDevice(deviceId);
-                    ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_fixPosture, postureErrorType));
+                    if (client != null)
+                        ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_fixPosture, postureErrorType));
                 }
             }
 
