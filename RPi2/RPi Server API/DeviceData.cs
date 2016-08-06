@@ -1,11 +1,5 @@
-﻿using RPi2.RPi_Hardware;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Microsoft.Azure.Devices.Client;
-using Newtonsoft.Json;
-using System.Text;
-using System.Threading;
-using System.Diagnostics;
 using Windows.UI.Core;
 
 namespace RPi2.RPi_Server_API
@@ -16,9 +10,10 @@ namespace RPi2.RPi_Server_API
     public sealed class CDeviceData
     {
         #region Fields
-        
+
         private static volatile CDeviceData m_instance;
         private static object syncRoot = new object();
+
         private MessageConverter messageConvert;
         private DeviceMessagesSendReceive deviceMessagesSendReceive;
 
@@ -33,7 +28,6 @@ namespace RPi2.RPi_Server_API
 
         private CDeviceData()
         {
-
             messageConvert = MessageConverter.Instance;
             deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
         }
@@ -45,7 +39,7 @@ namespace RPi2.RPi_Server_API
         /// <summary>
         /// time to wait in seconds before sending next data-set to Server
         /// </summary>
-        public static int frequencyToReport { get; } = 5;
+        public static int frequencyToReport { get; set; } = 5;
 
         /// <summary>
         /// CDeviceData Singleton class uses double lock methodology,
@@ -69,13 +63,12 @@ namespace RPi2.RPi_Server_API
             }
         }
 
-        public UInt32 Id { get; private set; }
-
         /// <summary>
         /// <para>access example: int particular_measurement = Data[Seat][RightMid];                                 </para>
         /// <para>or: foreach (var chairPart in Data.Keys) { foreach (var chairPartArea in Data[chairPart]) { .. } } </para>
         /// </summary>
-        public Dictionary<EChairPart, Dictionary<EChairPartArea, int>> Data { get; set; } = new Dictionary<EChairPart, Dictionary<EChairPartArea, int>>();
+        public Dictionary<EChairPart, Dictionary<EChairPartArea, int>> Data { get; set; }
+            = new Dictionary<EChairPart, Dictionary<EChairPartArea, int>>();
 
         #endregion Properties
 

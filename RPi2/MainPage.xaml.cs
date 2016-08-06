@@ -14,14 +14,29 @@ namespace RPi2
     {
         #region Fields
 
+        // sensors:
         private CSensor m_bigSensor1 = new CSensor(ESensorType.FlexiForceA201, 0);
         private CSensor m_bigSensor2 = new CSensor(ESensorType.FlexiForceA201, 1);
+        private CSensor m_smallSensor1 = new CSensor(ESensorType.SquareForceResistor, 2);
+        private CSensor m_smallSensor2 = new CSensor(ESensorType.SquareForceResistor, 3);
+        private CSensor m_smallSensor3 = new CSensor(ESensorType.SquareForceResistor, 4);
+        private CSensor m_smallSensor4 = new CSensor(ESensorType.SquareForceResistor, 5);
 
+        // list of weights for calibration:
         private List<double> m_weightsBigSensor1 = new List<double>();
-        private List<double> m_voltagesBigSensor1 = new List<double>();
-
         private List<double> m_weightsBigSensor2 = new List<double>();
+        private List<double> m_weightsSmallSensor1 = new List<double>();
+        private List<double> m_weightsSmallSensor2 = new List<double>();
+        private List<double> m_weightsSmallSensor3 = new List<double>();
+        private List<double> m_weightsSmallSensor4 = new List<double>();
+
+        // list of voltage measurements for calibration:
+        private List<double> m_voltagesBigSensor1 = new List<double>();
         private List<double> m_voltagesBigSensor2 = new List<double>();
+        private List<double> m_voltagesSmallSensor1 = new List<double>();
+        private List<double> m_voltagesSmallSensor2 = new List<double>();
+        private List<double> m_voltagesSmallSensor3 = new List<double>();
+        private List<double> m_voltagesSmallSensor4 = new List<double>();
 
         private DispatcherTimer m_dispatcherTimer;
 
@@ -48,6 +63,10 @@ namespace RPi2
 
             myChair.Seat[EChairPartArea.LeftMid] = m_bigSensor1;
             myChair.Seat[EChairPartArea.RightMid] = m_bigSensor2;
+            myChair.Back[EChairPartArea.LeftBottom] = m_smallSensor1;
+            myChair.Back[EChairPartArea.RightBottom] = m_smallSensor2;
+            myChair.Back[EChairPartArea.LeftTop] = m_smallSensor3;
+            myChair.Back[EChairPartArea.RightTop] = m_smallSensor4;
 
             myChair.Sensors[EChairPart.Seat] = myChair.Seat;
             myChair.Sensors[EChairPart.Back] = myChair.Back;
