@@ -47,7 +47,7 @@ namespace Client
             deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
             deviceMessagesSendReceive.receiveMessages(handleMessagesReceivedFromServer);
 
-            isInitialize = false;
+            isInitialize = true;
 
             pairWithOrrsDeviceTest();
             startCollectingInitData();
@@ -56,8 +56,6 @@ namespace Client
 
         private void handleMessagesReceivedFromServer(string messageString)
         {
-            
-
             Message<object> messageStruct = messageConvert.decode(messageString);
             switch (messageStruct.messageid)
             {
@@ -98,7 +96,7 @@ namespace Client
 
         private void handleReceiveDataLogs(List<List<object>> rawLogs)
         {
-            List<Datapoint> logs = messageConvert.convertRawLogsToDatapointsList(rawLogs);
+            List<toClientDataPoint> logs = messageConvert.convertRawLogsToDatapointsList(rawLogs);
 
             onDayData(new dayDataEventArgs(logs));
             
@@ -173,12 +171,12 @@ namespace Client
 
     public class dayDataEventArgs: EventArgs
     {
-        private List<Datapoint> m_dataPoints;
-        public dayDataEventArgs(List<Datapoint> dataPoints)
+        private List<toClientDataPoint> m_dataPoints;
+        public dayDataEventArgs(List<toClientDataPoint> dataPoints)
         {
             m_dataPoints = dataPoints;
         }
 
-        public List<Datapoint> DayDataPoints { get { return m_dataPoints; } }
+        public List<toClientDataPoint> DayDataPoints { get { return m_dataPoints; } }
     }
 }
