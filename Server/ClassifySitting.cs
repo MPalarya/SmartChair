@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace Server
         private static double CORRECT_RATIO_THRESHOLD = 0.4; // = 40%
 
         private double[] normalizedInitMultipliers;
+        private int[] init;
 
         #endregion
 
@@ -28,6 +30,12 @@ namespace Server
         #region Methods
         private void normalizeInitData(int[] init)
         {
+            for(int i = 0; i < init.Length; i++)
+            {
+                init[i] += 1;
+            }
+            this.init = init;
+
             normalizedInitMultipliers = new double[init.Length];
 
             if (init.Length <= 0)
@@ -37,7 +45,7 @@ namespace Server
 
             for(int i = 0; i < init.Length; i++)
             {
-                normalizedInitMultipliers[i] = (double)max / init[i] ;
+                normalizedInitMultipliers[i] = (double)max / init[i];
             }
         }
 
@@ -58,7 +66,7 @@ namespace Server
 
         private bool currAndInitDataIncomaptible(int[] curr)
         {
-            return curr.Length < normalizedInitMultipliers.Length;
+            return curr.Length < normalizedInitMultipliers.Length || normalizedInitMultipliers.Length <= 0;
         }
 
         public double[] normalizeCurrData(int[] curr)
@@ -98,13 +106,8 @@ namespace Server
                     return EPostureErrorType.Correct;
 
                 case EPostureErrorType.HighPressureLeftBack:
-                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftMid);
-                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.RightMid);
-                    break;
-
-                case EPostureErrorType.HighPressureLeftHandle:
-                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Handles, EChairPartArea.LeftMid);
-                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Handles, EChairPartArea.RightMid);
+                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
+                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.RightBottom);
                     break;
 
                 case EPostureErrorType.HighPressureLeftSeat:
@@ -113,13 +116,8 @@ namespace Server
                     break;
 
                 case EPostureErrorType.HighPressureRightBack:
-                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.RightMid);
-                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftMid);
-                    break;
-
-                case EPostureErrorType.HighPressureRightHandle:
-                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Handles, EChairPartArea.RightMid);
-                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Handles, EChairPartArea.LeftMid);
+                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
+                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.RightBottom);
                     break;
 
                 case EPostureErrorType.HighPressureRightSeat:
@@ -155,6 +153,27 @@ namespace Server
             return true;
         }
 
+        public List<List<object>> convertLogsToStdErr(List<List<object>> logs)
+        {
+            List<List<object>> logsStdErr = logs;
+            for(int i = 0; i < logsStdErr.Count; i++)
+            {
+                logsStdErr[i][1] = convertDatapointToStdErr(JsonConvert.DeserializeObject<int[]>(logsStdErr[i][1].ToString()));
+            }
+
+            return logsStdErr;
+        }
+
+        private int convertDatapointToStdErr(int[] log)
+        {
+            int sum = 0;
+            for (int i = 0; i < log.Length; i++)
+            {
+                sum += (log[i] - init[i]) * (log[i] - init[i]);
+            }
+
+            return (int)Math.Sqrt(sum);
+        }
         #endregion
     }
 }

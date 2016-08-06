@@ -58,7 +58,7 @@ namespace ClientSimulator
                 }
                 else if (line[0] == '<')
                 {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new LogBounds(new DateTime(2016, 07, 11), new DateTime(2016, 07, 12), deviceId)));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new LogBounds(new DateTime(2016, 08, 6), new DateTime(2016, 08, 7), deviceId)));
                 }
             }
         }
