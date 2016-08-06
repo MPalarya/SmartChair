@@ -36,8 +36,6 @@ public enum EPostureErrorType
     HighPressureRightSeat,
     HighPressureLeftBack,
     HighPressureRightBack,
-    HighPressureLeftHandle,
-    HighPressureRightHandle,
     CannotAnalyzeData,
     #endregion
 }
@@ -355,10 +353,10 @@ public class ChairPartConverter
 
         mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.LeftMid, 0);
         mapChairPartToIndex[EChairPart.Seat].Add(EChairPartArea.RightMid, 1);
-        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.LeftMid, 2);
-        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.RightMid, 3);
-        mapChairPartToIndex[EChairPart.Handles].Add(EChairPartArea.LeftMid, 4);
-        mapChairPartToIndex[EChairPart.Handles].Add(EChairPartArea.RightMid, 5);
+        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.LeftBottom, 2);
+        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.RightBottom, 3);
+        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.LeftTop, 4);
+        mapChairPartToIndex[EChairPart.Back].Add(EChairPartArea.RightTop, 5);
     }
 
     public int getIndexByChairPart(EChairPart chairPart, EChairPartArea chairPartArea)
