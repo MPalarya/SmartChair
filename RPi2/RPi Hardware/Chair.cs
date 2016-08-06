@@ -13,7 +13,6 @@ namespace RPi2.RPi_Hardware
 
         private static volatile CChair m_instance;
         private static object syncRoot = new object();
-        private static DateTime lastReported = DateTime.MinValue;
 
         #endregion
 
@@ -71,15 +70,9 @@ namespace RPi2.RPi_Hardware
         /// </summary>
         public void ReadAndReport()
         {
-            DateTime curTime = DateTime.Now;
-
-            //if (lastReported == DateTime.MinValue)// curTime.Subtract(lastReported).TotalMinutes < CDeviceData.frequencyToReport)
-            //  return;
-
-            lastReported = curTime;
-
             CDeviceData deviceData = CDeviceData.Instance;
             deviceData.Data.Clear();
+
             foreach (var chairPart in Sensors)
             {
                 foreach (var partArea in chairPart.Value)

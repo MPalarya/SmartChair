@@ -1,11 +1,5 @@
-﻿using RPi2.RPi_Hardware;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Microsoft.Azure.Devices.Client;
-using Newtonsoft.Json;
-using System.Text;
-using System.Threading;
-using System.Diagnostics;
 using Windows.UI.Core;
 
 namespace RPi2.RPi_Server_API
