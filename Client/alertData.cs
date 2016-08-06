@@ -8,7 +8,7 @@ namespace Client
 {
     public class alertData
     {
-        public int alertScale { get; set; }
+        public long alertScale { get; set; }
         public DateTime time { get; set; }
     }
 }

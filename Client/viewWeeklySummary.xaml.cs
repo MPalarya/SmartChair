@@ -23,7 +23,7 @@ namespace Client
     /// </summary>
     public sealed partial class viewWeeklySummary : Page
     {
-        smartChairServerClient smartClientServerClient = new smartChairServerClient();
+        smartChairServerClient smartClientServerClient = smartChairServerClient.Instance;
         public viewWeeklySummary()
         {
             this.DataContext = new weeklySummaryController();
@@ -37,7 +37,13 @@ namespace Client
 
         private void SmartClientServerClient_dayData(object sender, dayDataEventArgs e)
         {
-            (weeklySummary.Series[0] as LineSeries).ItemsSource = e.DayDataPoints;
+            List<alertData> data = new List<alertData>();
+            foreach (var item in e.DayDataPoints)
+            {
+                data.Add(new alertData() { time = item.datetime, alertScale = item.pressure });
+            }
+
+            (weeklySummary.Series[0] as LineSeries).ItemsSource = data;
         }
 
         private void ViewWeeklySummary_Loaded(object sender, RoutedEventArgs e)

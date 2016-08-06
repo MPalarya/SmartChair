@@ -23,16 +23,19 @@ namespace Client
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        smartChairController m_smartChairController;
         public MainPage()
         {
-            this.DataContext = new smartChairController();
+            m_smartChairController = new smartChairController();
+            this.DataContext = m_smartChairController;
             this.InitializeComponent();
         }
 
 
         private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(initializeChair));
+            //this.Frame.Navigate(typeof(initializeChair));
+            m_smartChairController.onInitialize();
         }
 
         private void HyperlinkButton2_Click(object sender, RoutedEventArgs e)

@@ -13,7 +13,7 @@ namespace Client
     {
         private static string deviceKey = "Pz5l6+AVMj877mvG3/qqRThVutch4XrdnOjugMh5i+g=";
         private static string deviceId = "00326-10000-00000-AA340";
-        private static string RPiId = "00326-10000-00000-AA800"; //orr's computer
+        private static string RPiId = "00326-10000-00000-AA800"; //"SmartChair01"; ////orr's computer
         private MessageConverter messageConvert;
         private DeviceMessagesSendReceive deviceMessagesSendReceive;
 
@@ -24,11 +24,30 @@ namespace Client
         public event PostureErrorEventHandler postureError;
         public event DayDataEventHandler dayData;
 
+        public bool isInitialize{ get; set; }
+        private static smartChairServerClient m_smartChairServerClient;
+
+        public static smartChairServerClient Instance
+        {
+            get
+            {
+                if (m_smartChairServerClient == null)
+                    m_smartChairServerClient = new smartChairServerClient();
+
+                return m_smartChairServerClient;
+                
+            }
+        }
+
         public smartChairServerClient()
         {
+            
+
             messageConvert = MessageConverter.Instance;
             deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
             deviceMessagesSendReceive.receiveMessages(handleMessagesReceivedFromServer);
+
+            isInitialize = false;
 
             pairWithOrrsDeviceTest();
             startCollectingInitData();
@@ -37,20 +56,25 @@ namespace Client
 
         private void handleMessagesReceivedFromServer(string messageString)
         {
+            
+
             Message<object> messageStruct = messageConvert.decode(messageString);
             switch (messageStruct.messageid)
             {
                 case EMessageId.ServerClient_Datapoint:
+                    if (!isInitialize) return;
                     Datapoint datapoint = (Datapoint)messageStruct.data;
                     handleRealtimeDatapoint(datapoint);
                     break;
 
                 case EMessageId.ServerClient_DayData:
+                    if (!isInitialize) return;
                     List<List<object>> rawLogs = (List<List<object>>)messageStruct.data;
                     handleReceiveDataLogs(rawLogs);
                     break;
 
                 case EMessageId.ServerClient_fixPosture:
+                    if (!isInitialize) return;
                     EPostureErrorType postureErrorType = (EPostureErrorType)messageStruct.data;
                     handlePostureError(postureErrorType);
                     break;
@@ -102,6 +126,7 @@ namespace Client
         {
             // TODO Sivan: notify user we have finished collecting initializing data
             OnHandleFinish(EventArgs.Empty);
+            isInitialize = true;
         }
 
         public void getLogsByDateTimeBounds(DateTime startdate, DateTime enddate)

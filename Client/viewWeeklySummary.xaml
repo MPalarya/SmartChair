@@ -10,9 +10,9 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-        <Charting:Chart x:Name="weeklySummary" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="609,100,300,0" Width="800" Height="600">
-            <Charting:LineSeries Title="Last Week Alerts" Margin="0" IndependentValuePath="datetime" DependentValuePath="pressure" IsSelectionEnabled="True"/>
+        <Charting:Chart x:Name="weeklySummary" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="388,75,0,0" Width="800" Height="600" Title="Standart Deviation from Initialization Posture During the Last Day">
+            <Charting:LineSeries Title="Last Day Posture Data" Margin="0" IndependentValuePath="time" DependentValuePath="alertScale" IsSelectionEnabled="True"/>
         </Charting:Chart>
-        <HyperlinkButton Click="HyperlinkButton2_Click">Finish</HyperlinkButton>
+        <HyperlinkButton Click="HyperlinkButton2_Click" RenderTransformOrigin="5.633,9.218" Margin="42,0,0,688">Back</HyperlinkButton>
     </Grid>
 </Page>

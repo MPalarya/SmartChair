@@ -104,8 +104,8 @@ public class Datapoint
     #region Fields
 
     public string deviceId;
-    public DateTime datetime;
-    public int[] pressure;
+    public DateTime datetime {get; set; }
+    public long pressure { get; set; }
 
     #endregion
 
@@ -114,24 +114,24 @@ public class Datapoint
     {
         this.deviceId = "";
         this.datetime = DateTime.Now;
-        this.pressure = new int[0];
+        this.pressure = 0;
     }
 
     public Datapoint(int numOfSensors)
     {
         this.deviceId = "";
         this.datetime = DateTime.Now;
-        this.pressure = new int[numOfSensors];
+        this.pressure = 0;
     }
 
     public Datapoint(int numOfSensors, int initValue)
         :this(numOfSensors)
     {
-        for (int i = 0; i < numOfSensors; i++)
-            pressure[i] = initValue;
+        //for (int i = 0; i < numOfSensors; i++)
+            //pressure[i] = initValue;
     }
 
-    public Datapoint(string deviceId, DateTime datetime, int[] pressure)
+    public Datapoint(string deviceId, DateTime datetime, long pressure)
     {
         this.deviceId = deviceId;
         this.datetime = datetime;
@@ -142,7 +142,7 @@ public class Datapoint
     {
         this.deviceId = "";
         this.datetime = DateTime.Parse((string)rawDataPoint[0]);
-        this.pressure = (int[])rawDataPoint[1];
+        this.pressure = (long)rawDataPoint[1];
     }
     #endregion
 }
