@@ -16,6 +16,7 @@ namespace RPi2.RPi_Server_API
 
         private MessageConverter messageConvert;
         private DeviceMessagesSendReceive deviceMessagesSendReceive;
+        private bool isDataEmpty = true;
 
         private static readonly string deviceId = "SmartChair01";
         private static readonly string deviceKey = "Sgerz/a7KV2M8/kJ+As5XH5u/o9fJtIIuDsQZYpLsGU=";
@@ -80,9 +81,17 @@ namespace RPi2.RPi_Server_API
         /// </summary>
         public void RPiServer_newDataSample(System.DateTime timestamp)
         {
+            isDataEmpty = true;
             string messageString = createMessageStringFromData(timestamp);
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
-            reportMessageSent(messageString);
+            if (isDataEmpty)
+            {
+                reportMessageSent("Message not sent because data was empty");
+            }
+            else
+            {
+                deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
+                reportMessageSent(messageString);
+            }
         }
 
         private string createMessageStringFromData(DateTime timestamp)
@@ -102,6 +111,8 @@ namespace RPi2.RPi_Server_API
                 foreach (var partArea in chairPart.Value)
                 {
                     sensorDataList.Add(partArea.Value);
+                    if (partArea.Value > 0)
+                        isDataEmpty = false;
                 }
             }
 

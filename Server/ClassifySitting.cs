@@ -12,8 +12,6 @@ namespace Server
         #region Fields
 
         private static ChairPartConverter chairPartConverter = ChairPartConverter.Instance;
-        private static double CORRECT_RATIO_THRESHOLD = 0.4; // = 40%
-
         private double[] normalizedInitMultipliers;
         private int[] init;
 
@@ -30,23 +28,26 @@ namespace Server
         #region Methods
         private void normalizeInitData(int[] init)
         {
-            for(int i = 0; i < init.Length; i++)
+            normalizedInitMultipliers = new double[init.Length];
+            if (init.Length <= 0)
+                return;
+            removeZeroValuesFromInit(init);
+
+            int max = init.Max();
+
+            for (int i = 0; i < init.Length; i++)
+            {
+                normalizedInitMultipliers[i] = (double)max / init[i];
+            }
+        }
+
+        private void removeZeroValuesFromInit(int[] init)
+        {
+            for (int i = 0; i < init.Length; i++)
             {
                 init[i] += 1;
             }
             this.init = init;
-
-            normalizedInitMultipliers = new double[init.Length];
-
-            if (init.Length <= 0)
-                return;
-
-            int max = init.Max();
-
-            for(int i = 0; i < init.Length; i++)
-            {
-                normalizedInitMultipliers[i] = (double)max / init[i];
-            }
         }
 
         public void updateInitData(int[] init)
@@ -125,6 +126,16 @@ namespace Server
                     lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Seat, EChairPartArea.LeftMid);
                     break;
 
+                case EPostureErrorType.HighPressureLowerBackToUpperBack:
+                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
+                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftTop);
+                    break;
+
+                case EPostureErrorType.HighPressureUpperBackToLowerBack:
+                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftTop);
+                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
+                    break;
+
                 default:
                     return EPostureErrorType.Correct;
             }
@@ -147,7 +158,7 @@ namespace Server
         private bool testCorrectPostureByIndex(double[] currNormalized, int indexHigh, int indexLow)
         {
             double ratio = (currNormalized[indexHigh] - currNormalized[indexLow]) / currNormalized[indexLow];
-            if (ratio > CORRECT_RATIO_THRESHOLD)
+            if (ratio > Globals.CORRECT_SITTING_RATIO_THRESHOLD)
                 return false;
 
             return true;
