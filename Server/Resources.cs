@@ -7,6 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+public static class Globals
+{
+    #region Properties
+    public static int NUMBER_OF_DATAPOINTS_TO_AGGREGATE { get; private set; } = 5;
+    public static int MAX_SITTING_TIME_IN_SECONDS { get; private set; } = 120;
+    public static int MAX_DIFFERENCE_BETWEEN_CONTINUAL_SITTING { get; private set; } = 30;
+    public static double CORRECT_SITTING_RATIO_THRESHOLD { get; private set; } = 0.4; // = 40%
+
+    #endregion
+}
+
 // Sets what type of message is being sent through IOT hub
 public enum EMessageId
 {
@@ -17,6 +28,7 @@ public enum EMessageId
     ServerClient_StopInit,
     ServerClient_DayData,
     ServerClient_fixPosture,
+    ServerClient_noDeviceConnected,
     ClientServer_StartRealtime,
     ClientServer_StopRealtime,
     ClientServer_StartInit,
@@ -36,6 +48,9 @@ public enum EPostureErrorType
     HighPressureRightSeat,
     HighPressureLeftBack,
     HighPressureRightBack,
+    ContinuallySittingTooLong,
+    HighPressureUpperBackToLowerBack,
+    HighPressureLowerBackToUpperBack,
     CannotAnalyzeData,
     #endregion
 }
@@ -317,14 +332,18 @@ public class MessageConverter
 
 public class toClientDataPoint
 {
+    #region Fields
     public DateTime datetime { get; set; }
     public long pressure { get; set; }
+    #endregion
 
+    #region Constructors
     public toClientDataPoint(List<object> rawDataPoint)
     {
         this.datetime = DateTime.Parse((string)rawDataPoint[0]);
         this.pressure = (long)rawDataPoint[1];
     }
+    #endregion
 }
 
 public class ChairPartConverter
