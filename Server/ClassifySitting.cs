@@ -11,7 +11,6 @@ namespace Server
     {
         #region Fields
 
-        private static ChairPartConverter chairPartConverter = ChairPartConverter.Instance;
         private double[] normalizedInitMultipliers;
         private int[] init;
 
@@ -107,33 +106,33 @@ namespace Server
                     return EPostureErrorType.Correct;
 
                 case EPostureErrorType.HighPressureLeftBack:
-                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
-                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.RightBottom);
+                    highIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
+                    lowIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.RightBottom);
                     break;
 
                 case EPostureErrorType.HighPressureLeftSeat:
-                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Seat, EChairPartArea.LeftMid);
-                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Seat, EChairPartArea.RightMid);
+                    highIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Seat, EChairPartArea.LeftMid);
+                    lowIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Seat, EChairPartArea.RightMid);
                     break;
 
                 case EPostureErrorType.HighPressureRightBack:
-                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
-                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.RightBottom);
+                    highIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
+                    lowIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.RightBottom);
                     break;
 
                 case EPostureErrorType.HighPressureRightSeat:
-                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Seat, EChairPartArea.RightMid);
-                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Seat, EChairPartArea.LeftMid);
+                    highIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Seat, EChairPartArea.RightMid);
+                    lowIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Seat, EChairPartArea.LeftMid);
                     break;
 
                 case EPostureErrorType.HighPressureLowerBackToUpperBack:
-                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
-                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftTop);
+                    highIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
+                    lowIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftTop);
                     break;
 
                 case EPostureErrorType.HighPressureUpperBackToLowerBack:
-                    highIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftTop);
-                    lowIndex = chairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
+                    highIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftTop);
+                    lowIndex = ChairPartConverter.getIndexByChairPart(EChairPart.Back, EChairPartArea.LeftBottom);
                     break;
 
                 default:
@@ -186,7 +185,7 @@ namespace Server
         private int convertDatapointToStdErr(int[] log)
         {
             int sum = 0;
-            for (int i = 0; i < log.Length; i++)
+            for (int i = 0; i < log.Length && i < init.Length; i++)
             {
                 sum += (log[i] - init[i]) * (log[i] - init[i]);
             }

@@ -16,7 +16,6 @@ namespace Server
 
         private static ConcurrentDictionary<string, DatapointsBuffer> dataPointsBufferDict;
         private static IDbProxy dbProxy;
-        private static MessageConverter messageConvert;
         private static ServerMessagesSendReceive serverMessagesSendReceive;
 
         #endregion
@@ -28,7 +27,6 @@ namespace Server
 
             dataPointsBufferDict = new ConcurrentDictionary<string, DatapointsBuffer>();
             dbProxy = CDbProxy.Instance;
-            messageConvert = MessageConverter.Instance;
             serverMessagesSendReceive = new ServerMessagesSendReceive(scheduleMessageStringHandling);
             serverMessagesSendReceive.receiveMessages();
         }
@@ -50,7 +48,7 @@ namespace Server
         private static dynamic decodeMessage(Object stateInfo)
         {
             string messageString = (string)stateInfo;
-            Message<object> messageStruct = messageConvert.decode(messageString);
+            Message<object> messageStruct = MessageConverter.decode(messageString);
 
             return messageStruct;
         }
@@ -79,6 +77,10 @@ namespace Server
                     handleMessageStartCollectingInitData(messageStruct);
                     break;
 
+                case EMessageId.ClientServer_GetLogsError:
+                    handleMessageGetLogsError(messageStruct);
+                    break;
+
                 case EMessageId.ClientServer_GetLogs:
                     handleMessageGetLogs(messageStruct);
                     break;
@@ -93,7 +95,7 @@ namespace Server
 
             if (shouldSendRealtimeMessageToClient(client))
             {
-                string messageString = messageConvert.encode(EMessageId.ServerClient_Datapoint, datapoint);
+                string messageString = MessageConverter.encode(EMessageId.ServerClient_Datapoint, datapoint);
                 ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageString);
             }
         }
@@ -144,11 +146,11 @@ namespace Server
             }
             else
             {
-                ServerMessagesSendReceive.sendMessageToClient(clientId, messageConvert.encode(EMessageId.ServerClient_noDeviceConnected, ""));
+                ServerMessagesSendReceive.sendMessageToClient(clientId, MessageConverter.encode(EMessageId.ServerClient_noDeviceConnected, ""));
             }
         }
 
-        private static void handleMessageGetLogs(Message<object> messageStruct)
+        private static void handleMessageGetLogsError(Message<object> messageStruct)
         {
             LogBounds logLimits = (LogBounds)messageStruct.data;
             string clientId = logLimits.clientId;
@@ -167,7 +169,19 @@ namespace Server
                 {
                     logsStdErr = null;
                 }
-                ServerMessagesSendReceive.sendMessageToClient(clientId, messageConvert.encode(EMessageId.ServerClient_DayData, logsStdErr));
+                ServerMessagesSendReceive.sendMessageToClient(clientId, MessageConverter.encode(EMessageId.ServerClient_resultLogsError, logsStdErr));
+            }
+        }
+
+        private static void handleMessageGetLogs(Message<object> messageStruct)
+        {
+            LogBounds logLimits = (LogBounds)messageStruct.data;
+            string clientId = logLimits.clientId;
+            string deviceId = dbProxy.getDeviceByClient(clientId);
+            if (deviceId != null)
+            {
+                List<List<object>> logs = getDeviceLogsInJson(deviceId, logLimits.startdate, logLimits.enddate);
+                ServerMessagesSendReceive.sendMessageToClient(clientId, MessageConverter.encode(EMessageId.ServerClient_resultLogs, logs));
             }
         }
 
@@ -188,7 +202,7 @@ namespace Server
             if (dataPointsBufferDict.TryGetValue(deviceId, out dataPointsBuffer))
                 dataPointsBuffer.startCollectingInitDatapoints();
             else
-                ServerMessagesSendReceive.sendMessageToClient(clientId, messageConvert.encode(EMessageId.ServerClient_noDeviceConnected, ""));
+                ServerMessagesSendReceive.sendMessageToClient(clientId, MessageConverter.encode(EMessageId.ServerClient_noDeviceConnected, ""));
         }
 
         private static List<List<object>> getDeviceLogsInJson(string deviceId, DateTime startdate, DateTime enddate)
@@ -304,7 +318,6 @@ namespace Server
             #region Fields
 
             private static ClassifySitting classifySitting;
-            private static MessageConverter messageConvert;
             private int[] currPressureSum;
             private int[] averagePressure;
             private int numOfSensors;
@@ -330,7 +343,6 @@ namespace Server
 
             private DatapointsBuffer(int numOfSensors)
             {
-                messageConvert = MessageConverter.Instance;
                 this.count = 0;
                 this.numOfSensors = numOfSensors;
                 this.currPressureSum = new int[numOfSensors];
@@ -417,7 +429,7 @@ namespace Server
             {
                 ClientProperties client = dbProxy.getClientByDevice(deviceId);
                 if (client != null)
-                    ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_fixPosture, postureErrorType));
+                    ServerMessagesSendReceive.sendMessageToClient(client.clientId, MessageConverter.encode(EMessageId.ServerClient_fixPosture, postureErrorType));
             }
 
             private void calculateAveragePressure()
@@ -448,7 +460,7 @@ namespace Server
                 dbProxy.setInit(datapoint);
                 ClientProperties client = dbProxy.getClientByDevice(datapoint.deviceId);
                 classifySitting.updateInitData(datapoint.pressure);
-                ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_StopInit, ""));
+                ServerMessagesSendReceive.sendMessageToClient(client.clientId, MessageConverter.encode(EMessageId.ServerClient_StopInit, ""));
             }
 
             public void startCollectingInitDatapoints()
