@@ -14,7 +14,6 @@ namespace Client
         private static string deviceKey = "Pz5l6+AVMj877mvG3/qqRThVutch4XrdnOjugMh5i+g=";
         private static string deviceId = "00326-10000-00000-AA340";
         private static string RPiId = "00326-10000-00000-AA800"; //"SmartChair01"; ////orr's computer
-        private MessageConverter messageConvert;
         private DeviceMessagesSendReceive deviceMessagesSendReceive;
 
         public delegate void ChangedEventHandler(object sender, EventArgs e);
@@ -41,9 +40,6 @@ namespace Client
 
         public smartChairServerClient()
         {
-            
-
-            messageConvert = MessageConverter.Instance;
             deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
             deviceMessagesSendReceive.receiveMessages(handleMessagesReceivedFromServer);
 
@@ -56,7 +52,7 @@ namespace Client
 
         private void handleMessagesReceivedFromServer(string messageString)
         {
-            Message<object> messageStruct = messageConvert.decode(messageString);
+            Message<object> messageStruct = MessageConverter.decode(messageString);
             switch (messageStruct.messageid)
             {
                 case EMessageId.ServerClient_Datapoint:
@@ -65,7 +61,7 @@ namespace Client
                     handleRealtimeDatapoint(datapoint);
                     break;
 
-                case EMessageId.ServerClient_DayData:
+                case EMessageId.ServerClient_resultLogsError:
                     if (!isInitialize) return;
                     List<List<object>> rawLogs = (List<List<object>>)messageStruct.data;
                     handleReceiveDataLogs(rawLogs);
@@ -96,7 +92,7 @@ namespace Client
 
         private void handleReceiveDataLogs(List<List<object>> rawLogs)
         {
-            List<toClientDataPoint> logs = messageConvert.convertRawLogsToDatapointsList(rawLogs);
+            List<toClientDataPoint> logs = MessageConverter.convertRawLogsToDatapointsList(rawLogs);
 
             onDayData(new dayDataEventArgs(logs));
             
@@ -129,32 +125,32 @@ namespace Client
 
         public void getLogsByDateTimeBounds(DateTime startdate, DateTime enddate)
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new LogBounds(startdate, enddate, deviceId)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_GetLogsError, new LogBounds(startdate, enddate, deviceId)));
         }
 
         public void pairWithDevice(string deviceIdtoPairWith)
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, deviceIdtoPairWith)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, deviceIdtoPairWith)));
         }
 
         public void pairWithOrrsDeviceTest()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, RPiId)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, RPiId)));
         }
 
         public void startCollectingInitData()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StartInit, deviceId));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_StartInit, deviceId));
         }
 
         public void startCommunicationWithServer()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StartRealtime, deviceId));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_StartRealtime, deviceId));
         }
 
         public void stopCommunicationWithServer()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StopRealtime, deviceId));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_StopRealtime, deviceId));
         }
     }
 
