@@ -157,11 +157,19 @@ namespace Server
 
         private bool testCorrectPostureByIndex(double[] currNormalized, int indexHigh, int indexLow)
         {
+            if (sensorsAreNotFunctioning(currNormalized[indexHigh], currNormalized[indexLow]))
+                return true;
+
             double ratio = (currNormalized[indexHigh] - currNormalized[indexLow]) / currNormalized[indexLow];
             if (ratio > Globals.CORRECT_SITTING_RATIO_THRESHOLD)
                 return false;
 
             return true;
+        }
+
+        private static bool sensorsAreNotFunctioning(double sensorHigh, double sensorLow)
+        {
+            return sensorHigh <= 0 || sensorLow <= 0;
         }
 
         public List<List<object>> convertLogsToStdErr(List<List<object>> logs)
