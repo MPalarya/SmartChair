@@ -9,7 +9,7 @@ using Microsoft.Azure.Devices.Client;
 
 namespace Client
 {
-    public class smartChairServerClient : ISmartChairServerClient
+    public class smartChairServerClient 
     {
         private static string deviceKey = "Pz5l6+AVMj877mvG3/qqRThVutch4XrdnOjugMh5i+g=";
         private static string deviceId = "00326-10000-00000-AA340";
@@ -58,7 +58,7 @@ namespace Client
                 case EMessageId.ServerClient_Datapoint:
                     if (!isInitialize) return;
                     Datapoint datapoint = (Datapoint)messageStruct.data;
-                    handleRealtimeDatapoint(datapoint);
+                    // not needed for client right now
                     break;
 
                 case EMessageId.ServerClient_resultLogsError:
@@ -77,11 +77,6 @@ namespace Client
                     handleFinishedInit();
                     break;
             }
-        }
-
-        private void handleRealtimeDatapoint(Datapoint datapoint)
-        {
-            // TODO Sivan: display data point in real time screen ---not needed
         }
 
         private void onDayData(dayDataEventArgs e)

@@ -26,13 +26,8 @@ namespace Client
         smartChairServerClient smartClientServerClient = smartChairServerClient.Instance;
         public viewWeeklySummary()
         {
-            this.DataContext = new weeklySummaryController();
             this.InitializeComponent();
-            //this.Loaded += ViewWeeklySummary_Loaded;
             smartClientServerClient.dayData += SmartClientServerClient_dayData;
-            var today = System.DateTime.Today;
-            var tomorrow = today.AddDays(1);
-            smartClientServerClient.getLogsByDateTimeBounds(today, tomorrow);
         }
 
         private void SmartClientServerClient_dayData(object sender, dayDataEventArgs e)
@@ -45,22 +40,17 @@ namespace Client
 
             (weeklySummary.Series[0] as LineSeries).ItemsSource = data;
         }
-
-        private void ViewWeeklySummary_Loaded(object sender, RoutedEventArgs e)
-        {
-            List<alertData> data = new List<alertData>();
-
-            data.Add(new alertData() { time = new DateTime(2016, 6, 5, 10, 15, 0), alertScale = 1});
-            data.Add(new alertData() { time = new DateTime(2016, 6, 2, 14, 23, 0) ,alertScale = 5});
-            data.Add(new alertData() { time = new DateTime(2016, 6, 1, 14, 20, 0) ,alertScale = 22 });
-
-            (weeklySummary.Series[0] as LineSeries).ItemsSource = data;
-            
-        }
+      
 
         private void HyperlinkButton2_Click(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(MainPage));
         }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            smartClientServerClient.getLogsByDateTimeBounds(fromDate.Date.DateTime, toDate.Date.DateTime);
+        }
+        
     }
 }

@@ -7,12 +7,25 @@
     xmlns:Charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
     x:Class="Client.viewWeeklySummary"
     mc:Ignorable="d">
+    <Grid Background="WhiteSmoke">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-        <Charting:Chart x:Name="weeklySummary" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="388,75,0,0" Width="800" Height="600" Title="Standart Deviation from Initialization Posture During the Last Day">
-            <Charting:LineSeries Title="Last Day Posture Data" Margin="0" IndependentValuePath="time" DependentValuePath="alertScale" IsSelectionEnabled="True"/>
+        <Charting:Chart x:Name="weeklySummary" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="388,75,0,0" Width="800" Height="600" Title="Standart Deviation from Initialization Posture">
+            <Charting:LineSeries Title="Posture Data" Margin="0" IndependentValuePath="time" DependentValuePath="alertScale" IsSelectionEnabled="True"/>
         </Charting:Chart>
-        <HyperlinkButton Click="HyperlinkButton2_Click" RenderTransformOrigin="5.633,9.218" Margin="103,173,0,515">Back</HyperlinkButton>
+
+        <HyperlinkButton BorderThickness="2" BorderBrush="LightSkyBlue" Foreground="DarkBlue" Background="LightSkyBlue" Click="HyperlinkButton2_Click" RenderTransformOrigin="5.633,9.218" Margin="45,75,0,604" Width="60" Height="41">
+            <HyperlinkButton.ContentTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" />
+                </DataTemplate>
+            </HyperlinkButton.ContentTemplate> Back
+        </HyperlinkButton>
+
+        <DatePicker HorizontalAlignment="Left" Name="fromDate" Margin="45,249,0,0" VerticalAlignment="Top"/>
+        <DatePicker HorizontalAlignment="Left" Name="toDate" Margin="45,355,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="button" Background="LightSkyBlue" FontWeight="Bold" Foreground="DarkBlue" Content="Get Report" Click="button_Click" HorizontalAlignment="Left" Margin="134,486,0,0" VerticalAlignment="Top">
+
+        </Button>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="45,196,0,0" Foreground="DarkBlue" TextWrapping="Wrap" Text="Please choose the dates you want to et data for: " VerticalAlignment="Top" Height="32" Width="319"/>
     </Grid>
 </Page>
