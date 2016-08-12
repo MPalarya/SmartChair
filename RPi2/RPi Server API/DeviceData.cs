@@ -14,7 +14,6 @@ namespace RPi2.RPi_Server_API
         private static volatile CDeviceData m_instance;
         private static object syncRoot = new object();
 
-        private MessageConverter messageConvert;
         private DeviceMessagesSendReceive deviceMessagesSendReceive;
 
         private static readonly string deviceId = "SmartChair01";
@@ -28,7 +27,6 @@ namespace RPi2.RPi_Server_API
 
         private CDeviceData()
         {
-            messageConvert = MessageConverter.Instance;
             deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
         }
 
@@ -81,31 +79,27 @@ namespace RPi2.RPi_Server_API
         public void RPiServer_newDataSample(System.DateTime timestamp)
         {
             string messageString = createMessageStringFromData(timestamp);
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
-            reportMessageSent(messageString);
+            if (messageString == null)
+            {
+                reportMessageSent("Message not sent because data was empty");
+            }
+            else
+            {
+                deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
+                reportMessageSent(messageString);
+            }
         }
 
         private string createMessageStringFromData(DateTime timestamp)
         {
-            int[] pressureArr = aggregateDataToArray();
+            int[] pressureArr = ChairPartConverter.dictionaryToArrayOrNullIfEmpty(Data);
+            if (pressureArr == null)
+                return null;
+
             Datapoint dataPoint = new Datapoint(deviceId, timestamp, pressureArr);
-            string messageString = messageConvert.encode(EMessageId.RpiServer_Datapoint, dataPoint);
+            string messageString = MessageConverter.encode(EMessageId.RpiServer_Datapoint, dataPoint);
 
             return messageString;
-        }
-
-        private int[] aggregateDataToArray()
-        {
-            List<int> sensorDataList = new List<int>();
-            foreach (var chairPart in Data)
-            {
-                foreach (var partArea in chairPart.Value)
-                {
-                    sensorDataList.Add(partArea.Value);
-                }
-            }
-
-            return sensorDataList.ToArray();
         }
 
         private async void reportMessageSent(string messageString)

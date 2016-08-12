@@ -6,19 +6,8 @@ using System.Threading.Tasks;
 using StackExchange.Redis;
 using Newtonsoft.Json;
 
-/* REDIS
-We chose a Redis databse for the project.
-- There are many writes because each device writes to the database once every 60 seconds. Each write appends a value to the key.
-- There are few reads. Only when client asks for log. Each reads gets all of the value.
-Both these operations are very efficiant in Redis, performing at O(1) complexity.
-*/
-
 namespace Server
 {   
-    // Provides an interface to interact with the redis database
-    // Interface methods can remain the same even if converting data to another database
-    // Class is a non blocking singleton instance
-     
     // Table 0: key = deviceId, value = device datapoint log
     // Table 1: key = deviceId, value = init dataset for device
     // Table 2: key = deviceId, value = Client class
