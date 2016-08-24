@@ -258,6 +258,7 @@ public static class MessageConverter
         messageIdToStructMap[(int)EMessageId.ServerClient_resultLogsError] = typeof(List<List<object>>);
         messageIdToStructMap[(int)EMessageId.ServerClient_resultLogs] = typeof(List<List<object>>);
         messageIdToStructMap[(int)EMessageId.ServerClient_fixPosture] = typeof(EPostureErrorType);
+        messageIdToStructMap[(int)EMessageId.ServerClient_noDeviceConnected] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ClientServer_StartRealtime] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ClientServer_StopRealtime] = typeof(string);
         messageIdToStructMap[(int)EMessageId.ClientServer_StartInit] = typeof(string);
