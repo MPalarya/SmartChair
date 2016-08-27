@@ -170,7 +170,8 @@ public class toClientDataPoint
     #region Constructors
     public toClientDataPoint(List<object> rawDataPoint)
     {
-        this.datetime = DateTime.Parse((string)rawDataPoint[0]);
+        //this.datetime = DateTime.Parse((string)rawDataPoint[0]);
+        this.datetime = DateTime.ParseExact((string)rawDataPoint[0], "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.CurrentCulture);
         this.pressure = (long)rawDataPoint[1];
     }
     #endregion
@@ -321,9 +322,21 @@ public static class MessageConverter
     public static List<toClientDataPoint> convertRawLogsToDatapointsList(List<List<object>> logs)
     {
         List<toClientDataPoint> retList = new List<toClientDataPoint>();
+        int count = 0;
         foreach (var rawDatapoint in logs)
         {
-            retList.Add(new toClientDataPoint(rawDatapoint));
+            try
+            {
+                retList.Add(new toClientDataPoint(rawDatapoint));
+                count++;
+            }
+            catch (Exception e)
+            {
+
+                //throw;
+            }
+            
+           
         }
 
         return retList;
