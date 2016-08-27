@@ -130,12 +130,16 @@ namespace RPi2
         {
             m_bigSensor1.Calibrate(m_weightsBigSensor1, m_voltagesBigSensor1);
             textCal1.Text = Math.Round(m_bigSensor1.Coefficient, 2).ToString();
+            m_weightsBigSensor1.Clear();
+            m_voltagesBigSensor1.Clear();
         }
 
         private void buttonCalibrate2_Click(object sender, RoutedEventArgs e)
         {
             m_bigSensor2.Calibrate(m_weightsBigSensor2, m_voltagesBigSensor2);
             textCal2.Text = Math.Round(m_bigSensor2.Coefficient, 2).ToString();
+            m_weightsBigSensor2.Clear();
+            m_voltagesBigSensor2.Clear();
         }
 
         #region keyboard
