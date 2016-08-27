@@ -15,12 +15,18 @@ namespace RPi2
         #region Fields
 
         // sensors:
-        private CSensor m_bigSensor1 = new CSensor(ESensorType.FlexiForceA201, 0);
-        private CSensor m_bigSensor2 = new CSensor(ESensorType.FlexiForceA201, 1);
-        private CSensor m_smallSensor1 = new CSensor(ESensorType.SquareForceResistor, 2);
-        private CSensor m_smallSensor2 = new CSensor(ESensorType.SquareForceResistor, 3);
-        private CSensor m_smallSensor3 = new CSensor(ESensorType.SquareForceResistor, 4);
-        private CSensor m_smallSensor4 = new CSensor(ESensorType.SquareForceResistor, 5);
+        private CSensor m_bigSensor1 = new CSensor(ESensorType.FlexiForceA201, 0)
+        { Coefficient = 4.92  };
+        private CSensor m_bigSensor2 = new CSensor(ESensorType.FlexiForceA201, 1)
+        { Coefficient = 8.9 };
+        private CSensor m_smallSensor1 = new CSensor(ESensorType.SquareForceResistor, 2)
+        { Coefficient = 195.44 };
+        private CSensor m_smallSensor2 = new CSensor(ESensorType.SquareForceResistor, 3)
+        { Coefficient = 258.47 };
+        private CSensor m_smallSensor3 = new CSensor(ESensorType.SquareForceResistor, 4)
+        { Coefficient = 232.73 };
+        private CSensor m_smallSensor4 = new CSensor(ESensorType.SquareForceResistor, 5)
+        { Coefficient = 277.09 };
 
         // list of weights for calibration:
         private List<double> m_weightsBigSensor1 = new List<double>();
