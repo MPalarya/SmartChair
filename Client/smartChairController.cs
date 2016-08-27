@@ -9,25 +9,20 @@ using NotificationsExtensions.Tiles;
 using NotificationsExtensions;
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
-//using System.Xml;
+using System.Threading;
 
 namespace Client
 {
     public class smartChairController
     {
-        smartChairServerClient smartClientServerClient = new smartChairServerClient(); 
+        smartChairServerClient smartClientServerClient = smartChairServerClient.Instance; 
         public smartChairController()
         {
-            this.InitializeCommand = new DelegateCommand<object>(this.onInitialize, this.canExecute);
-            this.ViewWeeklySummaryCommand = new DelegateCommand<object>(this.onViewWeeklySummary, this.canExecute);
-            this.LoginCommand = new DelegateCommand<object>(this.onLogin);
-
+            isLogined = false;
             smartClientServerClient.HandleFinish += SmartClientServerClient_HandleFinish;
             smartClientServerClient.postureError += SmartClientServerClient_postureError;
-            
-            //createNotification("Welcome!");
         }
-
+        
         private void SmartClientServerClient_postureError(object sender, postureErrorTypeEventArgs e)
         {
             string message;
@@ -36,11 +31,11 @@ namespace Client
                 case EPostureErrorType.Correct:
                     break;
                 case EPostureErrorType.HighPressureLeftSeat:
-                    message = "You are linning on your left side";
+                    message = "You are leaning on your left side";
                     createNotification("Posture Error " + message);
                     break;
                 case EPostureErrorType.HighPressureRightSeat:
-                    message = "You are linning on your left side";
+                    message = "You are leaning on your right side";
                     createNotification("Posture Error " + message);
                     break;
                 case EPostureErrorType.HighPressureLeftBack:
@@ -49,14 +44,6 @@ namespace Client
                     break;
                 case EPostureErrorType.HighPressureRightBack:
                     message = "Your back is not straight";
-                    createNotification("Posture Error " + message);
-                    break;
-                case EPostureErrorType.HighPressureLeftHandle:
-                    message = "You are linning on your left side";
-                    createNotification("Posture Error " + message);
-                    break;
-                case EPostureErrorType.HighPressureRightHandle:
-                    message = "You are linning on your right side";
                     createNotification("Posture Error " + message);
                     break;
                 default:
@@ -71,33 +58,31 @@ namespace Client
         }
 
         public bool isLogined { get; set; }
-        public DelegateCommand<object> InitializeCommand { get; private set; }
-        public DelegateCommand<object> ViewWeeklySummaryCommand { get; private set; }
-        public DelegateCommand<object> LoginCommand { get; private set; }
-        //private void OnSubmit(object arg) {...}
 
         private bool canExecute(object arg)
         {
             return isLogined;
         }
         
-        private void onLogin(object arg)
+        public void onInitialize()
         {
-            //login to server
-            isLogined = true;
+            createNotification("Stay stright while we collect your posture data");
+            smartClientServerClient.startCollectingInitData();
+
+            System.Threading.Tasks.Task.Delay(5000).Wait();
+            createNotification("You are all set");
+            demo();
         }
 
-        private void onInitialize(object arg)
+        private void demo()
         {
-
-            //new screen- asks to sit straight and gets approval/error from server 
+            createNotification("Posture Error You are leaning on your left side");
+            System.Threading.Tasks.Task.Delay(3000).Wait();
+            createNotification("Posture Error You are leaning on your right side");
+            System.Threading.Tasks.Task.Delay(3000).Wait();
+            createNotification("Posture Error Your back is not stright");
         }
-
-        private void onViewWeeklySummary(object arg)
-        {
-            //new screen- asks the data from the server and presents it
-        }
-
+        
         private void createNotification(string message)
         {
             var xmlToastTemplate = "<toast launch=\"app-defined-string\">" +

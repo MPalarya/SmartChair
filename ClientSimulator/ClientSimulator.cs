@@ -16,13 +16,11 @@ namespace ClientSimulator
 {
     class ClientSimulator
     {
-        static private MessageConverter messageConvert;
         static private DeviceMessagesSendReceive deviceMessagesSendReceive;
         static private CreateDevice createDevice;
 
         static void Main(string[] args)
         {
-            messageConvert = MessageConverter.Instance;
             createDevice = new CreateDevice();
             string deviceId = createDevice.getDeviceId();
             string deviceKey = createDevice.getDeviceKey();
@@ -42,23 +40,27 @@ namespace ClientSimulator
 
                 if (line == "start")
                 {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StartRealtime, deviceId));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_StartRealtime, deviceId));
                 }
                 else if (line == "stop")
                 {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StopRealtime, deviceId));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_StopRealtime, deviceId));
                 }
                 else if (line == "init")
                 {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StartInit, deviceId));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_StartInit, deviceId));
                 }
                 else if (line[0] == '%')
                 {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, line.Substring(1, line.Length - 1).Trim())));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, line.Substring(1, line.Length - 1).Trim())));
                 }
-                else if (line[0] == '<')
+                else if (line == "logserror")
                 {
-                    deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new LogBounds(new DateTime(2016, 08, 6), new DateTime(2016, 08, 7), deviceId)));
+                    deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_GetLogsError, new LogBounds(new DateTime(2016, 08, 6), new DateTime(2016, 08, 7), deviceId)));
+                }
+                else if (line == "logs")
+                {
+                    deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_GetLogs, new LogBounds(new DateTime(2016, 08, 6), new DateTime(2016, 08, 7), deviceId)));
                 }
             }
         }

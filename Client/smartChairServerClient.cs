@@ -9,24 +9,41 @@ using Microsoft.Azure.Devices.Client;
 
 namespace Client
 {
-    public class smartChairServerClient : ISmartChairServerClient
+    public class smartChairServerClient 
     {
         private static string deviceKey = "Pz5l6+AVMj877mvG3/qqRThVutch4XrdnOjugMh5i+g=";
         private static string deviceId = "00326-10000-00000-AA340";
-        private static string RPiId = "00326-10000-00000-AA800"; //orr's computer
-        private MessageConverter messageConvert;
+        private static string RPiId = "00326-10000-00000-AA800"; //"SmartChair01"; ////orr's computer
         private DeviceMessagesSendReceive deviceMessagesSendReceive;
 
         public delegate void ChangedEventHandler(object sender, EventArgs e);
         public delegate void PostureErrorEventHandler(object sender, postureErrorTypeEventArgs e);
+        public delegate void DayDataEventHandler(object sender, dayDataEventArgs e);
         public event ChangedEventHandler HandleFinish;
         public event PostureErrorEventHandler postureError;
+        public event DayDataEventHandler dayData;
+
+        public bool isInitialize{ get; set; }
+        private static smartChairServerClient m_smartChairServerClient;
+
+        public static smartChairServerClient Instance
+        {
+            get
+            {
+                if (m_smartChairServerClient == null)
+                    m_smartChairServerClient = new smartChairServerClient();
+
+                return m_smartChairServerClient;
+                
+            }
+        }
 
         public smartChairServerClient()
         {
-            messageConvert = MessageConverter.Instance;
             deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
             deviceMessagesSendReceive.receiveMessages(handleMessagesReceivedFromServer);
+
+            isInitialize = true;
 
             pairWithOrrsDeviceTest();
             startCollectingInitData();
@@ -35,20 +52,23 @@ namespace Client
 
         private void handleMessagesReceivedFromServer(string messageString)
         {
-            Message<object> messageStruct = messageConvert.decode(messageString);
+            Message<object> messageStruct = MessageConverter.decode(messageString);
             switch (messageStruct.messageid)
             {
                 case EMessageId.ServerClient_Datapoint:
+                    if (!isInitialize) return;
                     Datapoint datapoint = (Datapoint)messageStruct.data;
-                    handleRealtimeDatapoint(datapoint);
+                    // not needed for client right now
                     break;
 
-                case EMessageId.ServerClient_DayData:
+                case EMessageId.ServerClient_resultLogsError:
+                    if (!isInitialize) return;
                     List<List<object>> rawLogs = (List<List<object>>)messageStruct.data;
-                    
+                    handleReceiveDataLogs(rawLogs);
                     break;
 
                 case EMessageId.ServerClient_fixPosture:
+                    if (!isInitialize) return;
                     EPostureErrorType postureErrorType = (EPostureErrorType)messageStruct.data;
                     handlePostureError(postureErrorType);
                     break;
@@ -59,15 +79,18 @@ namespace Client
             }
         }
 
-        private void handleRealtimeDatapoint(Datapoint datapoint)
+        private void onDayData(dayDataEventArgs e)
         {
-            // TODO Sivan: display data point in real time screen ---not needed
+            if (dayData != null)
+                dayData(this, e);
         }
 
         private void handleReceiveDataLogs(List<List<object>> rawLogs)
         {
-            List<Datapoint> logs = messageConvert.convertRawLogsToDatapointsList(rawLogs);
-            // TODO Sivan: display logs received
+            List<toClientDataPoint> logs = MessageConverter.convertRawLogsToDatapointsList(rawLogs);
+
+            onDayData(new dayDataEventArgs(logs));
+            
         }
 
         private void handlePostureError(EPostureErrorType postureErrorType)
@@ -76,7 +99,7 @@ namespace Client
 
         }
 
-        protected virtual void OnPostureError(EventArgs e)
+        protected virtual void OnPostureError(postureErrorTypeEventArgs e)
         {
             if (postureError != null)
                 postureError(this, e);
@@ -92,36 +115,37 @@ namespace Client
         {
             // TODO Sivan: notify user we have finished collecting initializing data
             OnHandleFinish(EventArgs.Empty);
+            isInitialize = true;
         }
 
         public void getLogsByDateTimeBounds(DateTime startdate, DateTime enddate)
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_GetLogs, new LogBounds(startdate, enddate, deviceId)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_GetLogsError, new LogBounds(startdate, enddate, deviceId)));
         }
 
         public void pairWithDevice(string deviceIdtoPairWith)
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, deviceIdtoPairWith)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, deviceIdtoPairWith)));
         }
 
         public void pairWithOrrsDeviceTest()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, RPiId)));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_PairDevice, new ClientProperties(deviceId, RPiId)));
         }
 
         public void startCollectingInitData()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StartInit, deviceId));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_StartInit, deviceId));
         }
 
         public void startCommunicationWithServer()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StartRealtime, deviceId));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_StartRealtime, deviceId));
         }
 
         public void stopCommunicationWithServer()
         {
-            deviceMessagesSendReceive.sendMessageToServerAsync(messageConvert.encode(EMessageId.ClientServer_StopRealtime, deviceId));
+            deviceMessagesSendReceive.sendMessageToServerAsync(MessageConverter.encode(EMessageId.ClientServer_StopRealtime, deviceId));
         }
     }
 
@@ -134,5 +158,16 @@ namespace Client
         }
 
         public EPostureErrorType ErrorType {get { return m_errorType; }}
+    }
+
+    public class dayDataEventArgs: EventArgs
+    {
+        private List<toClientDataPoint> m_dataPoints;
+        public dayDataEventArgs(List<toClientDataPoint> dataPoints)
+        {
+            m_dataPoints = dataPoints;
+        }
+
+        public List<toClientDataPoint> DayDataPoints { get { return m_dataPoints; } }
     }
 }

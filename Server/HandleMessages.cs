@@ -10,17 +10,12 @@ using Microsoft.Azure.Devices;
 
 namespace Server
 {
-    // Runs the main code.
-    // Connects to IOT hub to receive messages and handle.
-    // Holds Hash Table of key = deviceId value = CDataPointsBuffer. Therefore adding a datapoint to its correct queue can happen in O(1).
-    // Adds every received message to a ThreadPool so a thread can process it. 
     public static class ServerMessagesHandler
     {
         #region Fields
 
         private static ConcurrentDictionary<string, DatapointsBuffer> dataPointsBufferDict;
         private static IDbProxy dbProxy;
-        private static MessageConverter messageConvert;
         private static ServerMessagesSendReceive serverMessagesSendReceive;
 
         #endregion
@@ -32,7 +27,6 @@ namespace Server
 
             dataPointsBufferDict = new ConcurrentDictionary<string, DatapointsBuffer>();
             dbProxy = CDbProxy.Instance;
-            messageConvert = MessageConverter.Instance;
             serverMessagesSendReceive = new ServerMessagesSendReceive(scheduleMessageStringHandling);
             serverMessagesSendReceive.receiveMessages();
         }
@@ -54,7 +48,7 @@ namespace Server
         private static dynamic decodeMessage(Object stateInfo)
         {
             string messageString = (string)stateInfo;
-            Message<object> messageStruct = messageConvert.decode(messageString);
+            Message<object> messageStruct = MessageConverter.decode(messageString);
 
             return messageStruct;
         }
@@ -83,6 +77,10 @@ namespace Server
                     handleMessageStartCollectingInitData(messageStruct);
                     break;
 
+                case EMessageId.ClientServer_GetLogsError:
+                    handleMessageGetLogsError(messageStruct);
+                    break;
+
                 case EMessageId.ClientServer_GetLogs:
                     handleMessageGetLogs(messageStruct);
                     break;
@@ -97,7 +95,7 @@ namespace Server
 
             if (shouldSendRealtimeMessageToClient(client))
             {
-                string messageString = messageConvert.encode(EMessageId.ServerClient_Datapoint, datapoint);
+                string messageString = MessageConverter.encode(EMessageId.ServerClient_Datapoint, datapoint);
                 ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageString);
             }
         }
@@ -144,15 +142,15 @@ namespace Server
             string deviceId = dbProxy.getDeviceByClient(clientId);
             if (deviceId != null)
             {
-                startCollectingInitDatapoints(deviceId);
+                startCollectingInitDatapoints(deviceId, clientId);
             }
             else
             {
-                // TODO: let client know no device is connected
+                ServerMessagesSendReceive.sendMessageToClient(clientId, MessageConverter.encode(EMessageId.ServerClient_noDeviceConnected, ""));
             }
         }
 
-        private static void handleMessageGetLogs(Message<object> messageStruct)
+        private static void handleMessageGetLogsError(Message<object> messageStruct)
         {
             LogBounds logLimits = (LogBounds)messageStruct.data;
             string clientId = logLimits.clientId;
@@ -171,7 +169,19 @@ namespace Server
                 {
                     logsStdErr = null;
                 }
-                ServerMessagesSendReceive.sendMessageToClient(clientId, messageConvert.encode(EMessageId.ServerClient_DayData, logsStdErr));
+                ServerMessagesSendReceive.sendMessageToClient(clientId, MessageConverter.encode(EMessageId.ServerClient_resultLogsError, logsStdErr));
+            }
+        }
+
+        private static void handleMessageGetLogs(Message<object> messageStruct)
+        {
+            LogBounds logLimits = (LogBounds)messageStruct.data;
+            string clientId = logLimits.clientId;
+            string deviceId = dbProxy.getDeviceByClient(clientId);
+            if (deviceId != null)
+            {
+                List<List<object>> logs = getDeviceLogsInJson(deviceId, logLimits.startdate, logLimits.enddate);
+                ServerMessagesSendReceive.sendMessageToClient(clientId, MessageConverter.encode(EMessageId.ServerClient_resultLogs, logs));
             }
         }
 
@@ -185,14 +195,14 @@ namespace Server
                 dataPointsBufferDict.TryAdd(datapoint.deviceId, new DatapointsBuffer(datapoint.pressure.Length, datapoint));
         }
 
-        private static void startCollectingInitDatapoints(string deviceId)
+        private static void startCollectingInitDatapoints(string deviceId, string clientId)
         {
             DatapointsBuffer dataPointsBuffer;
 
             if (dataPointsBufferDict.TryGetValue(deviceId, out dataPointsBuffer))
                 dataPointsBuffer.startCollectingInitDatapoints();
             else
-                return;// TODO: return device not getting data
+                ServerMessagesSendReceive.sendMessageToClient(clientId, MessageConverter.encode(EMessageId.ServerClient_noDeviceConnected, ""));
         }
 
         private static List<List<object>> getDeviceLogsInJson(string deviceId, DateTime startdate, DateTime enddate)
@@ -270,7 +280,7 @@ namespace Server
                         string messageString = Encoding.UTF8.GetString(eventData.GetBytes());
                         callbackOnReceiveMessage(messageString);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Console.WriteLine(e);
                     }
@@ -307,20 +317,18 @@ namespace Server
         {
             #region Fields
 
-            private static int CAPACITY = 1;
             private static ClassifySitting classifySitting;
-            private static MessageConverter messageConvert;
             private int[] currPressureSum;
             private int[] averagePressure;
             private int numOfSensors;
-            private int size;
             private int count;
             private string deviceId;
             private bool bCollectingInitDatapoints;
             private Datapoint oldest;
-            private Queue<Datapoint> queue;
+            private LinkedList<Datapoint> queue;
             private IDbProxy dbProxy;
             private object syncLock;
+            private double timeCount;
             #endregion
 
             #region Constructors
@@ -335,47 +343,67 @@ namespace Server
 
             private DatapointsBuffer(int numOfSensors)
             {
-                messageConvert = MessageConverter.Instance;
                 this.count = 0;
-                this.size = 0;
                 this.numOfSensors = numOfSensors;
                 this.currPressureSum = new int[numOfSensors];
                 this.averagePressure = new int[numOfSensors];
                 this.bCollectingInitDatapoints = false;
                 this.oldest = new Datapoint(numOfSensors, 0);
-                this.queue = new Queue<Datapoint>(CAPACITY);
+                this.queue = new LinkedList<Datapoint>();
                 this.dbProxy = CDbProxy.Instance;
                 this.syncLock = new Object();
+                this.timeCount = 0;
             }
             #endregion
 
             #region Methods
-            // Enqueues a datapoint. If the queue is full a datapoint is dequeued and 
-            // the average of the past CAPACITY datapoints is added to the database
             public void addDataPoint(Datapoint datapoint)
             {
                 lock (syncLock)
                 {
+                    testSittingContinuity(datapoint);
                     enqueueDatapoint(datapoint);
                     updatePressureSumArray(datapoint);
-                    if (count == CAPACITY)
+                    if (count == Globals.NUMBER_OF_DATAPOINTS_TO_AGGREGATE)
                     {
                         calculateAveragePressure();
                         saveAverageAndInitPresseureToDb(datapoint.datetime);
-                        notifyClientAboutSittingCorrectness();
+                        testAndNotifyClientAboutSittingCorrectness();
                     }
+                }
+            }
+
+            private void testSittingContinuity(Datapoint datapoint)
+            {
+                if (queue.Count == 0)
+                    return;
+
+                Datapoint last = queue.Last.Value;
+                TimeSpan timeDifference = datapoint.datetime - last.datetime;
+                if (timeDifference.TotalSeconds > Globals.MAX_DIFFERENCE_BETWEEN_CONTINUAL_SITTING)
+                {
+                    timeCount = 0;
+                }
+                else
+                {
+                    timeCount += timeDifference.TotalSeconds;
+                }
+
+                if (timeCount > Globals.MAX_SITTING_TIME_IN_SECONDS)
+                {
+                    timeCount = 0;
+                    sendSittingIncorrectMessageToClient(EPostureErrorType.ContinuallySittingTooLong);
                 }
             }
 
             private void enqueueDatapoint(Datapoint datapoint)
             {
                 count++;
-                size++;
-                queue.Enqueue(datapoint);
-                if (size > CAPACITY)
+                queue.AddLast(datapoint);
+                if (queue.Count > Globals.NUMBER_OF_DATAPOINTS_TO_AGGREGATE)
                 {
-                    oldest = queue.Dequeue();
-                    size--;
+                    oldest = queue.First.Value;
+                    queue.RemoveFirst();
                 }
             }
 
@@ -388,15 +416,20 @@ namespace Server
                 }
             }
 
-            private void notifyClientAboutSittingCorrectness()
+            private void testAndNotifyClientAboutSittingCorrectness()
             {
                 EPostureErrorType postureErrorType = classifySitting.isSittingCorrectly(averagePressure);
                 if (postureErrorType != EPostureErrorType.Correct)
                 {
-                    ClientProperties client = dbProxy.getClientByDevice(deviceId);
-                    if (client != null)
-                        ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_fixPosture, postureErrorType));
+                    sendSittingIncorrectMessageToClient(postureErrorType);
                 }
+            }
+
+            private void sendSittingIncorrectMessageToClient(EPostureErrorType postureErrorType)
+            {
+                ClientProperties client = dbProxy.getClientByDevice(deviceId);
+                if (client != null)
+                    ServerMessagesSendReceive.sendMessageToClient(client.clientId, MessageConverter.encode(EMessageId.ServerClient_fixPosture, postureErrorType));
             }
 
             private void calculateAveragePressure()
@@ -404,7 +437,7 @@ namespace Server
                 count = 0;
                 for (int i = 0; i < currPressureSum.Length; i++)
                 {
-                    averagePressure[i] = currPressureSum[i] / CAPACITY;
+                    averagePressure[i] = currPressureSum[i] / Globals.NUMBER_OF_DATAPOINTS_TO_AGGREGATE;
                 }
             }
 
@@ -427,7 +460,7 @@ namespace Server
                 dbProxy.setInit(datapoint);
                 ClientProperties client = dbProxy.getClientByDevice(datapoint.deviceId);
                 classifySitting.updateInitData(datapoint.pressure);
-                ServerMessagesSendReceive.sendMessageToClient(client.clientId, messageConvert.encode(EMessageId.ServerClient_StopInit, ""));
+                ServerMessagesSendReceive.sendMessageToClient(client.clientId, MessageConverter.encode(EMessageId.ServerClient_StopInit, ""));
             }
 
             public void startCollectingInitDatapoints()

@@ -6,15 +6,84 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    <Page.Resources>
+        <Style TargetType="HyperlinkButton">
+            <Setter Property="Foreground" Value="DarkBlue" />
+            <Setter Property="BorderThickness" Value="{ThemeResource HyperlinkButtonBorderThemeThickness}" />
+            <Setter Property="Padding" Value="0,6,0,6" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+            <Setter Property="UseSystemFocusVisuals" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="HyperlinkButton">
+                        <Grid x:Name="RootGrid">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                 Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHyperlinkBaseMediumBrush}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                 Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightBaseMediumLowBrush}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                 Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseMediumLowBrush}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter x:Name="ContentPresenter"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Content="{TemplateBinding Content}"
+                            ContentTransitions="{TemplateBinding ContentTransitions}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            Padding="{TemplateBinding Padding}"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                            AutomationProperties.AccessibilityView="Raw"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <!--<Button x:Name="button" Content="Initialize" FontSize="45" Command="{Binding InitializeCommand}" HorizontalAlignment="Left" Margin="171,146,0,0" VerticalAlignment="Top"/>-->
-        <!--<HyperlinkButton Click="HyperlinkButton_Click" Margin="249,124,0,539" FontSize="24" Height="57" Width="123">Initialize</HyperlinkButton>-->
-        <HyperlinkButton Click="HyperlinkButton2_Click" Margin="198,217,0,453" FontSize="24" Height="50" Width="299">Last Week Summary</HyperlinkButton>
-        <!--<HyperlinkButton Click="HyperlinkButton3_Click" Margin="262,304,0,364" FontSize="24" Height="52" Width="110">Login</HyperlinkButton>-->
-        <!--<Button x:Name="button1" Content="Last Week Summary" FontSize="45" Command="{Binding ViewWeeklySummaryCommand}" HorizontalAlignment="Left" Margin="171,290,0,0" VerticalAlignment="Top"/>-->
-        <TextBlock x:Name="textBlock" FontSize="45" HorizontalAlignment="Left" Margin="171,10,0,0" TextWrapping="Wrap" Text="Smart Chair App" VerticalAlignment="Top"/>
-        <!--<Button x:Name="button2" Content="Login" FontSize="45" Command="{Binding LoginCommand}" HorizontalAlignment="Left" Height="97" Margin="171,426,0,0" VerticalAlignment="Top" Width="339"/>-->
+
+    </Page.Resources>
+    <Grid Background="WhiteSmoke">
+        <HyperlinkButton Click="HyperlinkButton_Click" Background="LightSkyBlue" Margin="556,149,0,514" FontSize="24" Height="57" Width="221">
+            <HyperlinkButton.ContentTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" />
+                </DataTemplate>
+            </HyperlinkButton.ContentTemplate> Initialize Posture
+        </HyperlinkButton>
+        <HyperlinkButton Click="HyperlinkButton2_Click" Background="LightSkyBlue" Margin="518,277,0,386" FontSize="24" Height="57" Width="299">
+            <HyperlinkButton.ContentTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" />
+                </DataTemplate>
+            </HyperlinkButton.ContentTemplate> Posture Error Report
+        </HyperlinkButton>  
+        <TextBlock x:Name="textBlock" FontSize="45" FontWeight="Bold" FontFamily="Cooper black" HorizontalAlignment="Left" Margin="495,23,0,0" TextWrapping="Wrap" Text="Smart Chair App" Foreground="DarkBlue" VerticalAlignment="Top"/>
 
     </Grid>
 </Page>

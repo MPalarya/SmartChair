@@ -15,7 +15,6 @@ namespace RPiSimulator
 {
     class RPiSimulator
     {
-        static private MessageConverter messageConvert;
         static private DeviceMessagesSendReceive deviceMessagesSendReceive;
         static private CreateDevice createDevice;
 
@@ -23,7 +22,6 @@ namespace RPiSimulator
 
         static void Main(string[] args)
         {
-            messageConvert = MessageConverter.Instance;
             createDevice = new CreateDevice();
             deviceId = createDevice.getDeviceId();
             string deviceKey = createDevice.getDeviceKey();
@@ -38,7 +36,7 @@ namespace RPiSimulator
 
         private static void createAndSendTelemetryDatapointToServer()
         {
-            int[] currPressure = new int[7];
+            int[] currPressure = new int[6];
             Random rand = new Random();
 
             for(int i = 0; i < currPressure.Length; i++)
