@@ -69,17 +69,17 @@ namespace Client
             createNotification("Stay stright while we collect your posture data");
             smartClientServerClient.startCollectingInitData();
 
-            System.Threading.Tasks.Task.Delay(5000).Wait();
-            createNotification("You are all set");
-            demo();
+            //System.Threading.Tasks.Task.Delay(5000).Wait();
+            //createNotification("You are all set");
+           // demo();
         }
 
         private void demo()
         {
             createNotification("Posture Error You are leaning on your left side");
-            System.Threading.Tasks.Task.Delay(3000).Wait();
+            System.Threading.Tasks.Task.Delay(5000).Wait();
             createNotification("Posture Error You are leaning on your right side");
-            System.Threading.Tasks.Task.Delay(3000).Wait();
+            System.Threading.Tasks.Task.Delay(5000).Wait();
             createNotification("Posture Error Your back is not stright");
         }
         

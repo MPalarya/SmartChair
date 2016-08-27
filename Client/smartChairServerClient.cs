@@ -13,7 +13,7 @@ namespace Client
     {
         private static string deviceKey = "Pz5l6+AVMj877mvG3/qqRThVutch4XrdnOjugMh5i+g=";
         private static string deviceId = "00326-10000-00000-AA340";
-        private static string RPiId = "00326-10000-00000-AA800"; //"SmartChair01"; ////orr's computer
+        private static string RPiId = "00326-10000-00000-AA340";//"00326-10000-00000-AA800"; //"SmartChair01"; ////orr's computer
         private DeviceMessagesSendReceive deviceMessagesSendReceive;
 
         public delegate void ChangedEventHandler(object sender, EventArgs e);
@@ -43,7 +43,7 @@ namespace Client
             deviceMessagesSendReceive = new DeviceMessagesSendReceive(deviceId, deviceKey);
             deviceMessagesSendReceive.receiveMessages(handleMessagesReceivedFromServer);
 
-            isInitialize = true;
+            //isInitialize = true;
 
             pairWithOrrsDeviceTest();
             startCollectingInitData();

@@ -30,8 +30,57 @@ namespace RPiSimulator
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Simulated device on id = {0}\n", deviceId);
 
-            createAndSendTelemetryDatapointToServer();
+            //createAndSendTelemetryDatapointToServer();
+            createDemoData();
             Console.ReadLine();
+        }
+
+        private static void createDemoData()
+        {
+            int[] currPressure = new int[6];
+            string s;
+
+            do
+            {
+                s = Console.ReadLine();
+                switch (s)
+                {
+                    case "left":
+                        currPressure[0] =50;
+                        currPressure[1] =2;
+                        currPressure[2] =2;
+                        currPressure[3] =2;
+                        currPressure[4] =2;
+                        currPressure[5] =2;
+                        break;
+                    case "right":
+                        currPressure[0] =2;
+                        currPressure[1] =50;
+                        currPressure[2] =2;
+                        currPressure[3] =2;
+                        currPressure[4] =2;
+                        currPressure[5] =2;
+                        break;
+                    case "back":
+                        currPressure[0] =2;
+                        currPressure[1] =2;
+                        currPressure[2] =50;
+                        currPressure[3] =2;
+                        currPressure[4] =2;
+                        currPressure[5] =2;
+                        break;
+                    default:
+                        break;
+                }
+                Datapoint datapoint = new Datapoint(deviceId, DateTime.Now, currPressure);
+                Message<Datapoint> messagestruct = new Message<Datapoint>(EMessageId.RpiServer_Datapoint, datapoint);
+                string messageString = JsonConvert.SerializeObject(messagestruct);
+
+                Console.WriteLine("Sending message: {0}", messageString);
+                deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
+            }
+            while (s != null);
+            
         }
 
         private static void createAndSendTelemetryDatapointToServer()
