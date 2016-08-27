@@ -104,7 +104,7 @@ namespace RPi2.RPi_Hardware
         /// <para> conversation ratio between weight and voltage - calculated in calibration process.    </para>
         /// <para> satisfying: Weight(kilograms) = Coefficient * Vout(volt)                              </para>
         /// </summary>
-        public double Coefficient { get; private set; } = 1;
+        public double Coefficient { get; private set; } = 5;
 
         /// <summary>
         /// defines whether a sensor is in working condition.
