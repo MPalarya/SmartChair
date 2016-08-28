@@ -17,7 +17,7 @@ namespace RPiSimulator
     {
         static private DeviceMessagesSendReceive deviceMessagesSendReceive;
         static private CreateDevice createDevice;
-
+        static private int[] currPressure = new int[6];
         static private string deviceId;
 
         static void Main(string[] args)
@@ -30,77 +30,77 @@ namespace RPiSimulator
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Simulated device on id = {0}\n", deviceId);
 
-            //createAndSendTelemetryDatapointToServer();
             createDemoData();
             Console.ReadLine();
         }
 
         private static void createDemoData()
         {
-            int[] currPressure = new int[6];
-            string s;
+            Random rand = new Random();
+            string line;
+
+            for (int i = 0; i < currPressure.Length; i++)
+            {
+                currPressure[i] = 20;
+            }
+
+            SendDemoData();
 
             do
             {
-                s = Console.ReadLine();
-                switch (s)
+                line = Console.ReadLine();
+                switch (line)
                 {
+                    case "normal":
+                        currPressure[0] = 20;
+                        currPressure[1] = 20;
+                        currPressure[2] = 20;
+                        currPressure[3] = 20;
+                        currPressure[4] = 20;
+                        currPressure[5] = 20;
+                        break;
                     case "left":
                         currPressure[0] =50;
-                        currPressure[1] =2;
-                        currPressure[2] =2;
-                        currPressure[3] =2;
-                        currPressure[4] =2;
-                        currPressure[5] =2;
+                        currPressure[1] =20;
+                        currPressure[2] =20;
+                        currPressure[3] =20;
+                        currPressure[4] =20;
+                        currPressure[5] =20;
                         break;
                     case "right":
-                        currPressure[0] =2;
+                        currPressure[0] =20;
                         currPressure[1] =50;
-                        currPressure[2] =2;
-                        currPressure[3] =2;
-                        currPressure[4] =2;
-                        currPressure[5] =2;
+                        currPressure[2] =20;
+                        currPressure[3] =20;
+                        currPressure[4] =20;
+                        currPressure[5] =20;
                         break;
                     case "back":
-                        currPressure[0] =2;
-                        currPressure[1] =2;
+                        currPressure[0] =20;
+                        currPressure[1] =20;
                         currPressure[2] =50;
-                        currPressure[3] =2;
-                        currPressure[4] =2;
-                        currPressure[5] =2;
+                        currPressure[3] =20;
+                        currPressure[4] =20;
+                        currPressure[5] =20;
                         break;
+                    case "random":
+                        for (int i = 0; i < currPressure.Length; i++)
+                        {
+                            currPressure[i] = Math.Max(1, 30 + rand.Next(-20, 21));
+                        }
+                        break;
+
                     default:
                         break;
                 }
-                Datapoint datapoint = new Datapoint(deviceId, DateTime.Now, currPressure);
-                Message<Datapoint> messagestruct = new Message<Datapoint>(EMessageId.RpiServer_Datapoint, datapoint);
-                string messageString = JsonConvert.SerializeObject(messagestruct);
-
-                Console.WriteLine("Sending message: {0}", messageString);
-                deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
             }
-            while (s != null);
-            
+            while (line != null);
         }
 
-        private static void createAndSendTelemetryDatapointToServer()
+        private static async void SendDemoData()
         {
-            int[] currPressure = new int[6];
-            Random rand = new Random();
-
-            for(int i = 0; i < currPressure.Length; i++)
+            while(true)
             {
-                currPressure[i] = 30;
-            }
-
-            while (true)
-            {
-                for (int i = 0; i < currPressure.Length; i++)
-                {
-                    currPressure[i] = Math.Max(1, currPressure[i] + rand.Next(-1, 2));
-                    currPressure[i] = Math.Min(currPressure[i], 100);
-                }
-
                 Datapoint datapoint = new Datapoint(deviceId, DateTime.Now, currPressure);
                 Message<Datapoint> messagestruct = new Message<Datapoint>(EMessageId.RpiServer_Datapoint, datapoint);
                 string messageString = JsonConvert.SerializeObject(messagestruct);
@@ -108,7 +108,7 @@ namespace RPiSimulator
                 Console.WriteLine("Sending message: {0}", messageString);
                 deviceMessagesSendReceive.sendMessageToServerAsync(messageString);
 
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
             }
         }
     }
